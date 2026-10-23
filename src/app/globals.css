@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #1f3a5f;
+  --color-amber: #f2a33a;
+  --color-cream: #f5f1ea;
+  --font-sans: var(--font-rubik), system-ui, sans-serif;
+  --font-brand: var(--font-montserrat), sans-serif;
+}
+
+body {
+  @apply bg-cream text-navy font-sans;
+  /* Notch / home-bar insets (viewport-fit=cover). Top is padded by the page header so its navy fills the notch. */
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Use on the first element at the top of the screen (usually the header). */
+@utility pt-safe {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
