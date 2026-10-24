@@ -47,7 +47,11 @@ export function EmailCodeLogin({ supabase, shouldCreateUser, title, subtitle }: 
     e?.preventDefault();
     setPending(true);
     setError(null);
-    const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser } });
+    // The email has a code if the Supabase template shows {{ .Token }}, otherwise a link back to this page.
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: { shouldCreateUser, emailRedirectTo: window.location.origin + window.location.pathname },
+    });
     setPending(false);
     if (error) return setError(sendError(error));
     setStep("code");
@@ -103,7 +107,7 @@ export function EmailCodeLogin({ supabase, shouldCreateUser, title, subtitle }: 
       ) : (
         <form onSubmit={(e) => { e.preventDefault(); verify(code); }} className="flex flex-col gap-5">
           <p className="text-lg">
-            שלחנו קוד בן {CODE_LENGTH} ספרות ל-<bdi dir="ltr">{email.trim()}</bdi>
+            שלחנו מייל ל-<bdi dir="ltr">{email.trim()}</bdi>. הקלידו את הקוד שבו, או פשוט לחצו על הקישור שבמייל.
           </p>
           <Field label="הקוד מהאימייל" error={error ?? undefined}>
             <input
