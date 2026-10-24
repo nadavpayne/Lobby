@@ -1,10 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { EmailCodeLogin } from "@/components/auth/EmailCodeLogin";
-import { fetchMyBuilding } from "@/lib/api/buildings";
-import { isApiError } from "@/lib/api/http";
-import type { MyBuilding } from "@/lib/buildings/types";
+import { useMyBuilding } from "@/lib/buildings/useMyBuilding";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
 import { BuildingForm } from "./BuildingForm";
 import { InviteLink } from "./InviteLink";
@@ -14,23 +11,7 @@ const loading = <p className="pt-10 text-center text-lg text-navy/70">טוען�
 /** Sign in, then: already in a building → show it (invite link for the committee); otherwise the registration form. */
 export function RegisterBuilding() {
   const { supabase, session } = useSupabaseSession();
-  const token = session?.access_token;
-  const [building, setBuilding] = useState<MyBuilding | null>();
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!token) return;
-    let live = true;
-    fetchMyBuilding(token).then((res) => {
-      if (!live) return;
-      if (isApiError(res) && res.unauthorized) supabase?.auth.signOut(); // expired session → back to login
-      setError(isApiError(res) && !res.unauthorized ? res.error : null);
-      if (!isApiError(res)) setBuilding(res.building);
-    });
-    return () => {
-      live = false;
-    };
-  }, [token, supabase]);
+  const { building, setBuilding, error } = useMyBuilding(supabase, session?.access_token);
 
   if (!supabase) return <p role="alert">Supabase לא מוגדר.</p>;
   if (session === undefined) return loading;
@@ -56,5 +37,5 @@ export function RegisterBuilding() {
       </p>
     );
   }
-  return <BuildingForm token={session.access_token} onCreated={(created) => setBuilding(created)} />;
+  return <BuildingForm token={session.access_token} onCreated={setBuilding} />;
 }

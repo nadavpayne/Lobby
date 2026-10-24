@@ -6,6 +6,7 @@ import { DEMO_CODE, DEMO_PIN } from "./constants.ts";
 // run this file directly with Node; it still must only ever get a secret-key client.
 
 const DEMO_RESIDENT_EMAIL = "demo-resident@lobby.invalid";
+const DEMO_APARTMENTS = 20;
 // Longer than the real 24h so a demo never shows "expired" by surprise; the reset button renews it.
 const DEMO_CODE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -47,8 +48,12 @@ export async function seedDemo(db: SupabaseClient): Promise<{ businessId: string
     maybe(await db.from("buildings").select("id").eq("is_demo", true).limit(1).maybeSingle<Row>()) ??
     one(await db.from("buildings").insert({ address: "הרצל 10", city: "תל אביב", is_demo: true, committee_name: "ועד הבית (הדגמה)" }).select("id").single<Row>());
 
+  // A full apartment list so the demo invite link can be tried too; the demo resident lives in 7.
+  maybe(await db.from("buildings").update({ apartment_count: DEMO_APARTMENTS }).eq("id", building.id));
+  const apartments = Array.from({ length: DEMO_APARTMENTS }, (_, i) => ({ building_id: building.id, apartment_number: String(i + 1) }));
+  maybe(await db.from("apartments").upsert(apartments, { onConflict: "building_id,apartment_number", ignoreDuplicates: true }));
   const apartment = one(
-    await db.from("apartments").upsert({ building_id: building.id, apartment_number: "7" }, { onConflict: "building_id,apartment_number" }).select("id").single<Row>(),
+    await db.from("apartments").select("id").eq("building_id", building.id).eq("apartment_number", "7").single<Row>(),
   );
   await ensureDemoResident(db, apartment.id);
 
