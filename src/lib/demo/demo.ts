@@ -60,7 +60,8 @@ export async function seedDemo(db: SupabaseClient): Promise<{ businessId: string
         .insert({
           name: "קפה לובי (הדגמה)",
           category: "food",
-          address: "הרצל 12, תל אביב",
+          address: "הרצל 12",
+          city: "תל אביב",
           contact_name: "לובי",
           phone: "0500000000",
           email: "demo@lobby.invalid",

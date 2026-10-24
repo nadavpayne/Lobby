@@ -4,6 +4,7 @@ export interface JoinData {
   name: string;
   category: Category;
   address: string;
+  city: string;
   contactName: string;
   phone: string;
   email: string;
@@ -40,6 +41,7 @@ export function validateJoin(raw: unknown): JoinResult {
 
   const name = text("name", "שם העסק", 80);
   const address = text("address", "כתובת", 120);
+  const city = text("city", "עיר", 40);
   const contactName = text("contactName", "שם איש הקשר", 60);
   const description = text("description", "תיאור ההטבה", 200);
   const terms = text("terms", "תנאי ההטבה", 500, false);
@@ -67,7 +69,7 @@ export function validateJoin(raw: unknown): JoinResult {
   return {
     ok: true,
     data: {
-      name, address, contactName, description, discountPercent, pin, email,
+      name, address, city, contactName, description, discountPercent, pin, email,
       category: category as Category,
       phone: phone!,
       terms: terms || null,

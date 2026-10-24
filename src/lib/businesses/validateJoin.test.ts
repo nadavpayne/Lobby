@@ -5,7 +5,8 @@ import { normalizeIsraeliPhone, validateJoin } from "./validateJoin.ts";
 const valid = {
   name: " קפה הפינה ",
   category: "food",
-  address: "הרצל 10, תל אביב",
+  address: "הרצל 10",
+  city: "תל אביב",
   contactName: "דנה",
   phone: "+972 52-123-4567",
   email: "Dana@Example.com",

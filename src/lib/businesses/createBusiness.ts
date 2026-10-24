@@ -13,6 +13,7 @@ export async function createBusiness(data: JoinData): Promise<string> {
       name: data.name,
       category: data.category,
       address: data.address,
+      city: data.city,
       contact_name: data.contactName,
       phone: data.phone,
       email: data.email,

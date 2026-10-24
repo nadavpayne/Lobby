@@ -72,8 +72,11 @@ export function JoinForm() {
             ))}
           </select>
         </Field>
-        <Field label="כתובת העסק" hint="רחוב, מספר ועיר" error={errors.address}>
+        <Field label="כתובת העסק" hint="רחוב ומספר" error={errors.address}>
           <input {...control("address")} autoComplete="street-address" maxLength={120} />
+        </Field>
+        <Field label="עיר" hint="דיירים יראו עסקים בעיר של הבניין שלהם" error={errors.city}>
+          <input {...control("city")} autoComplete="address-level2" maxLength={40} />
         </Field>
       </fieldset>
 

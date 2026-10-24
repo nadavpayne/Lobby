@@ -4,13 +4,14 @@ import type { BusinessStatus } from "@/lib/businesses/types";
 import type { AdminBusiness, StatusChange } from "./types";
 
 const COLUMNS =
-  "id, name, category, address, contact_name, phone, email, status, is_demo, access_slug, created_at, offers(discount_percent, description)";
+  "id, name, category, address, city, contact_name, phone, email, status, is_demo, access_slug, created_at, offers(discount_percent, description)";
 
 interface BusinessRow {
   id: string;
   name: string;
   category: string;
   address: string;
+  city: string | null;
   contact_name: string;
   phone: string;
   email: string;
@@ -28,7 +29,7 @@ function toAdminBusiness(row: BusinessRow, baseUrl: string): AdminBusiness {
     id: row.id,
     name: row.name,
     category: row.category,
-    address: row.address,
+    address: row.city ? `${row.address}, ${row.city}` : row.address,
     contactName: row.contact_name,
     phone: row.phone,
     email: row.email,
