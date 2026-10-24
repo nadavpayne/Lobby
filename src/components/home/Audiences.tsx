@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { primaryButton } from "@/components/ui";
-import { whatsappLink } from "@/lib/contact";
 import { ShareWithCommittee } from "./ShareWithCommittee";
 
 /** One audience card: title, short pitch, bullet points and its call to action. */
@@ -25,8 +24,6 @@ function AudienceCard({ id, title, pitch, points, children }: { id: string; titl
 
 /** Residents / house committees / businesses: what each side gets and what to do next. */
 export function Audiences() {
-  const committeeChat = whatsappLink("היי, אני מוועד הבית ורוצה לשמוע על לובי לבניין שלנו");
-
   return (
     <section className="mx-auto max-w-5xl px-4 py-14">
       <h2 className="mb-8 text-3xl font-bold">לובי בשבילכם</h2>
@@ -47,11 +44,7 @@ export function Audiences() {
           pitch="הטבה אמיתית לכל הדיירים, בלי לנהל כלום."
           points={["קישור אחד לקבוצת הווטסאפ, וזהו", "התראות על הטבות חדשות ליד הבניין", "דוח חודשי: כמה הבניין חסך", "חינם בתקופת הניסיון"]}
         >
-          {committeeChat ? (
-            <a href={committeeChat} target="_blank" rel="noopener noreferrer" className={primaryButton}>דברו איתנו בווטסאפ</a>
-          ) : (
-            <p className="rounded-xl bg-cream p-3 text-center">רוצים את לובי בבניין? בקרוב אפשר להירשם כאן.</p>
-          )}
+          <Link href="/building/new" className={primaryButton}>רישום הבניין</Link>
         </AudienceCard>
 
         <AudienceCard
