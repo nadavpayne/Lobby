@@ -104,6 +104,23 @@ export async function regenerateInvite(db: SupabaseClient, id: string): Promise<
   return data !== null;
 }
 
+/**
+ * Deletes a building with its apartments, invite link and pending QR tokens. Its residents are detached (free to join
+ * another building). Refused when the building has redemptions: that money history must stay. The demo can't be deleted.
+ */
+export async function deleteBuilding(db: SupabaseClient, id: string): Promise<"deleted" | "not_found" | "has_redemptions"> {
+  const { count, error: countError } = await db
+    .from("redemptions")
+    .select("id, apartments!inner(building_id)", { count: "exact", head: true })
+    .eq("apartments.building_id", id);
+  if (countError) throw countError;
+  if (count) return "has_redemptions";
+
+  const { data, error } = await db.from("buildings").delete().eq("id", id).eq("is_demo", false).select("id").maybeSingle();
+  if (error) throw error;
+  return data ? "deleted" : "not_found";
+}
+
 /** The monthly committee report: who joined, how much the building used and saved, per business. */
 export interface CommitteeReport {
   building: { name: string | null; address: string; city: string; committeeName: string | null; apartmentCount: number };

@@ -29,7 +29,10 @@ export const saveBuilding = (token: string, b: BuildingLead & { id?: string }) =
 /** Issues a new invite link (the old one stops working); returns the updated list. */
 export const newInvite = (token: string, id: string) => apiFetch<AdminBuilding[]>("/api/admin/buildings", { token, body: { action: "invite", id } });
 
-export const fetchReport = (token: string, id: string, period: string) =>
+/** Deletes a building (refused if it has redemptions); returns the updated list. */
+export const deleteBuilding = (token: string, id: string) => apiFetch<AdminBuilding[]>("/api/admin/buildings", { token, body: { action: "delete", id } });
+
+export const fetchReport =(token: string, id: string, period: string) =>
   apiFetch<CommitteeReport>(`/api/admin/buildings/${id}/report?period=${period}`, { token });
 
 export const fetchAdminBusinesses = (token: string) => apiFetch<AdminBusiness[]>("/api/admin/businesses", { token });

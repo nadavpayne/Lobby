@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { Field, inputClass } from "@/components/Field";
 import { Button, Modal } from "@/components/ui";
-import { saveBuilding } from "@/lib/api/admin";
+import { deleteBuilding, saveBuilding } from "@/lib/api/admin";
 import { isApiError } from "@/lib/api/http";
 import type { AdminBuilding } from "@/lib/admin/buildings";
 import { BUILDING_STAGES, validateBuildingLead, type BuildingLead, type BuildingStage } from "@/lib/admin/validate";
@@ -77,6 +77,42 @@ function BuildingFields({ token, building: b, onSaved }: { token: string; buildi
       <p className="text-sm text-navy/60">רק בניין בשלב „הצטרף” מקבל דיירים דרך קישור ההצטרפות.</p>
       {error && <p role="alert" className="text-red-700">{error}</p>}
       <Button type="submit" disabled={pending}>{pending ? "שומרים…" : "שמירה"}</Button>
+      {b && <DeleteBuilding token={token} building={b} onDeleted={onSaved} onError={setError} />}
     </form>
+  );
+}
+
+/** Delete with a confirm step. The server refuses buildings that already have redemptions. */
+function DeleteBuilding({ token, building, onDeleted, onError }: {
+  token: string; building: AdminBuilding; onDeleted: Props["onSaved"]; onError: (message: string) => void;
+}) {
+  const [confirming, setConfirming] = useState(false);
+  const [pending, setPending] = useState(false);
+
+  async function remove() {
+    setPending(true);
+    const res = await deleteBuilding(token, building.id);
+    setPending(false);
+    if (isApiError(res)) {
+      setConfirming(false);
+      return onError(res.error);
+    }
+    onDeleted(res);
+  }
+
+  if (!confirming) {
+    return <Button variant="ghost" size="md" className="text-red-700" onClick={() => setConfirming(true)}>מחיקת הבניין</Button>;
+  }
+  return (
+    <div role="alert" className="flex flex-col gap-3 rounded-2xl bg-rose p-4">
+      <p>
+        למחוק את <strong>{building.name ?? building.address}</strong>? הבניין, הדירות וקישור ההצטרפות יימחקו, והדיירים ינותקו
+        ממנו. אי אפשר לבטל את המחיקה.
+      </p>
+      <div className="grid grid-cols-2 gap-2">
+        <Button variant="danger" size="md" onClick={remove} disabled={pending}>{pending ? "מוחקים…" : "כן, למחוק"}</Button>
+        <Button variant="secondary" size="md" onClick={() => setConfirming(false)} disabled={pending}>ביטול</Button>
+      </div>
+    </div>
   );
 }

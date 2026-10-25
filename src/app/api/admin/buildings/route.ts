@@ -1,5 +1,5 @@
 import { connection } from "next/server";
-import { listBuildings, regenerateInvite, saveBuilding } from "@/lib/admin/buildings";
+import { deleteBuilding, listBuildings, regenerateInvite, saveBuilding } from "@/lib/admin/buildings";
 import { validateBuildingLead } from "@/lib/admin/validate";
 import { siteUrl } from "@/lib/siteUrl";
 import { badRequest, isUuid, notFound, requireAdmin } from "../requireAdmin";
@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   return Response.json(await listBuildings(auth.db, siteUrl(request)));
 }
 
-/** POST /api/admin/buildings — { action: "save", id?, ...building } | { action: "invite", id } → the updated list. */
+/** POST /api/admin/buildings — { action: "save", id?, ...building } | { action: "invite" | "delete", id } → the updated list. */
 export async function POST(request: Request) {
   const auth = await requireAdmin(request);
   if (auth instanceof Response) return auth;
@@ -25,6 +25,12 @@ export async function POST(request: Request) {
     if (!(await saveBuilding(auth.db, v.data, body.id))) return notFound("הבניין");
   } else if (body?.action === "invite" && body.id) {
     if (!(await regenerateInvite(auth.db, body.id))) return notFound("הבניין");
+  } else if (body?.action === "delete" && body.id) {
+    const outcome = await deleteBuilding(auth.db, body.id);
+    if (outcome === "not_found") return notFound("הבניין");
+    if (outcome === "has_redemptions") {
+      return Response.json({ error: "בבניין כבר היו מימושים, ולכן אי אפשר למחוק אותו. אפשר להעביר אותו לשלב „ליד” במקום." }, { status: 409 });
+    }
   } else {
     return badRequest();
   }
