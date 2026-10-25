@@ -6,8 +6,8 @@ import { Field, inputClass } from "@/components/Field";
 import { primaryButton } from "@/components/ui";
 
 const RESEND_SECONDS = 60; // Supabase's default minimum gap between codes to the same email
-// Must match Supabase → Authentication → Email → "Email OTP Length" (this project: 8).
-const CODE_LENGTH = 8;
+// Must match Supabase → Authentication → Email → "Email OTP Length" (set to 6 in both projects).
+const CODE_LENGTH = 6;
 
 /** Hebrew message for a failed "send code" call. */
 function sendError(error: AuthError): string {
