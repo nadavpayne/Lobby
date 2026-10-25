@@ -4,14 +4,13 @@ import { MessageCircle, Phone, Users } from "lucide-react";
 import Link from "next/link";
 import { buttonClass, Card, DetailRow, StatTile } from "@/components/ui";
 import { useResident } from "../ResidentGate";
-import { Approvals } from "./Approvals";
 import { BuildingStatsCard } from "./BuildingStatsCard";
 import { NotificationsCard } from "./NotificationsCard";
 
 /** "0521234567" → "972521234567" for wa.me links. */
 const whatsappNumber = (phone: string) => phone.replace(/\D/g, "").replace(/^0/, "972");
 
-/** Building tab: neighbors in Lobby, committee contact, my apartment, phones waiting for my approval; the committee also gets stats and the invite link. */
+/** Building tab: neighbors in Lobby, committee contact, my apartment; the committee also gets stats and the invite link. */
 export default function BuildingScreen() {
   const { token, building } = useResident();
   const isCommittee = building.role === "committee";
@@ -24,7 +23,6 @@ export default function BuildingScreen() {
         <p className="text-navy/70">{building.address}, {building.city}</p>
       </div>
       <NotificationsCard token={token} />
-      <Approvals token={token} isCommittee={isCommittee} />
       {building.neighbors !== undefined && (
         <StatTile tint="lilac" icon={<Users />} label="שכנים בלובי" value={building.neighbors} hint="חשבונות פעילים בבניין, כולל שלכם" />
       )}

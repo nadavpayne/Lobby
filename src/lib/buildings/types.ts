@@ -18,20 +18,11 @@ export interface MyBuilding {
   inviteUrl?: string;
 }
 
-/** A second phone waiting to be let into an apartment. */
-export interface PendingMember {
-  residentId: string;
-  name: string | null;
-  apartmentNumber: string;
-  requestedAt: string;
-}
-
 /** The committee's view of the building this month. */
 export interface BuildingStats {
   apartmentsTotal: number;
   apartmentsJoined: number;
   members: number;
-  pending: number;
   redemptionsThisMonth: number;
   savedThisMonth: number;
 }

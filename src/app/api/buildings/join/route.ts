@@ -7,7 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 const MAX_APARTMENTS = 500; // the exact count is checked against the building in joinBuilding
 
-/** POST /api/buildings/join — { inviteSlug, name, apartmentNumber } → { status: "active" | "pending" }. */
+/** POST /api/buildings/join — { inviteSlug, name, apartmentNumber } → { status: "active" }. */
 export async function POST(request: Request) {
   const db = createAdminClient();
   const user = await getUserFromRequest(db, request);
@@ -31,6 +31,7 @@ export async function POST(request: Request) {
     case "no_apartment":
       return Response.json({ errors: { apartmentNumber: "אין דירה כזו בבניין" } }, { status: 400 });
     case "full":
-      return Response.json({ error: "בדירה הזו כבר רשומים 2 חשבונות. אם זו טעות, פנו לוועד הבית." }, { status: 409 });
+      // Back to the form, on the apartment field: most often it's a typo in the apartment number.
+      return Response.json({ errors: { apartmentNumber: `בדירה ${check.data.apartmentNumber} כבר רשומים 2 טלפונים, וזה המקסימום לדירה. בדקו שמספר הדירה נכון.` } }, { status: 409 });
   }
 }

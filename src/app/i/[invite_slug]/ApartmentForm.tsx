@@ -44,7 +44,7 @@ export function ApartmentForm({ token, inviteSlug, address, apartmentCount, onJo
         <h1 className="text-3xl font-bold">באיזו דירה אתם גרים?</h1>
         <p className="text-lg">{address}</p>
       </div>
-      <Field label="השם שלכם" hint="ועד הבית יראה את השם כשיאשר חשבון נוסף בדירה" error={errors.name}>
+      <Field label="השם שלכם" error={errors.name}>
         <input name="name" autoComplete="name" maxLength={60} aria-invalid={!!errors.name} className={inputClass} />
       </Field>
       <Field label="מספר דירה" hint={`בין 1 ל-${apartmentCount}`} error={errors.apartmentNumber}>

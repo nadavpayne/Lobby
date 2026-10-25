@@ -33,7 +33,7 @@ export function BuildingStatsCard({ token }: { token: string }) {
       <h2 className="text-xl font-bold">הבניין החודש</h2>
       <div className="grid grid-cols-2 gap-3">
         <StatTile tint="sky" icon={<Home />} label="דירות שהצטרפו" value={`${stats.apartmentsJoined}/${stats.apartmentsTotal}`} />
-        <StatTile tint="lilac" icon={<Users />} label="חשבונות פעילים" value={stats.members} hint={stats.pending ? `${stats.pending} ממתינים לאישור` : undefined} />
+        <StatTile tint="lilac" icon={<Users />} label="חשבונות פעילים" value={stats.members} />
         <StatTile tint="peach" icon={<Ticket />} label="מימושים החודש" value={stats.redemptionsThisMonth} />
         <StatTile tint="mint" icon={<HandCoins />} label="הדיירים חסכו" value={<bdi dir="ltr">{formatShekels(stats.savedThisMonth)}</bdi>} />
       </div>

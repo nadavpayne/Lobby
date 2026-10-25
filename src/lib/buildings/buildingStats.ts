@@ -24,7 +24,6 @@ export async function buildingStats(db: SupabaseClient, m: Membership): Promise<
     apartmentsTotal: m.building.apartmentCount ?? 0,
     apartmentsJoined: new Set(active.map((r) => r.apartment_id)).size,
     members: active.length,
-    pending: members.data.length - active.length,
     redemptionsThisMonth: redeemed.data.length,
     savedThisMonth: Math.round(saved * 100) / 100,
   };

@@ -8,8 +8,8 @@ export type JoinOutcome =
   | { ok: false; reason: "not_found" | "inactive" | "no_apartment" | "full" };
 
 /**
- * Puts the user in an apartment of the invited building. The DB trigger decides the status:
- * first phone in the apartment → active, second → pending approval, third → refused ("apartment_full").
+ * Puts the user in an apartment of the invited building. The DB trigger allows two phones per apartment, both
+ * active right away; a third is refused ("apartment_full").
  */
 export async function joinBuilding(db: SupabaseClient, userId: string, inviteSlug: string, data: ResidentJoinData): Promise<JoinOutcome> {
   const { data: building, error } = await db
