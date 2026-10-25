@@ -13,7 +13,7 @@ export function JoinForm() {
   const [errors, setErrors] = useState<JoinErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [verifyUrl, setVerifyUrl] = useState<string | null>(null);
+  const [done, setDone] = useState<{ loginUrl: string; email: string } | null>(null);
 
   /** Common props for a named control, including its error state. */
   const control = (name: JoinField) => ({ name, "aria-invalid": !!errors[name], className: inputClass });
@@ -46,14 +46,14 @@ export function JoinForm() {
     const res = await submitJoin(payload);
     setPending(false);
 
-    if ("verifyUrl" in res) {
-      setVerifyUrl(res.verifyUrl);
+    if ("loginUrl" in res) {
+      setDone({ loginUrl: res.loginUrl, email: check.data.email });
       window.scrollTo(0, 0);
     } else if ("errors" in res) showErrors(form, res.errors);
     else setFormError(res.error);
   }
 
-  if (verifyUrl) return <JoinSuccess verifyUrl={verifyUrl} />;
+  if (done) return <JoinSuccess loginUrl={done.loginUrl} email={done.email} />;
 
   return (
     <form noValidate onSubmit={onSubmit} className="flex flex-col gap-8">
@@ -99,13 +99,6 @@ export function JoinForm() {
         </Field>
         <Field label="תנאים והגבלות (לא חובה)" error={errors.terms}>
           <textarea {...control("terms")} rows={3} placeholder="לדוגמה: לא כולל אלכוהול ומבצעים אחרים" maxLength={500} className={`${inputClass} py-2`} />
-        </Field>
-      </fieldset>
-
-      <fieldset className="flex flex-col gap-4">
-        <legend className="mb-3 text-xl font-bold">קוד PIN לאימות</legend>
-        <Field label="בחרו קוד בן 4 ספרות" hint="תזינו אותו פעם אחת בכל מכשיר שבו תאמתו קודים של דיירים" error={errors.pin}>
-          <input {...control("pin")} inputMode="numeric" autoComplete="off" maxLength={4} dir="ltr" className={`${inputClass} max-w-40 text-center text-2xl tracking-[0.5em]`} />
         </Field>
       </fieldset>
 

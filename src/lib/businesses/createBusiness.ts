@@ -1,5 +1,6 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { randomUUID } from "node:crypto";
 import { hashPin } from "@/lib/pin";
 import type { JoinData } from "./validateJoin";
 
@@ -19,7 +20,9 @@ export async function createBusiness(data: JoinData): Promise<string> {
       contact_name: data.contactName,
       phone: data.phone,
       email: data.email,
-      pin_hash: hashPin(data.pin),
+      // No PIN at sign-up: owners approve at /biz/scan after email sign-in and add cashier logins there.
+      // A random, never-shown secret keeps the old PIN terminal link locked for this business.
+      pin_hash: hashPin(randomUUID()),
       agreed_terms_at: new Date().toISOString(),
     })
     .select("id, access_slug")

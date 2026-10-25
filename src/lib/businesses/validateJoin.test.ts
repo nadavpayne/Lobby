@@ -15,7 +15,6 @@ const valid = {
   discountPercent: 10,
   description: "10% הנחה על כל התפריט",
   terms: "",
-  pin: "1234",
   acceptTerms: true,
 };
 
@@ -48,9 +47,9 @@ test("tags must come from the list", () => {
 });
 
 test("rejects bad fields with per-field errors", () => {
-  const result = validateJoin({ ...valid, category: "toString", pin: "12a4", discountPercent: 0, acceptTerms: "true", name: "" });
+  const result = validateJoin({ ...valid, category: "toString", discountPercent: 0, acceptTerms: "true", name: "" });
   assert.ok(!result.ok);
-  assert.deepEqual(Object.keys(result.errors).sort(), ["acceptTerms", "category", "discountPercent", "name", "pin"]);
+  assert.deepEqual(Object.keys(result.errors).sort(), ["acceptTerms", "category", "discountPercent", "name"]);
 });
 
 test("rejects non-object bodies", () => {

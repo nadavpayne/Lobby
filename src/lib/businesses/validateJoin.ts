@@ -15,7 +15,6 @@ export interface JoinData {
   discountPercent: number;
   description: string;
   terms: string | null;
-  pin: string;
 }
 
 export type JoinField = keyof JoinData | "acceptTerms";
@@ -78,16 +77,13 @@ export function validateJoin(raw: unknown): JoinResult {
     errors.discountPercent = "ההנחה חייבת להיות בין 1% ל-50%";
   }
 
-  const pin = str(body.pin);
-  if (!/^\d{4}$/.test(pin)) errors.pin = "קוד PIN חייב להיות 4 ספרות";
-
   if (body.acceptTerms !== true) errors.acceptTerms = "יש לאשר את תנאי ההצטרפות";
 
   if (Object.keys(errors).length) return { ok: false, errors };
   return {
     ok: true,
     data: {
-      name, address, city, contactName, description, discountPercent, pin, email,
+      name, address, city, contactName, description, discountPercent, email,
       category, subcategories, tags,
       phone: phone!,
       terms: terms || null,
