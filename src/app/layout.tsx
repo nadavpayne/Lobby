@@ -5,7 +5,7 @@ import "./globals.css";
 const rubik = Rubik({ variable: "--font-rubik", subsets: ["hebrew", "latin"] });
 
 // Montserrat is only for the "Lobby" wordmark.
-const montserrat = Montserrat({ variable: "--font-montserrat", subsets: ["latin"], weight: "700" });
+const montserrat = Montserrat({ variable: "--font-montserrat", subsets: ["latin"], weight: "900" });
 
 export const metadata: Metadata = {
   title: "לובי — מועדון הטבות לבניין",

@@ -16,7 +16,7 @@ export function ResidentShell({ nav, buildingName, children }: Props) {
     <>
       <header className="bg-navy px-4 pt-safe pb-3 text-cream">
         <div className="mx-auto flex max-w-lg items-center gap-3">
-          <Logo className="size-10" />
+          <Logo className="size-10" tone="dark" />
           <div className="flex min-w-0 flex-col leading-tight">
             <span dir="ltr" className="text-start font-brand text-lg text-white">Lobby</span>
             {buildingName && <span className="truncate text-sm text-cream/80">הבניין שלי: {buildingName}</span>}

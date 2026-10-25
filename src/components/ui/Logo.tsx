@@ -1,10 +1,15 @@
-/** The Lobby mark: a round elevator "L" button (navy circle, orange ring). Same drawing as /logo.svg. */
-export function Logo({ className = "size-9", label }: { className?: string; label?: string }) {
+const NAVY = "#14254A";
+const ORANGE = "#F28E2A";
+
+/** The Lobby mark: a house with an orange roof and an "L". `tone="dark"` is the white house for navy backgrounds. Same drawing as /logo.svg. */
+export function Logo({ className = "size-9", label, tone = "light" }: { className?: string; label?: string; tone?: "light" | "dark" }) {
+  const house = tone === "dark" ? "#FFFFFF" : NAVY;
+  const letter = tone === "dark" ? NAVY : "#FFFFFF";
   return (
-    <svg viewBox="0 0 512 512" className={className} role={label ? "img" : undefined} aria-label={label} aria-hidden={label ? undefined : true}>
-      <circle cx="256" cy="256" r="240" fill="#1F3A5F" />
-      <circle cx="256" cy="256" r="202" fill="none" stroke="#F2A33A" strokeWidth="26" />
-      <path d="M192 156 H244 V310 H326 V356 H192 Z" fill="#F5F1EA" />
+    <svg viewBox="0 0 120 120" className={className} role={label ? "img" : undefined} aria-label={label} aria-hidden={label ? undefined : true}>
+      <path d="M16 56 L60 18 L104 56 V102 Q104 112 94 112 H26 Q16 112 16 102 Z" fill={house} />
+      <path d="M51 62 V88 H69" fill="none" stroke={letter} strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M10 56 L60 14 L110 56" fill="none" stroke={ORANGE} strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

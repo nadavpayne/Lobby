@@ -11,7 +11,7 @@ export function SideNav({ items, appName }: { items: NavItem[]; appName: string 
   return (
     <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col gap-6 bg-navy p-4 text-cream md:flex">
       <div className="flex items-center gap-2 pt-2">
-        <Logo className="size-10" />
+        <Logo className="size-10" tone="dark" />
         <div dir="ltr" className="flex flex-col text-start leading-tight">
           <span className="font-brand text-xl text-white">Lobby</span>
           <span dir="rtl" className="text-sm text-cream/70">{appName}</span>

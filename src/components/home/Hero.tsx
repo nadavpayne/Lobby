@@ -4,7 +4,6 @@ import { primaryButton, secondaryButton } from "@/components/ui";
 const STATS = [
   ["10%", "הנחה לדיירים בעסקים בשכונה"],
   ["0 ₪", "לוועד הבית בתקופת הניסיון"],
-  ["5%", "עמלה לעסק, רק על מכירה מאומתת"],
 ] as const;
 
 /** Illustration of the resident's code screen (not live data). */
@@ -39,7 +38,7 @@ export function Hero() {
         <p className="text-navy/70">דיירים? ההצטרפות רק דרך הקישור שהוועד שולח.</p>
       </div>
       <PhoneMock />
-      <dl className="grid gap-3 sm:grid-cols-3 md:col-span-2">
+      <dl className="grid gap-3 sm:grid-cols-2 md:col-span-2">
         {STATS.map(([value, label]) => (
           <div key={label} className="rounded-2xl bg-white p-5 shadow-sm">
             <dt className="text-navy/70">{label}</dt>
