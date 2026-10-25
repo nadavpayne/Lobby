@@ -1,4 +1,5 @@
 import "server-only";
+import { existingAccount } from "./accountGuard";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import type { Role } from "./homeFor";
 
@@ -33,6 +34,9 @@ export async function getRoles(db: SupabaseClient, userId: string): Promise<Acco
  */
 export async function linkOwnedBusinesses(db: SupabaseClient, user: User): Promise<void> {
   if (!user.email || !user.email_confirmed_at) return;
+  // One account per email: the admin or a resident never becomes a business owner by matching email.
+  const kind = await existingAccount(db, { email: user.email, userId: user.id });
+  if (kind === "admin" || kind === "resident") return;
   const { data, error } = await db.from("businesses").select("id").ilike("email", user.email).eq("is_demo", false);
   if (error) throw error;
   if (data.length === 0) return;

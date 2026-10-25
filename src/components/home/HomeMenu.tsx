@@ -14,7 +14,11 @@ const ITEMS = [
 export function HomeMenu() {
   const account = useHomeAccount();
   return (
-    <details className="group relative z-30">
+    <div className="flex items-center gap-2">
+      {account?.roles.includes("admin") && (
+        <Link href="/admin" className="flex min-h-11 items-center rounded-xl bg-amber px-4 font-bold text-navy">ניהול</Link>
+      )}
+      <details className="group relative z-30">
       <summary aria-label="תפריט" className="grid size-11 cursor-pointer list-none place-items-center rounded-full text-white hover:bg-white/10 [&::-webkit-details-marker]:hidden">
         <Menu className="size-7" aria-hidden />
       </summary>
@@ -29,6 +33,7 @@ export function HomeMenu() {
           ))
         )}
       </ul>
-    </details>
+      </details>
+    </div>
   );
 }

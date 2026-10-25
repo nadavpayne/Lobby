@@ -1,3 +1,4 @@
+import { accountTakenMessage, existingAccount } from "@/lib/auth/accountGuard";
 import { checkLogo, storeLogo } from "@/lib/biz/logo";
 import { createBusiness } from "@/lib/businesses/createBusiness";
 import { validateJoin } from "@/lib/businesses/validateJoin";
@@ -23,6 +24,9 @@ export async function POST(request: Request) {
   }
 
   const db = createAdminClient();
+  const taken = await existingAccount(db, { email: result.data.email });
+  if (taken) return Response.json({ errors: { email: accountTakenMessage(taken) } }, { status: 409 });
+
   let businessId: string | null = null;
   try {
     businessId = (await createBusiness(result.data)).id;

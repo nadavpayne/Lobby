@@ -1,3 +1,4 @@
+import { accountTakenMessage, existingAccount } from "@/lib/auth/accountGuard";
 import { getUserFromRequest } from "@/lib/auth/getUser";
 import { joinBuilding } from "@/lib/buildings/joinBuilding";
 import { getMembership } from "@/lib/buildings/membership";
@@ -16,6 +17,9 @@ export async function POST(request: Request) {
   const check = validateResidentJoin(body, MAX_APARTMENTS);
   if (!check.ok) return Response.json({ errors: check.errors }, { status: 400 });
   if (await getMembership(db, user.id)) return Response.json({ error: "החשבון הזה כבר משויך לבניין" }, { status: 409 });
+
+  const taken = await existingAccount(db, { email: user.email ?? "", userId: user.id });
+  if (taken) return Response.json({ error: accountTakenMessage(taken) }, { status: 409 });
 
   const outcome = await joinBuilding(db, user.id, String(body?.inviteSlug ?? ""), check.data);
   if (outcome.ok) return Response.json({ status: outcome.status });
