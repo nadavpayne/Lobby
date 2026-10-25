@@ -9,6 +9,8 @@ const ICONS: Record<Exclude<Category, "other">, string> = {
   health: "💊",
   pets: "🐾",
   services: "🔧",
+  home: "🛋️",
+  kids: "🧸",
 };
 
 /** Tiles of the kinds of neighborhood businesses in the club (from the shared category list). */
