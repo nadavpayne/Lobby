@@ -1,4 +1,5 @@
 import { LogOut } from "lucide-react";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/ui";
 import { BottomNav } from "./BottomNav";
@@ -23,7 +24,9 @@ export function CrmShell({ appName, nav, account, onSignOut, topBar, children }:
       <SideNav items={nav} appName={appName} />
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-navy/10 bg-cream/90 px-4 pt-safe pb-3 backdrop-blur md:px-8 print:hidden">
-          <Logo className="size-8 md:hidden" />
+          <Link href="/" aria-label="לובי, לדף הבית" className="shrink-0 md:hidden">
+            <Logo className="size-8" />
+          </Link>
           <div className="min-w-0 flex-1">{topBar}</div>
           {account && <span className="hidden truncate text-sm text-navy/70 sm:block">{account}</span>}
           {onSignOut && (
