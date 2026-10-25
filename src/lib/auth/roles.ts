@@ -4,7 +4,7 @@ import type { Role } from "./homeFor";
 
 export interface AccountRoles {
   roles: Role[];
-  /** Businesses this account owns (business_owner rows). */
+  /** Businesses this account owns (business_owner rows), newest first. */
   businessIds: string[];
   /** Businesses this account works the register for (cashier rows: scan and approve only). */
   cashierBusinessIds: string[];
@@ -13,7 +13,8 @@ export interface AccountRoles {
 /** All roles of an account: user_roles rows plus the residents row (resident or committee). */
 export async function getRoles(db: SupabaseClient, userId: string): Promise<AccountRoles> {
   const [granted, resident] = await Promise.all([
-    db.from("user_roles").select("role, business_id").eq("user_id", userId),
+    // Newest first: an owner who signed up again (e.g. after being declined) sees the latest business.
+    db.from("user_roles").select("role, business_id").eq("user_id", userId).order("created_at", { ascending: false }),
     db.from("residents").select("role").eq("id", userId).maybeSingle<{ role: "resident" | "committee" }>(),
   ]);
   if (granted.error) throw granted.error;
