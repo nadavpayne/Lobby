@@ -27,7 +27,7 @@ test("accepts and normalizes a valid payload", () => {
 });
 
 test("rejects bad fields with per-field errors", () => {
-  const result = validateJoin({ ...valid, category: "toString", pin: "12a4", discountPercent: 5, acceptTerms: "true", name: "" });
+  const result = validateJoin({ ...valid, category: "toString", pin: "12a4", discountPercent: 0, acceptTerms: "true", name: "" });
   assert.ok(!result.ok);
   assert.deepEqual(Object.keys(result.errors).sort(), ["acceptTerms", "category", "discountPercent", "name", "pin"]);
 });

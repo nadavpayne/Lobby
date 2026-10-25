@@ -97,7 +97,7 @@ export function JoinForm() {
       <fieldset className="flex flex-col gap-4">
         <legend className="mb-3 text-xl font-bold">ההטבה לדיירים</legend>
         <Field label="אחוז הנחה" error={errors.discountPercent}>
-          <input {...control("discountPercent")} type="number" inputMode="numeric" min={10} max={50} defaultValue={10} dir="ltr" />
+          <input {...control("discountPercent")} type="number" inputMode="numeric" min={1} max={50} defaultValue={10} dir="ltr" />
         </Field>
         <Field label="תיאור ההטבה" error={errors.description}>
           <input {...control("description")} placeholder="לדוגמה: 10% הנחה על כל התפריט" maxLength={200} />
@@ -117,7 +117,7 @@ export function JoinForm() {
       <div className="flex flex-col gap-3 rounded-2xl bg-white p-4">
         <p className="font-bold">תנאי ההצטרפות</p>
         <ul className="list-disc ps-5 leading-relaxed">
-          <li>הנחה לדיירים לפי האחוז שבחרתם (לפחות <bdi dir="ltr">10%</bdi>)</li>
+          <li>הנחה לדיירים לפי האחוז שבחרתם</li>
           <li>עמלה של <bdi dir="ltr">5%</bdi> ללובי על כל מימוש מאומת</li>
           <li>מימוש אחד לכל דירה בחודש קלנדרי</li>
           <li>אין עמלה על מימוש שלא אימתתם</li>
