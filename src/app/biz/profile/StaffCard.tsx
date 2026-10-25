@@ -33,8 +33,8 @@ export function StaffCard({ token, terminalUrl }: { token: string; terminalUrl: 
   return (
     <Card tint="sky" className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <h2 className="text-xl font-bold">צוות וקופה</h2>
-        <p>עובדי הקופה נכנסים דרך הקישור הזה עם קוד PIN. הם יכולים רק לממש הטבות, בלי גישה לנתונים ולחיובים.</p>
+        <h2 className="text-xl font-bold">מסוף קופה משותף</h2>
+        <p>למכשיר שעומד בקופה: נכנסים בקישור הזה עם קוד PIN, ואפשר רק לממש הטבות, בלי גישה לנתונים ולחיובים.</p>
       </div>
       <p dir="ltr" className="select-all break-all rounded-xl bg-white p-3 font-mono text-sm">{terminalUrl}</p>
       <Button size="md" variant="navy" onClick={copy}><Copy aria-hidden className="size-4" /> {copied ? "הקישור הועתק" : "העתקת הקישור"}</Button>

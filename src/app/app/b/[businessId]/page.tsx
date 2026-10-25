@@ -17,7 +17,7 @@ import { RedeemBar } from "./RedeemBar";
 /** Business page: cover, the offer and its terms, address + map, hours, and "use benefit" with this month's status. */
 export default function BusinessScreen() {
   const { businessId } = useParams<{ businessId: string }>();
-  const { token } = useResident();
+  const { token, building } = useResident();
   const { feed, error, reload } = useFeed(token);
 
   if (error && !feed) return <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>;
@@ -49,7 +49,7 @@ export default function BusinessScreen() {
         <OfferTags offer={o} />
       </header>
 
-      <RedeemBar offer={o} token={token} onIssued={reload} />
+      <RedeemBar offer={o} token={token} address={`${building.address}, ${building.city}`} onRedeemed={reload} />
 
       <Card className="flex flex-col gap-2">
         <h2 className="text-lg font-bold">מה כולל</h2>

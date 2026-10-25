@@ -1,4 +1,6 @@
 import type { BusinessStatus } from "@/lib/businesses/types";
+import type { Cashier } from "@/lib/biz/cashiers";
+import type { BizRedemption, BizTotals } from "@/lib/biz/redemptionsLog";
 import type { BillingMonth, BizDashboard, BizOffer, BizProfile, Customer, OfferInput, ProfileInput } from "@/lib/biz/types";
 import { apiFetch } from "./http";
 
@@ -7,9 +9,12 @@ import { apiFetch } from "./http";
 export interface MyBusiness {
   name: string;
   status: BusinessStatus;
+  /** owner = the full CRM; cashier = the register only. */
+  role: "owner" | "cashier";
+  email: string | null;
 }
 
-/** My business's name and status. */
+/** The business I own or work the register for. */
 export const fetchMyBusiness = (token: string) => apiFetch<MyBusiness>("/api/biz/me", { token });
 
 /** Dashboard numbers, daily series and top buildings. */
@@ -45,3 +50,33 @@ export const saveProfile = (token: string, profile: ProfileInput) =>
 
 /** Sets a new staff terminal PIN (signs out every terminal device). */
 export const changePin = (token: string, pin: string) => apiFetch<{ ok: true }>("/api/biz/pin", { token, body: { pin } });
+
+/** My redemptions log with totals (filters: from, to, cashier). */
+export const fetchBizRedemptions = (token: string, query: string) =>
+  apiFetch<{ rows: BizRedemption[]; totals: BizTotals }>(`/api/biz/redemptions?${query}`, { token });
+
+/** Voids a redemption with a reason (owner only). */
+export const voidBizRedemption = (token: string, id: string, reason: string) => apiFetch<{ ok: true }>("/api/biz/redemptions", { token, body: { id, reason } });
+
+/** Downloads my redemptions log as CSV; returns an error message or null. */
+export async function downloadBizCsv(token: string, query: string): Promise<string | null> {
+  try {
+    const res = await fetch(`/api/biz/redemptions?${query}&format=csv`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) return "ההורדה נכשלה";
+    const url = URL.createObjectURL(await res.blob());
+    Object.assign(document.createElement("a"), { href: url, download: "lobby-redemptions.csv" }).click();
+    URL.revokeObjectURL(url);
+    return null;
+  } catch {
+    return "אין חיבור לאינטרנט";
+  }
+}
+
+/** My cashiers (scan-only logins). */
+export const fetchCashiers = (token: string) => apiFetch<Cashier[]>("/api/biz/cashiers", { token });
+
+/** Adds a cashier by email; returns the updated list. */
+export const addCashier = (token: string, email: string) => apiFetch<Cashier[]>("/api/biz/cashiers", { token, body: { action: "add", email } });
+
+/** Revokes a cashier; returns the updated list. */
+export const revokeCashier = (token: string, userId: string) => apiFetch<Cashier[]>("/api/biz/cashiers", { token, body: { action: "revoke", userId } });

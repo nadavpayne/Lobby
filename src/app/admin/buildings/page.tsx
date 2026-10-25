@@ -10,6 +10,7 @@ import { fetchBuildings, newInvite } from "@/lib/api/admin";
 import { isApiError } from "@/lib/api/http";
 import type { AdminBuilding } from "@/lib/admin/buildings";
 import { BUILDING_STAGES, type BuildingStage } from "@/lib/admin/validate";
+import { formatShekels } from "@/lib/redemptions/money";
 import { BuildingForm, STAGE_LABEL } from "./BuildingForm";
 
 const STAGE_TINT: Record<BuildingStage, "white" | "sky" | "mint"> = { lead: "white", contacted: "sky", joined: "mint" };
@@ -56,6 +57,7 @@ function BuildingsScreen() {
     { key: "contact", header: "ועד", render: (b) => <span>{b.committeeName ?? "—"}{b.committeePhone && <a href={`tel:${b.committeePhone}`} dir="ltr" className="block text-sm text-navy/60 underline">{b.committeePhone}</a>}</span> },
     { key: "join", header: "הצטרפות", align: "end", render: (b) => <span>{b.apartmentsJoined}/{b.apartmentCount}<span className="block text-sm text-navy/60">{b.apartmentCount ? Math.round((b.apartmentsJoined / b.apartmentCount) * 100) : 0}%</span></span> },
     { key: "month", header: "מימושים החודש", align: "end", render: (b) => b.redemptionsThisMonth },
+    { key: "saved", header: "חיסכון הדיירים", align: "end", render: (b) => <bdi dir="ltr">{formatShekels(b.savedThisMonth)}</bdi> },
     {
       key: "actions", header: "", render: (b) => (
         <span className="flex gap-1">

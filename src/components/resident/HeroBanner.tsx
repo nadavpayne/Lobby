@@ -6,7 +6,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { HeroSlide } from "@/lib/offers/feedSections";
 
 const ROTATE_MS = 5000;
-const BACKGROUNDS = ["from-navy to-[#2b5182]", "from-amber to-[#f7c26b]", "from-[#2b5182] to-navy"];
+// Flat brand colours (the design system has no gradients); navy text on orange.
+const BACKGROUNDS = ["bg-navy", "bg-amber", "bg-navy-deep"];
 
 /** One slide's card: image (if any) behind the text, links when it has a target. */
 function SlideCard({ slide: s, i }: { slide: HeroSlide; i: number }) {
@@ -28,7 +29,7 @@ function SlideCard({ slide: s, i }: { slide: HeroSlide; i: number }) {
       {s.href && <span className="inline-flex items-center gap-1 font-bold">לפרטים <ChevronLeft aria-hidden className="size-4" /></span>}
     </>
   );
-  const className = `relative isolate flex min-h-40 flex-col justify-between gap-3 overflow-hidden rounded-3xl p-5 shadow-lift ${s.imageUrl ? "text-cream" : `bg-gradient-to-bl ${BACKGROUNDS[i % BACKGROUNDS.length]} ${dark ? "text-navy" : "text-cream"}`}`;
+  const className = `relative isolate flex min-h-40 flex-col justify-between gap-3 overflow-hidden rounded-3xl p-5 shadow-lift ${s.imageUrl ? "text-cream" : `${BACKGROUNDS[i % BACKGROUNDS.length]} ${dark ? "text-navy" : "text-cream"}`}`;
   return s.href ? <Link href={s.href} className={className}>{body}</Link> : <div className={className}>{body}</div>;
 }
 

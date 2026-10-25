@@ -6,6 +6,8 @@ export interface AccountRoles {
   roles: Role[];
   /** Businesses this account owns (business_owner rows). */
   businessIds: string[];
+  /** Businesses this account works the register for (cashier rows: scan and approve only). */
+  cashierBusinessIds: string[];
 }
 
 /** All roles of an account: user_roles rows plus the residents row (resident or committee). */
@@ -17,10 +19,11 @@ export async function getRoles(db: SupabaseClient, userId: string): Promise<Acco
   if (granted.error) throw granted.error;
   if (resident.error) throw resident.error;
 
-  const rows = granted.data as { role: "admin" | "business_owner"; business_id: string | null }[];
+  const rows = granted.data as { role: "admin" | "business_owner" | "cashier"; business_id: string | null }[];
   const roles = new Set<Role>(rows.map((r) => r.role));
   if (resident.data) roles.add(resident.data.role);
-  return { roles: [...roles], businessIds: rows.flatMap((r) => (r.business_id ? [r.business_id] : [])) };
+  const businessesAs = (role: string) => rows.flatMap((r) => (r.role === role && r.business_id ? [r.business_id] : []));
+  return { roles: [...roles], businessIds: businessesAs("business_owner"), cashierBusinessIds: businessesAs("cashier") };
 }
 
 /**

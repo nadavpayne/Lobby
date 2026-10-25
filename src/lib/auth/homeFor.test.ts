@@ -8,6 +8,8 @@ test("roles: each account lands in its own app, admin wins", () => {
   assert.equal(homeFor(["committee"]), "/app");
   assert.equal(homeFor(["resident", "business_owner"]), "/biz");
   assert.equal(homeFor(["business_owner", "admin"]), "/admin");
+  assert.equal(homeFor(["cashier", "resident"]), "/cashier");
+  assert.ok(canOpen(["cashier"], "/cashier") && !canOpen(["cashier"], "/biz"));
 
   assert.ok(canOpen(["committee"], "/app"));
   assert.ok(!canOpen(["resident"], "/biz"));

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1F3A5F",
+  themeColor: "#14254A",
   // cover: draw under the notch / home bar; globals.css pads with env(safe-area-inset-*).
   viewportFit: "cover",
 };

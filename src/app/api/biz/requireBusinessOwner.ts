@@ -30,9 +30,19 @@ export async function requireBusinessOwner(request: Request): Promise<{ db: Supa
   return { db, userId: user.id, business: data };
 }
 
-/** Like requireBusinessOwner, but the business must be active (for redeeming codes). */
-export async function requireActiveOwner(request: Request) {
-  const auth = await requireBusinessOwner(request);
-  if (auth instanceof Response || auth.business.status === "active") return auth;
-  return Response.json({ error: STATUS_NOTICE[auth.business.status] }, { status: 403 });
+/**
+ * Someone allowed to work the register of an active business: its owner or one of its cashiers.
+ * Cashiers get scan + approve only; every other /api/biz route uses requireBusinessOwner.
+ */
+export async function requireRegister(request: Request): Promise<{ db: SupabaseClient; userId: string; businessId: string } | Response> {
+  const db = createAdminClient();
+  const user = await getUserFromRequest(db, request);
+  if (!user) return Response.json({ error: "צריך להתחבר" }, { status: 401 });
+  const { businessIds, cashierBusinessIds } = await getRoles(db, user.id);
+  const businessId = businessIds[0] ?? cashierBusinessIds[0];
+  if (!businessId) return Response.json({ error: "לחשבון הזה אין גישה לקופה" }, { status: 403 });
+  const { data, error } = await db.from("businesses").select("status").eq("id", businessId).single<{ status: BusinessStatus }>();
+  if (error) throw error;
+  if (data.status !== "active") return Response.json({ error: STATUS_NOTICE[data.status] }, { status: 403 });
+  return { db, userId: user.id, businessId };
 }

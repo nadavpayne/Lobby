@@ -21,7 +21,7 @@ function createOverlay() {
   cancel.type = "button";
   cancel.textContent = "ביטול";
   cancel.style.cssText =
-    "margin:16px;min-height:56px;border-radius:12px;border:0;background:#F5F1EA;color:#1F3A5F;font:inherit;font-size:1.25rem";
+    "margin:16px;min-height:56px;border-radius:12px;border:0;background:#EEF1F6;color:#14254A;font:inherit;font-size:1.25rem";
 
   overlay.append(video, cancel);
   document.body.append(overlay);

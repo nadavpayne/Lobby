@@ -73,28 +73,17 @@ function upcomingOffer(business: BusinessWithOffers, now = new Date()): OfferRow
     .sort((a, b) => Date.parse(a.starts_at!) - Date.parse(b.starts_at!))[0];
 }
 
-/** How many of a quantity-limited offer are left for this building (issued + redeemed count against it). */
+/** How many of a quantity-limited offer are left for this building (redemptions count against it). */
 export async function remainingInBuilding(db: SupabaseClient, offer: OfferRow, buildingId: string): Promise<number | null> {
   if (!offer.quantity_limit) return null;
   const { count, error } = await db
     .from("redemptions")
     .select("id, apartments!inner(building_id)", { count: "exact", head: true })
     .eq("offer_id", offer.id)
-    .in("status", ["issued", "redeemed"])
+    .eq("status", "redeemed")
     .eq("apartments.building_id", buildingId);
   if (error) throw error;
   return Math.max(0, offer.quantity_limit - (count ?? 0));
-}
-
-/** Marks this apartment's codes past their expiry as expired, so the monthly slot frees up immediately. */
-export async function expireStaleForApartment(db: SupabaseClient, apartmentId: string): Promise<void> {
-  const { error } = await db
-    .from("redemptions")
-    .update({ status: "expired" })
-    .eq("apartment_id", apartmentId)
-    .eq("status", "issued")
-    .lte("expires_at", new Date().toISOString());
-  if (error) throw error;
 }
 
 /** Redeemed count per business over the last 30 days, across all buildings. */
@@ -115,17 +104,15 @@ async function recentRedemptions(db: SupabaseClient, businessIds: string[]): Pro
 
 /** Live and upcoming offers for the member's building, each with this month's state for their apartment. */
 export async function listOffers(db: SupabaseClient, m: Membership): Promise<ResidentOffer[]> {
-  await expireStaleForApartment(db, m.apartmentId);
-  const [businesses, mine] = await Promise.all([
+  const [businesses, used, tokens] = await Promise.all([
     findBusinesses(db, m),
-    db
-      .from("redemptions")
-      .select("business_id, code, status, expires_at")
-      .eq("apartment_id", m.apartmentId)
-      .eq("period", currentPeriod())
-      .in("status", ["issued", "redeemed"]),
+    db.from("redemptions").select("business_id").eq("apartment_id", m.apartmentId).eq("period", currentPeriod()).eq("status", "redeemed"),
+    db.from("redemption_tokens").select("business_id").eq("apartment_id", m.apartmentId).eq("status", "active").gt("expires_at", new Date().toISOString()),
   ]);
-  if (mine.error) throw mine.error;
+  if (used.error) throw used.error;
+  if (tokens.error) throw tokens.error;
+  const usedAt = new Set(used.data.map((r) => r.business_id as string));
+  const showingAt = new Set(tokens.data.map((t) => t.business_id as string));
   const recent = await recentRedemptions(db, businesses.map((b) => b.id));
   const home = m.building.lat !== null && m.building.lng !== null ? { lat: m.building.lat, lng: m.building.lng } : null;
 
@@ -134,9 +121,8 @@ export async function listOffers(db: SupabaseClient, m: Membership): Promise<Res
     const live = liveOffer(b);
     const offer = live ?? upcomingOffer(b);
     if (!offer) continue;
-    const used = live && mine.data.find((r) => r.business_id === b.id);
     const remaining = live ? await remainingInBuilding(db, offer, m.building.id) : null;
-    const state = !live ? "upcoming" : used ? (used.status === "issued" ? "active" : "used") : remaining === 0 ? "sold_out" : "available";
+    const state = !live ? "upcoming" : usedAt.has(b.id) ? "used" : showingAt.has(b.id) ? "active" : remaining === 0 ? "sold_out" : "available";
 
     offers.push({
       businessId: b.id,
@@ -163,9 +149,6 @@ export async function listOffers(db: SupabaseClient, m: Membership): Promise<Res
       remaining,
       state,
       ...(state === "used" && { renewsOn: nextPeriodStart() }),
-      ...(used && used.status === "issued" && {
-        activeCode: { code: used.code, expiresAt: used.expires_at, businessName: b.name, discountPercent: offer.discount_percent },
-      }),
     });
   }
   return offers;

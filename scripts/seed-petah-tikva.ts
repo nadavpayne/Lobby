@@ -3,7 +3,7 @@
 // WIPES all app data and all *@seed.lobby.invalid accounts first, so it refuses to run unless SEED_TARGET=dev.
 // Run: npm run seed:dev   (reads .env.dev.local)
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { generateCode } from "../src/lib/codes.ts";
+import { generateBackupCode } from "../src/lib/qr/backupCode.ts";
 import { hashPin } from "../src/lib/pin.ts";
 import { BUILDINGS, BUSINESSES, CITY, FIRST_NAMES, HOURS, LAST_NAMES, LEAD_BUILDINGS, LEAD_BUSINESSES } from "./seed/data.ts";
 import { lastMonths, planRedemptions, seededRandom, type PlanApartment } from "./seed/generate.ts";
@@ -34,7 +34,7 @@ const pick = <T>(list: readonly T[]): T => list[Math.floor(random() * list.lengt
 
 /** Deletes every row of the app tables (children first) and every seeded auth account. */
 async function wipe(client: SupabaseClient): Promise<void> {
-  for (const table of ["redemptions", "customer_notes", "invoices", "user_roles", "devices", "business_attempts", "offers", "branches", "residents", "apartments", "businesses", "buildings"]) {
+  for (const table of ["audit_log", "redemption_tokens", "redemptions", "customer_notes", "invoices", "user_roles", "devices", "business_attempts", "offers", "branches", "residents", "apartments", "businesses", "buildings"]) {
     check(await client.from(table).delete().not("id", "is", null));
   }
   const { data, error } = await client.auth.admin.listUsers({ perPage: 1000 });
@@ -155,18 +155,24 @@ const planned = planRedemptions(plan, BUSINESSES.map((b, i) => ({
 const codesByBusiness = businessIds.map(() => new Set<string>());
 /** A code not yet used by this business. */
 function freshCode(businessIdx: number): string {
-  let code = generateCode();
-  while (codesByBusiness[businessIdx].has(code)) code = generateCode();
+  let code = generateBackupCode();
+  while (codesByBusiness[businessIdx].has(code)) code = generateBackupCode();
   codesByBusiness[businessIdx].add(code);
   return code;
 }
-await insertAll("redemptions", planned.map((r) => ({
-  code: freshCode(r.businessIdx), apartment_id: r.apartmentKey, business_id: businessIds[r.businessIdx], offer_id: offerIds[r.businessIdx],
-  resident_id: residentIds[r.residentIdx],
-  status: r.status, period: r.period, issued_at: r.issuedAt.toISOString(), expires_at: r.expiresAt.toISOString(),
-  redeemed_at: r.redeemedAt?.toISOString() ?? null, amount: r.amount, discount_amount: r.discountAmount, commission_amount: r.commissionAmount,
+// Only redeemed purchases are stored (a QR that expired unused leaves just its token). Money in agorot.
+const agorot = (shekels: number) => Math.round(shekels * 100);
+const buildingOf = new Map(apartmentRows.map((a, i) => [apartmentIds[i], a.building_id]));
+const redeemed = planned.filter((r) => r.status === "redeemed");
+await insertAll("redemptions", redeemed.map((r) => ({
+  code: freshCode(r.businessIdx), apartment_id: r.apartmentKey, building_id: buildingOf.get(r.apartmentKey), business_id: businessIds[r.businessIdx],
+  offer_id: offerIds[r.businessIdx], resident_id: residentIds[r.residentIdx], status: "redeemed", period: r.period,
+  issued_at: r.issuedAt.toISOString(), expires_at: r.expiresAt.toISOString(), redeemed_at: r.redeemedAt!.toISOString(),
+  bill_agorot: agorot(r.amount!), discount_agorot: agorot(r.discountAmount!), paid_agorot: agorot(r.amount!) - agorot(r.discountAmount!),
+  commission_agorot: agorot(r.commissionAmount!), discount_rate: BUSINESSES[r.businessIdx].offer.discount ?? 10,
+  commission_rate: BUSINESSES[r.businessIdx].commission ?? 5, commission_base: "gross",
 })));
-console.log(`Created ${planned.length} redemptions over ${months.join(", ")}.`);
+console.log(`Created ${redeemed.length} redemptions over ${months.join(", ")}.`);
 
 // Invoices for finished months: the oldest is paid, the rest open.
 const invoices = months.slice(0, -1).flatMap((period, m) => businessIds.map((businessId, b) => {

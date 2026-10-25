@@ -10,6 +10,7 @@ import type { BizProfile } from "@/lib/biz/types";
 import { validateProfile, type ProfileErrors } from "@/lib/biz/validateProfile";
 import { CATEGORIES, type Category } from "@/lib/businesses/categories";
 import { useBiz } from "../BizShell";
+import { CashiersCard } from "./CashiersCard";
 import { HoursEditor } from "./HoursEditor";
 import { StaffCard } from "./StaffCard";
 
@@ -108,7 +109,7 @@ export default function ProfileScreen() {
           {message && <p role={message.ok ? "status" : "alert"} className={`rounded-2xl p-3 ${message.ok ? "bg-mint" : "bg-red-50 text-red-800"}`}>{message.text}</p>}
           <Button type="submit" disabled={pending}>{pending ? "שומרים…" : "שמירת השינויים"}</Button>
         </form>
-        <aside><StaffCard token={token} terminalUrl={p.terminalUrl} /></aside>
+        <aside className="flex flex-col gap-6"><CashiersCard token={token} /><StaffCard token={token} terminalUrl={p.terminalUrl} /></aside>
       </div>
     </div>
   );

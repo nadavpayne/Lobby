@@ -17,6 +17,8 @@ export interface AdminBuilding {
   apartmentsJoined: number;
   members: number;
   redemptionsThisMonth: number;
+  /** What the building's residents saved this month (non-voided redemptions). */
+  savedThisMonth: number;
   inviteUrl: string;
   createdAt: string;
 }
@@ -42,7 +44,7 @@ export async function listBuildings(db: SupabaseClient, origin: string): Promise
   const [buildings, members, redeemed] = await Promise.all([
     db.from("buildings").select(COLUMNS).eq("is_demo", false).order("created_at", { ascending: false }),
     db.from("residents").select("apartment_id, apartments!inner(building_id)").eq("status", "active"),
-    db.from("redemptions").select("apartments!inner(building_id)").eq("status", "redeemed").eq("period", currentPeriod()),
+    db.from("redemptions").select("discount_amount, apartments!inner(building_id)").eq("status", "redeemed").eq("period", currentPeriod()),
   ]);
   for (const r of [buildings, members, redeemed]) if (r.error) throw r.error;
 
@@ -54,14 +56,17 @@ export async function listBuildings(db: SupabaseClient, origin: string): Promise
     memberCount.set(b, (memberCount.get(b) ?? 0) + 1);
   }
   const monthCount = new Map<string, number>();
-  for (const r of redeemed.data as unknown as { apartments: { building_id: string } }[]) {
-    monthCount.set(r.apartments.building_id, (monthCount.get(r.apartments.building_id) ?? 0) + 1);
+  const monthSaved = new Map<string, number>();
+  for (const r of redeemed.data as unknown as { discount_amount: number; apartments: { building_id: string } }[]) {
+    const b = r.apartments.building_id;
+    monthCount.set(b, (monthCount.get(b) ?? 0) + 1);
+    monthSaved.set(b, Math.round(((monthSaved.get(b) ?? 0) + Number(r.discount_amount)) * 100) / 100);
   }
 
   return (buildings.data as Row[]).map((b) => ({
     id: b.id, name: b.name, address: b.address, city: b.city, pipeline: b.pipeline, active: b.active,
     committeeName: b.committee_name, committeePhone: b.committee_phone, apartmentCount: b.apartment_count ?? 0,
-    apartmentsJoined: joined.get(b.id)?.size ?? 0, members: memberCount.get(b.id) ?? 0, redemptionsThisMonth: monthCount.get(b.id) ?? 0,
+    apartmentsJoined: joined.get(b.id)?.size ?? 0, members: memberCount.get(b.id) ?? 0, redemptionsThisMonth: monthCount.get(b.id) ?? 0, savedThisMonth: monthSaved.get(b.id) ?? 0,
     inviteUrl: `${origin}/i/${b.invite_slug}`, createdAt: b.created_at,
   }));
 }

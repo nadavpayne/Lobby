@@ -10,7 +10,7 @@ import type { LogRow } from "@/lib/admin/redemptions";
 import { formatShekels } from "@/lib/redemptions/money";
 
 const time = new Intl.DateTimeFormat("he-IL", { timeZone: "Asia/Jerusalem", day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit" });
-const STATUS: Record<LogRow["status"], [string, "mint" | "sky" | "white"]> = { redeemed: ["מומש", "mint"], issued: ["פעיל", "sky"], expired: ["פג תוקף", "white"] };
+const STATUS: Record<LogRow["status"], [string, "mint" | "white"]> = { redeemed: ["מומש", "mint"], voided: ["בוטל", "white"] };
 const money = (n: number | null) => (n === null ? "—" : <bdi dir="ltr">{formatShekels(n)}</bdi>);
 const select = "min-h-11 rounded-xl border border-navy/25 bg-white px-3";
 
@@ -67,7 +67,7 @@ export default function RedemptionsScreen() {
         <label className="flex flex-col text-sm">עד<input type="date" value={filters.to} onChange={set("to")} className={select} /></label>
         <label className="flex flex-col text-sm">עסק<select value={filters.business} onChange={set("business")} className={select}><option value="">כל העסקים</option>{options.businesses.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}</select></label>
         <label className="flex flex-col text-sm">בניין<select value={filters.building} onChange={set("building")} className={select}><option value="">כל הבניינים</option>{options.buildings.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}</select></label>
-        <label className="flex flex-col text-sm">סטטוס<select value={filters.status} onChange={set("status")} className={select}><option value="">הכל</option><option value="redeemed">מומש</option><option value="issued">פעיל</option><option value="expired">פג תוקף</option></select></label>
+        <label className="flex flex-col text-sm">סטטוס<select value={filters.status} onChange={set("status")} className={select}><option value="">הכל</option><option value="redeemed">מומש</option><option value="voided">בוטל</option></select></label>
       </div>
       {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>}
       {rows && (

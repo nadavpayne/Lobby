@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, Megaphone, ReceiptText, ScanLine, Store, Users } from "lucide-react";
+import { LayoutDashboard, ListChecks, Megaphone, ReceiptText, ScanLine, Store, Users } from "lucide-react";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { RoleGate, useAccount } from "@/components/auth/RoleGate";
 import { CrmShell } from "@/components/shell/CrmShell";
@@ -11,7 +11,8 @@ import { STATUS_NOTICE } from "@/lib/businesses/statusNotice";
 
 const NAV: NavItem[] = [
   { href: "/biz", label: "לוח בקרה", icon: LayoutDashboard },
-  { href: "/biz/scan", label: "מימוש", icon: ScanLine },
+  { href: "/biz/scan", label: "סריקה", icon: ScanLine },
+  { href: "/biz/redemptions", label: "מימושים", icon: ListChecks },
   { href: "/biz/customers", label: "לקוחות", icon: Users },
   { href: "/biz/offers", label: "הטבות", icon: Megaphone },
   { href: "/biz/billing", label: "חיובים", icon: ReceiptText },

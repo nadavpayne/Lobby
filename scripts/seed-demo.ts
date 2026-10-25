@@ -15,5 +15,5 @@ console.log(`
 Demo ready.
   Terminal link: ${site}/b/${accessSlug}
   PIN:           ${DEMO_PIN}
-  Demo code:     ${DEMO_CODE}
+  Demo backup code: ${DEMO_CODE.slice(0, 3)}-${DEMO_CODE.slice(3)}
 `);

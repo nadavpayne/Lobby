@@ -1,10 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand: navy primary, orange ("amber") accent, warm off-white page. */
-  --color-navy: #1f3a5f;
-  --color-amber: #f2a33a;
-  --color-cream: #f5f1ea;
+  /* Lobby design system (claude.ai/artifact/EroqQUqXt2yf9f7mt4VQ7D): navy primary, orange accent, cool light page.
+     "amber" is the brand orange (navy text on it, never white); "highlight" is the brighter badge amber. */
+  --color-navy: #14254a;
+  --color-navy-deep: #0f1b33;
+  --color-amber: #f28c28;
+  --color-highlight: #ffb020;
+  --color-cream: #eef1f6;
+  --color-warm: #f4efe9;
+  --color-muted: #4a5878;
+  --color-hairline: #d3dae6;
   /* Soft card tints (used by Card / StatTile / Tag). Text on them stays navy. */
   --color-sky: #e3edf9;
   --color-peach: #fde9d2;
@@ -15,8 +21,8 @@
   --font-sans: var(--font-rubik), system-ui, sans-serif;
   --font-brand: var(--font-montserrat), sans-serif;
 
-  --shadow-soft: 0 1px 2px rgb(31 58 95 / 0.06), 0 4px 16px rgb(31 58 95 / 0.08);
-  --shadow-lift: 0 2px 4px rgb(31 58 95 / 0.08), 0 12px 32px rgb(31 58 95 / 0.14);
+  --shadow-soft: 0 1px 2px rgb(16 30 64 / 0.06), 0 4px 16px rgb(16 30 64 / 0.08);
+  --shadow-lift: 0 18px 40px rgb(16 30 64 / 0.16);
 
   --animate-pop-in: pop-in 180ms ease-out both;
   --animate-shimmer: shimmer 1.4s linear infinite;
@@ -63,4 +69,13 @@ body {
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* Register scan line: sweeps up and down the viewfinder (stops for reduced motion via the rule above). */
+@keyframes lobby-scan {
+  0%, 100% { top: 28px; }
+  50% { top: 248px; }
+}
+.lobby-scanline {
+  animation: lobby-scan 2.6s ease-in-out infinite;
 }

@@ -1,10 +1,18 @@
 import { connection } from "next/server";
-import { requireBusinessOwner } from "../requireBusinessOwner";
+import { getUserFromRequest } from "@/lib/auth/getUser";
+import { getRoles } from "@/lib/auth/roles";
+import { createAdminClient } from "@/lib/supabase/admin";
 
-/** GET /api/biz/me — the owner's business: name and status (for the CRM header and notices). */
+/** GET /api/biz/me — the business I own or work the register for: name, status, and my role there. */
 export async function GET(request: Request) {
   await connection(); // per-request auth: never prerender (cacheComponents is on)
-  const auth = await requireBusinessOwner(request);
-  if (auth instanceof Response) return auth;
-  return Response.json({ name: auth.business.name, status: auth.business.status });
+  const db = createAdminClient();
+  const user = await getUserFromRequest(db, request);
+  if (!user) return Response.json({ error: "צריך להתחבר" }, { status: 401 });
+  const { businessIds, cashierBusinessIds } = await getRoles(db, user.id);
+  const role = businessIds[0] ? "owner" : cashierBusinessIds[0] ? "cashier" : null;
+  if (!role) return Response.json({ error: "לחשבון הזה אין עסק בלובי" }, { status: 403 });
+  const { data, error } = await db.from("businesses").select("name, status").eq("id", businessIds[0] ?? cashierBusinessIds[0]).single();
+  if (error) throw error;
+  return Response.json({ name: data.name, status: data.status, role, email: user.email ?? null });
 }

@@ -1,6 +1,6 @@
 import type { WeekHours } from "./hours";
 
-/** Where an offer stands for my apartment this month. "upcoming" = approved but starts later. */
+/** Where an offer stands for my apartment this month. "active" = a QR is live right now; "upcoming" = starts later. */
 export type OfferState = "available" | "active" | "used" | "sold_out" | "upcoming";
 
 /** A business's benefit as the resident app shows it (feed cards and the business page). */
@@ -33,7 +33,6 @@ export interface ResidentOffer {
   /** Left for this building when the offer has a quantity limit, else null. */
   remaining: number | null;
   state: OfferState;
-  activeCode?: IssuedCode;
   /** "YYYY-MM-01" when this month's benefit is used and renews. */
   renewsOn?: string;
 }
@@ -65,24 +64,14 @@ export interface Feed {
   savedTotal: number;
 }
 
-/** A live code to show at the register. */
-export interface IssuedCode {
-  code: string;
-  expiresAt: string;
-  businessName: string;
-  discountPercent: number;
-}
-
-/** One line in "my codes". */
+/** One line in "my benefits" (voided = the business cancelled it). */
 export interface CodeHistoryItem {
   code: string;
   businessName: string;
-  status: "issued" | "redeemed" | "expired";
-  issuedAt: string;
-  expiresAt: string;
-  redeemedAt: string | null;
-  amount: number | null;
-  discountAmount: number | null;
+  status: "redeemed" | "voided";
+  redeemedAt: string;
+  amount: number;
+  discountAmount: number;
 }
 
 export interface CodeHistory {

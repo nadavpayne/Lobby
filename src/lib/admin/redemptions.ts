@@ -7,7 +7,7 @@ export interface LogRow {
   id: string;
   issuedAt: string;
   redeemedAt: string | null;
-  status: "issued" | "redeemed" | "expired";
+  status: "redeemed" | "voided";
   code: string;
   business: string;
   businessId: string;
@@ -45,11 +45,11 @@ export function parseLogFilters(url: URL): LogFilters {
   const status = p.get("status");
   return {
     from: day(p.get("from")), to: day(p.get("to")), businessId: id(p.get("business")), buildingId: id(p.get("building")),
-    status: status === "issued" || status === "redeemed" || status === "expired" ? status : null,
+    status: status === "redeemed" || status === "voided" ? status : null,
   };
 }
 
-/** Matching redemptions, newest first (by issue time), demo data excluded. */
+/** Matching redemptions, newest first, demo data excluded. */
 export async function listLog(db: SupabaseClient, f: LogFilters, limit: number): Promise<LogRow[]> {
   let q = db
     .from("redemptions")
@@ -58,11 +58,11 @@ export async function listLog(db: SupabaseClient, f: LogFilters, limit: number):
         "businesses!inner(name, is_demo), residents(name), apartments!inner(apartment_number, buildings!inner(id, name, address))",
     )
     .eq("businesses.is_demo", false)
-    .order("issued_at", { ascending: false })
+    .order("redeemed_at", { ascending: false })
     .limit(limit);
   // Days are Israel calendar days; +02:00/+03:00 drift of an hour at the edges is acceptable for a log filter.
-  if (f.from) q = q.gte("issued_at", `${f.from}T00:00:00+03:00`);
-  if (f.to) q = q.lte("issued_at", `${f.to}T23:59:59+02:00`);
+  if (f.from) q = q.gte("redeemed_at", `${f.from}T00:00:00+03:00`);
+  if (f.to) q = q.lte("redeemed_at", `${f.to}T23:59:59+02:00`);
   if (f.businessId) q = q.eq("business_id", f.businessId);
   if (f.buildingId) q = q.eq("apartments.buildings.id", f.buildingId);
   if (f.status) q = q.eq("status", f.status);
@@ -77,7 +77,7 @@ export async function listLog(db: SupabaseClient, f: LogFilters, limit: number):
   }));
 }
 
-const STATUS_HE = { issued: "פעיל", redeemed: "מומש", expired: "פג תוקף" } as const;
+const STATUS_HE = { redeemed: "מומש", voided: "בוטל" } as const;
 const israelTime = new Intl.DateTimeFormat("he-IL", { timeZone: "Asia/Jerusalem", dateStyle: "short", timeStyle: "short" });
 
 /** The log as a CSV file (Hebrew headers, Israel times). */
