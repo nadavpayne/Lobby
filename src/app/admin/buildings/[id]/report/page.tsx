@@ -30,7 +30,7 @@ export default function CommitteeReportScreen() {
   const { id } = useParams<{ id: string }>();
   const { token } = useAccount();
   const periods = recentPeriods();
-  const [period, setPeriod] = useState(periods[1]); // last full month by default
+  const [period, setPeriod] = useState(periods[0]); // current month by default, so this month's savings show up
   const [report, setReport] = useState<CommitteeReport>();
   const [error, setError] = useState<string | null>(null);
 
@@ -77,7 +77,7 @@ export default function CommitteeReportScreen() {
             {[
               ["דירות שהצטרפו", `${r.apartmentsJoined}/${r.building.apartmentCount}`],
               ["חשבונות פעילים", String(r.members)],
-              ["הצטרפו החודש", String(r.newMembers)],
+              ["הצטרפו בחודש זה", String(r.newMembers)],
               ["מימושים", String(r.redemptions)],
             ].map(([label, value]) => (
               <div key={label} className="rounded-2xl bg-cream p-4">
@@ -87,7 +87,7 @@ export default function CommitteeReportScreen() {
             ))}
           </section>
           <p className="rounded-2xl bg-mint p-4 text-lg">
-            הדיירים בבניין חסכו החודש <bdi dir="ltr" className="font-bold">{formatShekels(r.saved)}</bdi> בעסקים בשכונה.
+            הדיירים בבניין חסכו ב{title(r.period)} <bdi dir="ltr" className="font-bold">{formatShekels(r.saved)}</bdi> בעסקים בשכונה.
           </p>
           <section>
             <h2 className="mb-2 text-lg font-bold">איפה השתמשו בהטבות</h2>
