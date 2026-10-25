@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { Field, inputClass } from "@/components/Field";
 import { submitJoin } from "@/lib/api/join";
@@ -123,7 +124,11 @@ export function JoinForm() {
         </ul>
         <label className="flex min-h-11 items-center gap-3">
           <input name="acceptTerms" type="checkbox" aria-invalid={!!errors.acceptTerms} className="size-6 shrink-0 accent-navy" />
-          <span>קראתי ואני מאשר/ת את התנאים</span>
+          <span>
+            קראתי ואני מאשר/ת את{" "}
+            <Link href="/business-terms" target="_blank" className="font-bold underline">תנאי ההצטרפות לעסקים</Link> ואת{" "}
+            <Link href="/privacy" target="_blank" className="font-bold underline">מדיניות הפרטיות</Link>
+          </span>
         </label>
         {errors.acceptTerms && <span role="alert" className="text-sm text-red-700">{errors.acceptTerms}</span>}
       </div>

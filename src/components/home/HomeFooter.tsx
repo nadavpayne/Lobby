@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LegalLinks } from "@/components/legal/LegalLinks";
 import { Lockup } from "@/components/Lockup";
 import { primaryButton } from "@/components/ui";
 
@@ -19,6 +20,8 @@ export function HomeFooter() {
         </nav>
         <p className="text-sm text-cream/70">© 2026 לובי</p>
       </div>
+      <LegalLinks className="mx-auto max-w-5xl px-4 pt-2 text-sm text-cream/80" />
+
     </footer>
   );
 }

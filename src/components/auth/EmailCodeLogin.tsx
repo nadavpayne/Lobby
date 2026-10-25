@@ -1,6 +1,7 @@
 "use client";
 
 import type { AuthError, SupabaseClient } from "@supabase/supabase-js";
+import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { Field, inputClass } from "@/components/Field";
 import { primaryButton } from "@/components/ui";
@@ -103,6 +104,10 @@ export function EmailCodeLogin({ supabase, shouldCreateUser, title, subtitle }: 
           <button type="submit" disabled={pending || !email.trim()} className={primaryButton}>
             {pending ? "שולחים…" : "שליחת קוד"}
           </button>
+          <p className="text-center text-sm text-navy/70">
+            בהתחברות אתם מסכימים ל<Link href="/terms" className="underline">תקנון</Link> ול
+            <Link href="/privacy" className="underline">מדיניות הפרטיות</Link>.
+          </p>
         </form>
       ) : (
         <form onSubmit={(e) => { e.preventDefault(); verify(code); }} className="flex flex-col gap-5">
