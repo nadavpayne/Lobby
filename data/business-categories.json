@@ -1,0 +1,168 @@
+{
+  "version": 1,
+  "rules": {
+    "primaryCategory": "exactly one",
+    "subcategories": "1-2, from the chosen primary category",
+    "tags": "any number"
+  },
+  "categories": [
+    {
+      "id": "restaurants",
+      "label": "מסעדות ובתי קפה",
+      "subcategories": [
+        { "id": "restaurant", "label": "מסעדה" },
+        { "id": "cafe", "label": "בית קפה" },
+        { "id": "takeaway", "label": "טייק אוויי" },
+        { "id": "pizzeria", "label": "פיצרייה" },
+        { "id": "ice_cream_desserts", "label": "גלידה וקינוחים" },
+        { "id": "bar_pub", "label": "בר / פאב" },
+        { "id": "restaurants_other", "label": "אחר" }
+      ]
+    },
+    {
+      "id": "food_grocery",
+      "label": "מזון וקניות לבית",
+      "subcategories": [
+        { "id": "grocery_supermarket", "label": "מכולת / סופרמרקט" },
+        { "id": "fruit_vegetables", "label": "ירקות ופירות" },
+        { "id": "butcher", "label": "אטליז" },
+        { "id": "fish", "label": "דגים" },
+        { "id": "bakery", "label": "מאפייה" },
+        { "id": "patisserie", "label": "קונדיטוריה" },
+        { "id": "deli_cheese", "label": "מעדנייה וגבינות" },
+        { "id": "shabbat_food", "label": "אוכל מוכן לשבת" },
+        { "id": "wine_drinks", "label": "יין ומשקאות" },
+        { "id": "nuts_spices_sweets", "label": "פיצוחים, תבלינים וממתקים" },
+        { "id": "health_food", "label": "חנות טבע" },
+        { "id": "food_grocery_other", "label": "אחר" }
+      ]
+    },
+    {
+      "id": "beauty",
+      "label": "יופי וטיפוח",
+      "subcategories": [
+        { "id": "hair_salon", "label": "מספרה" },
+        { "id": "barber", "label": "ברבר" },
+        { "id": "cosmetics", "label": "קוסמטיקה" },
+        { "id": "nails", "label": "ציפורניים" },
+        { "id": "brows_lashes", "label": "גבות וריסים" },
+        { "id": "hair_removal", "label": "הסרת שיער" },
+        { "id": "spa_massage", "label": "ספא ועיסוי" },
+        { "id": "beauty_other", "label": "אחר" }
+      ]
+    },
+    {
+      "id": "health",
+      "label": "בריאות",
+      "subcategories": [
+        { "id": "pharmacy", "label": "בית מרקחת / פארם" },
+        { "id": "dental", "label": "מרפאת שיניים" },
+        { "id": "optics", "label": "אופטיקה" },
+        { "id": "physiotherapy", "label": "פיזיותרפיה" },
+        { "id": "complementary_medicine", "label": "רפואה משלימה" },
+        { "id": "health_other", "label": "אחר" }
+      ]
+    },
+    {
+      "id": "fitness",
+      "label": "כושר וספורט",
+      "subcategories": [
+        { "id": "gym", "label": "חדר כושר" },
+        { "id": "studio", "label": "סטודיו (פילאטיס, יוגה)" },
+        { "id": "martial_arts", "label": "אומנויות לחימה" },
+        { "id": "sports_store", "label": "חנות ספורט" },
+        { "id": "fitness_other", "label": "אחר" }
+      ]
+    },
+    {
+      "id": "home",
+      "label": "בית ועיצוב",
+      "subcategories": [
+        { "id": "furniture", "label": "ריהוט" },
+        { "id": "kitchenware", "label": "כלי בית ומטבח" },
+        { "id": "appliances", "label": "מוצרי חשמל" },
+        { "id": "home_textiles", "label": "טקסטיל לבית" },
+        { "id": "lighting", "label": "תאורה" },
+        { "id": "hardware", "label": "חומרי בניין וכלי עבודה" },
+        { "id": "flowers_nursery", "label": "פרחים ומשתלה" },
+        { "id": "home_other", "label": "אחר" }
+      ]
+    },
+    {
+      "id": "local_services",
+      "label": "שירותים בשכונה",
+      "subcategories": [
+        { "id": "laundry_dry_cleaning", "label": "מכבסה וניקוי יבש" },
+        { "id": "shoe_repair", "label": "סנדלר" },
+        { "id": "tailor", "label": "תופרת / חייט" },
+        { "id": "phone_computer_repair", "label": "תיקון טלפונים ומחשבים" },
+        { "id": "photo_printing", "label": "צילום והדפסה" },
+        { "id": "local_services_other", "label": "אחר" }
+      ]
+    },
+    {
+      "id": "car",
+      "label": "רכב",
+      "subcategories": [
+        { "id": "garage", "label": "מוסך" },
+        { "id": "car_wash", "label": "שטיפת רכב" },
+        { "id": "tires", "label": "צמיגים" },
+        { "id": "car_parts", "label": "חלקים ואביזרים" },
+        { "id": "car_other", "label": "אחר" }
+      ]
+    },
+    {
+      "id": "shopping",
+      "label": "אופנה וקניות",
+      "subcategories": [
+        { "id": "clothing", "label": "ביגוד" },
+        { "id": "shoes", "label": "הנעלה" },
+        { "id": "jewelry_watches", "label": "תכשיטים ושעונים" },
+        { "id": "electronics_mobile", "label": "אלקטרוניקה וסלולר" },
+        { "id": "books_stationery", "label": "ספרים וכלי כתיבה" },
+        { "id": "gifts_judaica", "label": "מתנות ויודאיקה" },
+        { "id": "shopping_other", "label": "אחר" }
+      ]
+    },
+    {
+      "id": "kids_family",
+      "label": "ילדים ומשפחה",
+      "subcategories": [
+        { "id": "toys", "label": "צעצועים" },
+        { "id": "kids_baby_clothing", "label": "ביגוד לילדים ותינוקות" },
+        { "id": "kids_activities", "label": "חוגים" },
+        { "id": "kids_family_other", "label": "אחר" }
+      ]
+    },
+    {
+      "id": "pets",
+      "label": "חיות מחמד",
+      "subcategories": [
+        { "id": "pet_store", "label": "חנות חיות" },
+        { "id": "vet", "label": "וטרינר" },
+        { "id": "dog_grooming", "label": "טיפוח כלבים" },
+        { "id": "pets_other", "label": "אחר" }
+      ]
+    },
+    {
+      "id": "leisure",
+      "label": "פנאי",
+      "subcategories": [
+        { "id": "escape_rooms", "label": "חדרי בריחה" },
+        { "id": "games_bowling", "label": "משחקים ובאולינג" },
+        { "id": "workshops", "label": "סדנאות" },
+        { "id": "leisure_other", "label": "אחר" }
+      ]
+    },
+    {
+      "id": "other",
+      "label": "אחר",
+      "subcategories": []
+    }
+  ],
+  "tags": [
+    { "id": "kosher", "label": "כשר" },
+    { "id": "delivery", "label": "משלוחים" },
+    { "id": "open_shabbat", "label": "פתוח בשבת" }
+  ]
+}

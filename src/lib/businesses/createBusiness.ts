@@ -12,6 +12,8 @@ export async function createBusiness(data: JoinData): Promise<string> {
     .insert({
       name: data.name,
       category: data.category,
+      subcategories: data.subcategories,
+      tags: data.tags,
       address: data.address,
       city: data.city,
       contact_name: data.contactName,

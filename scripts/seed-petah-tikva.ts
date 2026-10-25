@@ -98,11 +98,11 @@ const businessRow = (name: string, category: string, address: string, n: number,
   pin_hash: pinHash, hours: HOURS, ...extra,
 });
 const businessIds = await insertAll("businesses", BUSINESSES.map((b, i) => businessRow(b.name, b.category, b.address, i + 1, {
-  lat: b.lat, lng: b.lng, description: b.description, status: "active", commission_percent: b.commission ?? 5,
+  subcategories: b.subcategories, lat: b.lat, lng: b.lng, description: b.description, status: "active", commission_percent: b.commission ?? 5,
   agreed_terms_at: daysAgo(b.joinedDaysAgo).toISOString(), created_at: daysAgo(b.joinedDaysAgo).toISOString(),
 })));
 await insertAll("businesses", LEAD_BUSINESSES.map((b, i) => businessRow(b.name, b.category, b.address, 90 + i, {
-  status: b.status, agreed_terms_at: now.toISOString(),
+  subcategories: [...b.subcategories], status: b.status, agreed_terms_at: now.toISOString(),
 })));
 await insertAll("branches", BUSINESSES.flatMap((b, i) => (b.branches ?? []).map((br) => ({
   business_id: businessIds[i], name: br.name, address: br.address, city: CITY, hours: HOURS,

@@ -10,7 +10,7 @@ import { validateBusinessLead, type BusinessLead } from "@/lib/admin/validate";
 import { CATEGORIES } from "@/lib/businesses/categories";
 
 type Form = Record<keyof BusinessLead, string>;
-const EMPTY: Form = { name: "", category: "food", address: "", city: "פתח תקווה", contactName: "", phone: "", email: "" };
+const EMPTY: Form = { name: "", category: "restaurants", address: "", city: "פתח תקווה", contactName: "", phone: "", email: "" };
 
 /** Popup to add a business by hand as a sales lead. */
 export function LeadForm({ token, open, onClose, onAdded }: { token: string; open: boolean; onClose: () => void; onAdded: (b: AdminBusiness) => void }) {

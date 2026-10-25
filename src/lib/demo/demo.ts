@@ -7,7 +7,7 @@ import { DEMO_CODE, DEMO_PIN } from "./constants.ts";
 
 const DEMO_RESIDENT_EMAIL = "demo-resident@lobby.invalid";
 const DEMO_APARTMENTS = 20;
-// Longer than the real 24h so a demo never shows "expired" by surprise; the reset button renews it.
+// Longer than the real 5 minutes so a demo never shows "expired" by surprise; the reset button renews it.
 const DEMO_CODE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 type Row = { id: string };
@@ -64,7 +64,8 @@ export async function seedDemo(db: SupabaseClient): Promise<{ businessId: string
         .from("businesses")
         .insert({
           name: "קפה לובי (הדגמה)",
-          category: "food",
+          category: "restaurants",
+          subcategories: ["cafe"],
           address: "הרצל 12",
           city: "תל אביב",
           contact_name: "לובי",
@@ -80,32 +81,35 @@ export async function seedDemo(db: SupabaseClient): Promise<{ businessId: string
     );
 
   if (!maybe(await db.from("offers").select("id").eq("business_id", business.id).limit(1).maybeSingle())) {
-    maybe(await db.from("offers").insert({ business_id: business.id, description: "10% הנחה על כל התפריט", terms: "לא כולל אלכוהול" }));
+    maybe(await db.from("offers").insert({ business_id: business.id, title: "10% הנחה על כל התפריט", description: "10% הנחה על כל התפריט", terms: "לא כולל אלכוהול", approved_at: new Date().toISOString() }));
   }
 
   await resetDemoCode(db, business.id);
   return { businessId: business.id, accessSlug: business.access_slug };
 }
 
-/** Makes the demo code a fresh, unused code again: clears the demo business's redemptions and failed attempts. */
+/** Makes the demo code a fresh, unused QR token again: clears the demo business's redemptions, tokens and failed attempts. */
 export async function resetDemoCode(db: SupabaseClient, businessId: string): Promise<void> {
   const business = one(await db.from("businesses").select("is_demo").eq("id", businessId).single<{ is_demo: boolean }>());
   if (!business.is_demo) throw new Error("resetDemoCode called for a non-demo business");
 
   const apartment = one(
-    await db.from("apartments").select("id, buildings!inner(is_demo)").eq("buildings.is_demo", true).limit(1).single<Row>(),
+    await db.from("apartments").select("id, building_id, buildings!inner(is_demo)").eq("buildings.is_demo", true).limit(1).single<Row & { building_id: string }>(),
   );
   const resident = maybe(await db.from("residents").select("id").eq("apartment_id", apartment.id).limit(1).maybeSingle<Row>());
-  const offer = one(await db.from("offers").select("id").eq("business_id", businessId).limit(1).single<Row>());
+  const offer = one(await db.from("offers").select("id, discount_percent").eq("business_id", businessId).limit(1).single<Row & { discount_percent: number }>());
 
   maybe(await db.from("redemptions").delete().eq("business_id", businessId));
+  maybe(await db.from("redemption_tokens").delete().eq("business_id", businessId));
   maybe(await db.from("business_attempts").delete().eq("business_id", businessId));
   maybe(
-    await db.from("redemptions").insert({
-      code: DEMO_CODE,
+    await db.from("redemption_tokens").insert({
+      backup_code: DEMO_CODE,
       apartment_id: apartment.id,
+      building_id: apartment.building_id,
       business_id: businessId,
       offer_id: offer.id,
+      discount_rate: offer.discount_percent,
       resident_id: resident?.id ?? null,
       expires_at: new Date(Date.now() + DEMO_CODE_TTL_MS).toISOString(),
     }),

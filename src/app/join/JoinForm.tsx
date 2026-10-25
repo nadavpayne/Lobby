@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { Field, inputClass } from "@/components/Field";
 import { submitJoin } from "@/lib/api/join";
-import { CATEGORIES } from "@/lib/businesses/categories";
 import { validateJoin, type JoinErrors, type JoinField } from "@/lib/businesses/validateJoin";
+import { CategoryPicker } from "./CategoryPicker";
 import { JoinSuccess } from "./JoinSuccess";
 
 /** Business onboarding form: details, offer and PIN; on success shows the personal verification link. */
@@ -30,6 +30,8 @@ export function JoinForm() {
     const data = new FormData(form);
     const payload = {
       ...Object.fromEntries(data),
+      subcategories: data.getAll("subcategories"),
+      tags: data.getAll("tags"),
       discountPercent: Number(data.get("discountPercent")),
       acceptTerms: data.get("acceptTerms") === "on",
     };
@@ -65,14 +67,7 @@ export function JoinForm() {
         <Field label="שם העסק" error={errors.name}>
           <input {...control("name")} autoComplete="organization" maxLength={80} />
         </Field>
-        <Field label="קטגוריה" error={errors.category}>
-          <select {...control("category")} defaultValue="">
-            <option value="" disabled>בחרו קטגוריה</option>
-            {Object.entries(CATEGORIES).map(([key, label]) => (
-              <option key={key} value={key}>{label}</option>
-            ))}
-          </select>
-        </Field>
+        <CategoryPicker errors={errors} />
         <Field label="כתובת העסק" hint="רחוב ומספר" error={errors.address}>
           <input {...control("address")} autoComplete="street-address" maxLength={120} />
         </Field>

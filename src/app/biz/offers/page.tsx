@@ -56,7 +56,7 @@ export default function OffersScreen() {
         token={token}
         businessName={business.name}
         offer={editing === "new" ? null : editing}
-        defaultCategory={offers?.[0]?.category ?? "food"}
+        defaultCategory={offers?.[0]?.category ?? "restaurants"}
         onCancel={() => setEditing(null)}
         onSaved={(o) => {
           upsert(o);

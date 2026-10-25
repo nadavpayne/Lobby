@@ -1,5 +1,5 @@
 import {
-  Baby, Croissant, Dumbbell, HeartPulse, PawPrint, ShoppingBasket, Sofa, Sparkles, Store, Utensils, Wrench,
+  Baby, Car, Croissant, Dumbbell, HeartPulse, PawPrint, ShoppingBag, ShoppingBasket, Sofa, Sparkles, Store, Ticket, Utensils, Wrench,
   type LucideIcon,
 } from "lucide-react";
 
@@ -16,6 +16,9 @@ const ICONS: Record<string, LucideIcon> = {
   "paw-print": PawPrint,
   wrench: Wrench,
   store: Store,
+  car: Car,
+  "shopping-bag": ShoppingBag,
+  ticket: Ticket,
 };
 
 /** Icon for a category's icon name; falls back to a shop icon. */
