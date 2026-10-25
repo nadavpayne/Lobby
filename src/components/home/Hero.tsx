@@ -24,7 +24,7 @@ function PhoneMock() {
 /** Top of the home page: what Lobby is, the two main calls to action, and the key numbers. */
 export function Hero() {
   return (
-    <section className="mx-auto grid w-full max-w-5xl items-center gap-10 px-4 py-12 md:grid-cols-2 md:py-20">
+    <section className="mx-auto grid w-full max-w-5xl items-center gap-10 px-4 pt-5 pb-12 md:grid-cols-2 md:py-20">
       <div className="flex flex-col gap-6">
         <h1 className="text-4xl leading-tight font-bold md:text-5xl">ההטבות של השכונה, רק לדיירי הבניין שלכם</h1>
         <p className="text-xl leading-relaxed">
