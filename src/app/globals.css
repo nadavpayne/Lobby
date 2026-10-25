@@ -1,11 +1,34 @@
 @import "tailwindcss";
 
 @theme {
+  /* Brand: navy primary, orange ("amber") accent, warm off-white page. */
   --color-navy: #1f3a5f;
   --color-amber: #f2a33a;
   --color-cream: #f5f1ea;
+  /* Soft card tints (used by Card / StatTile / Tag). Text on them stays navy. */
+  --color-sky: #e3edf9;
+  --color-peach: #fde9d2;
+  --color-mint: #dff3e8;
+  --color-lilac: #ece6f8;
+  --color-rose: #fbe3e4;
+
   --font-sans: var(--font-rubik), system-ui, sans-serif;
   --font-brand: var(--font-montserrat), sans-serif;
+
+  --shadow-soft: 0 1px 2px rgb(31 58 95 / 0.06), 0 4px 16px rgb(31 58 95 / 0.08);
+  --shadow-lift: 0 2px 4px rgb(31 58 95 / 0.08), 0 12px 32px rgb(31 58 95 / 0.14);
+
+  --animate-pop-in: pop-in 180ms ease-out both;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+
+  @keyframes pop-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
 }
 
 body {
@@ -22,7 +45,22 @@ body {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Use on the first element at the top of the screen (usually the header). */
 @utility pt-safe {
   padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+
+/* Horizontal scrollers (chips, carousels) without a visible scrollbar. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

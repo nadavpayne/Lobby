@@ -1,17 +1,10 @@
-import type { Metadata } from "next";
-import { AppHeader } from "@/components/AppHeader";
-import { AdminApp } from "./AdminApp";
+"use client";
 
-export const metadata: Metadata = { title: "ניהול | לובי", robots: { index: false, follow: false } };
+import { useAccount } from "@/components/auth/RoleGate";
+import { BusinessList } from "./BusinessList";
 
-/** /admin — business list for the Lobby operator (ADMIN_EMAIL only, enforced by the API). */
+/** /admin — businesses, pending first, with activate / pause. */
 export default function AdminPage() {
-  return (
-    <>
-      <AppHeader />
-      <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6">
-        <AdminApp />
-      </main>
-    </>
-  );
+  const { token } = useAccount();
+  return <BusinessList token={token} />;
 }

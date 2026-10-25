@@ -17,10 +17,10 @@ export function parseAmount(input: unknown): number | null {
 }
 
 /** Splits the full pre-discount bill into discount, Lobby commission and what the resident pays. Rounds to the agora. */
-export function calcRedemption(amount: number, discountPercent: number): RedemptionAmounts {
+export function calcRedemption(amount: number, discountPercent: number, commissionPercent = COMMISSION_PERCENT): RedemptionAmounts {
   const agorot = Math.round(amount * 100);
   const discount = Math.round((agorot * discountPercent) / 100);
-  const commission = Math.round((agorot * COMMISSION_PERCENT) / 100);
+  const commission = Math.round((agorot * commissionPercent) / 100);
   return {
     amount: agorot / 100,
     discountAmount: discount / 100,

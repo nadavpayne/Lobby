@@ -7,14 +7,8 @@ import { changeBusinessStatus, fetchAdminBusinesses } from "@/lib/api/admin";
 import { isApiError } from "@/lib/api/http";
 import { BusinessCard } from "./BusinessCard";
 
-interface Props {
-  token: string;
-  email: string;
-  onSignOut: () => void;
-}
-
 /** All businesses, pending first, with activate / pause actions. */
-export function BusinessList({ token, email, onSignOut }: Props) {
+export function BusinessList({ token }: { token: string }) {
   const [businesses, setBusinesses] = useState<AdminBusiness[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,13 +36,7 @@ export function BusinessList({ token, email, onSignOut }: Props) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-3xl font-bold">עסקים</h1>
-        <div className="flex items-center gap-2 text-sm text-navy/70">
-          <bdi dir="ltr">{email}</bdi>
-          <button type="button" onClick={onSignOut} className="min-h-11 px-2 underline">יציאה</button>
-        </div>
-      </div>
+      <h1 className="text-3xl font-bold">עסקים</h1>
 
       {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>}
       {!businesses && !error && <p className="text-center text-lg text-navy/70">טוען…</p>}
