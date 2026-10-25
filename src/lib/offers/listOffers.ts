@@ -1,11 +1,14 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Membership } from "@/lib/buildings/membership";
-import { currentPeriod } from "@/lib/period";
+import { distanceMeters } from "@/lib/geo/distance";
+import { currentPeriod, nextPeriodStart } from "@/lib/period";
+import type { WeekHours } from "./hours";
 import type { ResidentOffer } from "./types";
 
 interface OfferRow {
   id: string;
+  title: string | null;
   discount_percent: number;
   description: string;
   terms: string | null;
@@ -13,6 +16,7 @@ interface OfferRow {
   starts_at: string | null;
   ends_at: string | null;
   active: boolean;
+  approved_at: string | null;
 }
 
 export interface BusinessWithOffers {
@@ -20,14 +24,27 @@ export interface BusinessWithOffers {
   name: string;
   category: string;
   address: string;
+  description: string | null;
+  logo_url: string | null;
+  cover_url: string | null;
+  lat: number | null;
+  lng: number | null;
+  hours: WeekHours | null;
+  created_at: string;
   offers: OfferRow[];
+  branches: { name: string; address: string }[];
 }
+
+const RECENT_DAYS = 30;
 
 /** Active businesses the building's residents may use: same city; demo buildings see only the demo business. */
 export async function findBusinesses(db: SupabaseClient, m: Membership, businessId?: string): Promise<BusinessWithOffers[]> {
   let query = db
     .from("businesses")
-    .select("id, name, category, address, offers(id, discount_percent, description, terms, quantity_limit, starts_at, ends_at, active)")
+    .select(
+      "id, name, category, address, description, logo_url, cover_url, lat, lng, hours, created_at, " +
+        "offers(id, title, discount_percent, description, terms, quantity_limit, starts_at, ends_at, active, approved_at), branches(name, address)",
+    )
     .eq("status", "active")
     .eq("city", m.building.city)
     .eq("is_demo", m.building.isDemo)
@@ -38,11 +55,21 @@ export async function findBusinesses(db: SupabaseClient, m: Membership, business
   return data as unknown as BusinessWithOffers[];
 }
 
-/** The business's offer that is switched on and inside its dates right now, if any. */
+/** Switched on and approved by Lobby (residents never see an offer the operator hasn't approved). */
+const usable = (o: OfferRow) => o.active && o.approved_at !== null;
+
+/** The business's usable offer that is inside its dates right now, if any. */
 export function liveOffer(business: BusinessWithOffers, now = new Date()): OfferRow | undefined {
   return business.offers.find(
-    (o) => o.active && (!o.starts_at || new Date(o.starts_at) <= now) && (!o.ends_at || new Date(o.ends_at) > now),
+    (o) => usable(o) && (!o.starts_at || new Date(o.starts_at) <= now) && (!o.ends_at || new Date(o.ends_at) > now),
   );
+}
+
+/** The business's next usable offer that hasn't started yet (for "נפתחות בקרוב"). */
+function upcomingOffer(business: BusinessWithOffers, now = new Date()): OfferRow | undefined {
+  return business.offers
+    .filter((o) => usable(o) && o.starts_at && new Date(o.starts_at) > now)
+    .sort((a, b) => Date.parse(a.starts_at!) - Date.parse(b.starts_at!))[0];
 }
 
 /** How many of a quantity-limited offer are left for this building (issued + redeemed count against it). */
@@ -58,7 +85,7 @@ export async function remainingInBuilding(db: SupabaseClient, offer: OfferRow, b
   return Math.max(0, offer.quantity_limit - (count ?? 0));
 }
 
-/** Marks this apartment's codes past their 24h as expired, so the monthly slot frees up immediately. */
+/** Marks this apartment's codes past their expiry as expired, so the monthly slot frees up immediately. */
 export async function expireStaleForApartment(db: SupabaseClient, apartmentId: string): Promise<void> {
   const { error } = await db
     .from("redemptions")
@@ -69,7 +96,23 @@ export async function expireStaleForApartment(db: SupabaseClient, apartmentId: s
   if (error) throw error;
 }
 
-/** Offers for the member's building, each with this month's state for their apartment. */
+/** Redeemed count per business over the last 30 days, across all buildings. */
+async function recentRedemptions(db: SupabaseClient, businessIds: string[]): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+  if (businessIds.length === 0) return counts;
+  // shortcut: counts rows in JS; move to a grouped view once a city has thousands of monthly redemptions.
+  const { data, error } = await db
+    .from("redemptions")
+    .select("business_id")
+    .in("business_id", businessIds)
+    .eq("status", "redeemed")
+    .gte("redeemed_at", new Date(Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000).toISOString());
+  if (error) throw error;
+  for (const r of data) counts.set(r.business_id, (counts.get(r.business_id) ?? 0) + 1);
+  return counts;
+}
+
+/** Live and upcoming offers for the member's building, each with this month's state for their apartment. */
 export async function listOffers(db: SupabaseClient, m: Membership): Promise<ResidentOffer[]> {
   await expireStaleForApartment(db, m.apartmentId);
   const [businesses, mine] = await Promise.all([
@@ -82,24 +125,43 @@ export async function listOffers(db: SupabaseClient, m: Membership): Promise<Res
       .in("status", ["issued", "redeemed"]),
   ]);
   if (mine.error) throw mine.error;
+  const recent = await recentRedemptions(db, businesses.map((b) => b.id));
+  const home = m.building.lat !== null && m.building.lng !== null ? { lat: m.building.lat, lng: m.building.lng } : null;
 
   const offers: ResidentOffer[] = [];
   for (const b of businesses) {
-    const offer = liveOffer(b);
+    const live = liveOffer(b);
+    const offer = live ?? upcomingOffer(b);
     if (!offer) continue;
-    const used = mine.data.find((r) => r.business_id === b.id);
-    const remaining = await remainingInBuilding(db, offer, m.building.id);
+    const used = live && mine.data.find((r) => r.business_id === b.id);
+    const remaining = live ? await remainingInBuilding(db, offer, m.building.id) : null;
+    const state = !live ? "upcoming" : used ? (used.status === "issued" ? "active" : "used") : remaining === 0 ? "sold_out" : "available";
+
     offers.push({
       businessId: b.id,
       businessName: b.name,
       category: b.category,
       address: b.address,
+      businessDescription: b.description,
+      logoUrl: b.logo_url,
+      coverUrl: b.cover_url,
+      lat: b.lat,
+      lng: b.lng,
+      hours: b.hours,
+      branches: b.branches,
+      title: offer.title ?? `${offer.discount_percent}% הנחה`,
       discountPercent: offer.discount_percent,
       description: offer.description,
       terms: offer.terms,
+      startsAt: offer.starts_at,
+      endsAt: offer.ends_at,
+      joinedAt: b.created_at,
+      distanceMeters: home && b.lat !== null && b.lng !== null ? distanceMeters(home, { lat: b.lat, lng: b.lng }) : null,
+      recentRedemptions: recent.get(b.id) ?? 0,
       remaining,
-      state: used ? (used.status === "issued" ? "active" : "used") : remaining === 0 ? "sold_out" : "available",
-      ...(used?.status === "issued" && {
+      state,
+      ...(state === "used" && { renewsOn: nextPeriodStart() }),
+      ...(used && used.status === "issued" && {
         activeCode: { code: used.code, expiresAt: used.expires_at, businessName: b.name, discountPercent: offer.discount_percent },
       }),
     });

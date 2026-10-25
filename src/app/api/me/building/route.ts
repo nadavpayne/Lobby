@@ -14,6 +14,12 @@ export async function GET(request: Request) {
 
   const m = await getMembership(db, user.id);
   if (!m) return Response.json({ building: null });
+  const { count, error } = await db
+    .from("residents")
+    .select("id, apartments!inner(building_id)", { count: "exact", head: true })
+    .eq("apartments.building_id", m.building.id)
+    .eq("status", "active");
+  if (error) throw error;
   const building: MyBuilding = {
     role: m.role,
     status: m.status,
@@ -21,6 +27,10 @@ export async function GET(request: Request) {
     address: m.building.address,
     city: m.building.city,
     apartmentCount: m.building.apartmentCount,
+    name: m.building.name,
+    neighbors: count ?? 0,
+    committeeName: m.building.committeeName,
+    committeePhone: m.building.committeePhone,
     ...(m.role === "committee" && { inviteUrl: `${siteUrl(request)}/i/${m.building.inviteSlug}` }),
   };
   return Response.json({ building });

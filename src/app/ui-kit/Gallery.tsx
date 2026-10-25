@@ -1,11 +1,12 @@
 "use client";
 
 import { ChevronLeft, Clock, Coins, MapPin, Receipt, Store, Users } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { Suspense, useState, type ReactNode } from "react";
 import {
   Button, Card, CategoryIcon, Chip, ChipRow, DataTable, EmptyState, Logo, Modal, Skeleton, SkeletonCard, StatTile, Tag,
   TINT_CYCLE, type Column,
 } from "@/components/ui";
+import { ResidentSamples } from "./ResidentSamples";
 
 // Sample data for the gallery only.
 const CATEGORIES = [
@@ -51,6 +52,11 @@ export function Gallery() {
           <p className="text-navy/70">אותם רכיבים באפליקציית הדיירים, ב-CRM לעסקים ובניהול.</p>
         </div>
       </header>
+
+      <Section title="פיד הדיירים">
+        {/* Suspense: the hours list reads today's date, which can't be prerendered. */}
+        <Suspense><ResidentSamples /></Suspense>
+      </Section>
 
       <Section title="כפתורים">
         <div className="flex flex-wrap items-center gap-3">

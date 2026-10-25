@@ -1,89 +1,62 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { isApiError } from "@/lib/api/http";
-import { fetchOffers, requestCode } from "@/lib/api/resident";
-import { CATEGORIES, type Category } from "@/lib/businesses/categories";
-import type { IssuedCode, ResidentOffer } from "@/lib/offers/types";
-import { CodeView } from "./CodeView";
-import { OfferCard } from "./OfferCard";
+import { Store } from "lucide-react";
+import Link from "next/link";
+import { BenefitCard } from "@/components/resident/BenefitCard";
+import { Carousel } from "@/components/resident/Carousel";
+import { HeroBanner } from "@/components/resident/HeroBanner";
+import { SavingsCounter } from "@/components/resident/SavingsCounter";
+import { CategoryIcon, ChipRow, EmptyState, Skeleton, SkeletonCard } from "@/components/ui";
+import { feedSections, heroOffers } from "@/lib/offers/feedSections";
+import { useFeed } from "@/lib/offers/useFeed";
 import { useResident } from "./ResidentGate";
 
-/** Offers tab: businesses in the building's city, filter by category, get or show a code. */
-export default function OffersScreen() {
+/** Placeholder while the feed loads. */
+function FeedSkeleton() {
+  return (
+    <div className="flex flex-col gap-5" role="status" aria-label="טוען הטבות">
+      <Skeleton className="h-40 w-full rounded-3xl" />
+      <div className="flex gap-2"><Skeleton className="h-11 w-24 rounded-full" /><Skeleton className="h-11 w-24 rounded-full" /><Skeleton className="h-11 w-24 rounded-full" /></div>
+      <div className="flex gap-3 overflow-hidden"><div className="w-72 shrink-0"><SkeletonCard /></div><div className="w-72 shrink-0"><SkeletonCard /></div></div>
+    </div>
+  );
+}
+
+/** Home: hero, savings, category chips, and the benefit carousels for my building. */
+export default function HomeScreen() {
   const { token, building } = useResident();
-  const [offers, setOffers] = useState<ResidentOffer[]>();
-  const [error, setError] = useState<string | null>(null);
-  const [category, setCategory] = useState<string>("all");
-  const [pendingId, setPendingId] = useState<string | null>(null);
-  const [shown, setShown] = useState<IssuedCode | null>(null);
-  const [version, setVersion] = useState(0); // bump to reload the list
+  const { feed, error } = useFeed(token);
 
-  useEffect(() => {
-    let live = true;
-    fetchOffers(token).then((res) => {
-      if (!live) return;
-      setError(isApiError(res) ? res.error : null);
-      if (!isApiError(res)) setOffers(res);
-    });
-    return () => {
-      live = false;
-    };
-  }, [token, version]);
-
-  /** Gets a new code (or the live one) and shows it full screen. */
-  async function getCode(businessId: string) {
-    setPendingId(businessId);
-    const res = await requestCode(token, businessId);
-    setPendingId(null);
-    if (isApiError(res)) return setError(res.error);
-    setShown(res);
-    setVersion((v) => v + 1); // the card now shows "show my code"
+  if (error && !feed) return <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>;
+  if (!feed) return <FeedSkeleton />;
+  if (feed.offers.length === 0) {
+    return (
+      <EmptyState icon={<Store />} title="ההטבות בדרך">
+        עוד אין עסקים פעילים ב{building.city}. אנחנו מצרפים עכשיו עסקים בשכונה, וההטבות יופיעו כאן.
+      </EmptyState>
+    );
   }
 
-  const categories = [...new Set(offers?.map((o) => o.category))];
-  const visible = offers?.filter((o) => category === "all" || o.category === category);
-
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-3xl font-bold">ההטבות שלכם</h1>
-        <p className="text-navy/70">{building.address}, {building.city} · דירה {building.apartmentNumber}</p>
-      </div>
-
-      {categories.length > 1 && (
-        <div role="group" aria-label="סינון לפי קטגוריה" className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]">
-          {["all", ...categories].map((c) => (
-            <button
-              key={c}
-              type="button"
-              aria-pressed={category === c}
-              onClick={() => setCategory(c)}
-              className="min-h-11 shrink-0 rounded-full border border-navy/20 bg-white px-4 font-medium aria-pressed:border-navy aria-pressed:bg-navy aria-pressed:text-cream"
-            >
-              {c === "all" ? "הכל" : (CATEGORIES[c as Category] ?? c)}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>}
-      {!offers && !error && <p className="pt-6 text-center text-lg text-navy/70">טוען…</p>}
-      {offers?.length === 0 && (
-        <p className="rounded-2xl bg-white p-6 text-lg">
-          עוד אין עסקים פעילים ב{building.city}. אנחנו מצרפים עכשיו עסקים בשכונה, וההטבות יופיעו כאן.
-        </p>
-      )}
-      {visible?.map((o) => (
-        <OfferCard
-          key={o.businessId}
-          offer={o}
-          pending={pendingId === o.businessId}
-          onGetCode={() => (o.activeCode ? setShown(o.activeCode) : getCode(o.businessId))}
-        />
+    <div className="flex animate-pop-in flex-col gap-6">
+      <HeroBanner offers={heroOffers(feed.offers)} />
+      <SavingsCounter saved={feed.savedTotal} />
+      <ChipRow label="קטגוריות">
+        {feed.categories.map((c) => (
+          <Link
+            key={c.slug}
+            href={`/app/categories?c=${c.slug}`}
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-navy/15 bg-white px-4 font-medium transition active:scale-95"
+          >
+            <CategoryIcon name={c.icon} /> {c.name}
+          </Link>
+        ))}
+      </ChipRow>
+      {feedSections(feed.offers).map((s) => (
+        <Carousel key={s.key} title={s.title} moreHref={s.key === "permanent" ? "/app/categories" : undefined}>
+          {s.offers.map((o) => <BenefitCard key={o.businessId} offer={o} categories={feed.categories} />)}
+        </Carousel>
       ))}
-
-      {shown && <CodeView code={shown} onClose={() => setShown(null)} />}
     </div>
   );
 }

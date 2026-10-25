@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Gift, Ticket } from "lucide-react";
+import { Building2, House, LayoutGrid, UserRound, Wallet } from "lucide-react";
 import Link from "next/link";
 import { createContext, useContext, type ReactNode } from "react";
 import { AppHeader } from "@/components/AppHeader";
@@ -19,9 +19,11 @@ interface Resident {
 }
 
 const NAV: NavItem[] = [
-  { href: "/app", label: "הטבות", icon: Gift },
-  { href: "/app/codes", label: "הקודים שלי", icon: Ticket },
+  { href: "/app", label: "בית", icon: House },
+  { href: "/app/categories", label: "קטגוריות", icon: LayoutGrid },
+  { href: "/app/wallet", label: "הארנק שלי", icon: Wallet },
   { href: "/app/building", label: "הבניין", icon: Building2 },
+  { href: "/app/profile", label: "פרופיל", icon: UserRound },
 ];
 
 const ResidentContext = createContext<Resident | null>(null);
@@ -102,7 +104,7 @@ export function ResidentGate({ children }: { children: ReactNode }) {
   if (!gate.ready) return <Frame>{gate.screen}</Frame>;
   return (
     <ResidentContext.Provider value={gate.resident}>
-      <ResidentShell nav={NAV} buildingName={gate.resident.building.address}>{children}</ResidentShell>
+      <ResidentShell nav={NAV} buildingName={gate.resident.building.name ?? gate.resident.building.address}>{children}</ResidentShell>
     </ResidentContext.Provider>
   );
 }

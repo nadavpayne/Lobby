@@ -1,8 +1,8 @@
-import type { CodeHistory, IssuedCode, ResidentOffer } from "@/lib/offers/types";
+import type { CodeHistory, Feed, IssuedCode } from "@/lib/offers/types";
 import { apiFetch } from "./http";
 
-/** Offers for my building with this month's state. */
-export const fetchOffers = (token: string) => apiFetch<ResidentOffer[]>("/api/me/offers", { token });
+/** My building's feed: offers with this month's state, categories, savings. */
+export const fetchFeed = (token: string) => apiFetch<Feed>("/api/me/offers", { token });
 
 /** Gets (or re-shows) my apartment's code for a business. */
 export const requestCode = (token: string, businessId: string) => apiFetch<IssuedCode>("/api/me/codes", { token, body: { businessId } });

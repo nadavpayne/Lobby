@@ -1,7 +1,7 @@
 export type MemberRole = "resident" | "committee";
 export type MemberStatus = "active" | "pending";
 
-/** The signed-in user's building as the app shows it. inviteUrl is only given to the committee. */
+/** The signed-in user's building as the app shows it. inviteUrl is only given to the committee; the optional fields come from GET /api/me/building. */
 export interface MyBuilding {
   role: MemberRole;
   status: MemberStatus;
@@ -9,6 +9,12 @@ export interface MyBuilding {
   address: string;
   city: string;
   apartmentCount: number | null;
+  /** Friendly name ("בית רוטשילד"); show the address when unset. */
+  name?: string | null;
+  /** Active accounts in the building, me included. */
+  neighbors?: number;
+  committeeName?: string | null;
+  committeePhone?: string | null;
   inviteUrl?: string;
 }
 
