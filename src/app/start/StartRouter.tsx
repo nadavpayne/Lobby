@@ -11,7 +11,7 @@ import { useSupabaseSession } from "@/lib/supabase/useSession";
 export function StartRouter() {
   const router = useRouter();
   const { supabase, session } = useSupabaseSession();
-  const { roles, error } = useRoles(session?.access_token);
+  const { roles, error } = useRoles(supabase, session?.access_token);
   const home = roles?.home;
 
   useEffect(() => {

@@ -48,7 +48,7 @@ interface Props {
  */
 export function RoleGate({ app, loginTitle, allowSignUp = false, children }: Props) {
   const { supabase, session } = useSupabaseSession();
-  const { roles, error } = useRoles(session?.access_token);
+  const { roles, error } = useRoles(supabase, session?.access_token);
   const loading = <p className="pt-10 text-center text-lg text-navy/70">טוען…</p>;
 
   if (!supabase) return <Frame><p role="alert">Supabase לא מוגדר: מלאו את המפתחות ב-.env.local.</p></Frame>;
