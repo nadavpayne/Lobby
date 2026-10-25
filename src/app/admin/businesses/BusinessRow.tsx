@@ -8,6 +8,7 @@ import { isApiError, type ApiError } from "@/lib/api/http";
 import type { AdminBusiness } from "@/lib/admin/types";
 import { CATEGORIES, type Category } from "@/lib/businesses/categories";
 import type { BusinessStatus } from "@/lib/businesses/types";
+import { BusinessLogo } from "@/components/resident/BusinessCover";
 import { OfferReview } from "./OfferReview";
 
 export const STAGE_LABEL: Record<BusinessStatus, string> = { lead: "ליד", pending: "במו״מ", active: "פעיל", paused: "מושהה", declined: "נדחה" };
@@ -42,6 +43,7 @@ export function BusinessRow({ token, business: b, focused, onChanged }: Props) {
       <div className="flex flex-wrap items-center gap-3">
         <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="flex min-w-0 flex-1 items-center gap-2 text-start">
           <ChevronDown aria-hidden className={`size-5 shrink-0 transition ${open ? "" : "rotate-90 rtl:-rotate-90"}`} />
+          <BusinessLogo name={b.name} logoUrl={b.logoUrl} className="size-12 shrink-0" />
           <span className="min-w-0">
             <span className="block truncate text-lg font-bold">{b.name}{b.isDemo && <span className="ms-2 text-sm font-normal text-navy/50">(הדגמה)</span>}</span>
             <span className="block truncate text-sm text-navy/60">{CATEGORIES[b.category as Category] ?? b.category} · {b.address}{b.city ? `, ${b.city}` : ""}</span>

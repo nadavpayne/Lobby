@@ -18,6 +18,8 @@ export interface AdminOffer {
 export interface AdminBusiness {
   id: string;
   name: string;
+  /** The business's one photo (required at sign-up since the logo step was added). */
+  logoUrl: string | null;
   category: string;
   address: string;
   city: string | null;

@@ -6,11 +6,15 @@ import { Field, inputClass } from "@/components/Field";
 import { submitJoin } from "@/lib/api/join";
 import { validateJoin, type JoinErrors, type JoinField } from "@/lib/businesses/validateJoin";
 import { CategoryPicker } from "./CategoryPicker";
+import { JoinLogoPicker } from "./JoinLogoPicker";
 import { JoinSuccess } from "./JoinSuccess";
 
-/** Business onboarding form: details, offer and PIN; on success shows the personal verification link. */
+const LOGO_REQUIRED = "צריך להעלות את הלוגו של העסק";
+
+/** Business onboarding form: logo (required), details, contact and offer; on success points to the business area. */
 export function JoinForm() {
-  const [errors, setErrors] = useState<JoinErrors>({});
+  const [errors, setErrors] = useState<JoinErrors & { logo?: string }>({});
+  const [logo, setLogo] = useState<Blob | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState<{ loginUrl: string; email: string } | null>(null);
@@ -19,7 +23,7 @@ export function JoinForm() {
   const control = (name: JoinField) => ({ name, "aria-invalid": !!errors[name], className: inputClass });
 
   /** Highlights field errors and moves focus to the first invalid control. */
-  function showErrors(form: HTMLFormElement, fieldErrors: JoinErrors) {
+  function showErrors(form: HTMLFormElement, fieldErrors: JoinErrors & { logo?: string }) {
     setErrors(fieldErrors);
     requestAnimationFrame(() => form.querySelector<HTMLElement>("[aria-invalid=true]")?.focus());
   }
@@ -36,14 +40,14 @@ export function JoinForm() {
       acceptTerms: data.get("acceptTerms") === "on",
     };
 
-    // Same rules as the server, so most mistakes are caught without a round-trip.
+    // Same rules as the server, so most mistakes are caught without a round-trip. The logo is required.
     const check = validateJoin(payload);
-    if (!check.ok) return showErrors(form, check.errors);
+    if (!check.ok || !logo) return showErrors(form, { ...(check.ok ? {} : check.errors), ...(!logo && { logo: LOGO_REQUIRED }) });
 
     setErrors({});
     setPending(true);
     setFormError(null);
-    const res = await submitJoin(payload);
+    const res = await submitJoin(payload, logo);
     setPending(false);
 
     if ("loginUrl" in res) {
@@ -61,6 +65,8 @@ export function JoinForm() {
         <h1 className="text-3xl font-bold">הצטרפות עסקים ללובי</h1>
         <p className="text-lg">לקוחות חדשים מהבניינים בשכונה. משלמים רק על מכירות שאימתתם.</p>
       </div>
+
+      <JoinLogoPicker logo={logo} onChange={(l) => { setLogo(l); setErrors((e) => ({ ...e, logo: undefined })); }} error={errors.logo} />
 
       <fieldset className="flex flex-col gap-4">
         <legend className="mb-3 text-xl font-bold">פרטי העסק</legend>

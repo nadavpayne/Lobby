@@ -6,12 +6,13 @@ import type { AdminBusiness } from "./types";
 import type { BusinessLead } from "./validate";
 
 const COLUMNS =
-  "id, name, category, address, city, contact_name, phone, email, status, commission_percent, is_demo, access_slug, created_at, " +
+  "id, name, logo_url, category, address, city, contact_name, phone, email, status, commission_percent, is_demo, access_slug, created_at, " +
   "offers(id, title, description, terms, discount_percent, active, approved_at, featured, starts_at, ends_at, created_at)";
 
 interface BusinessRow {
   id: string;
   name: string;
+  logo_url: string | null;
   category: string;
   address: string;
   city: string | null;
@@ -34,6 +35,7 @@ function toAdminBusiness(row: BusinessRow, baseUrl: string): AdminBusiness {
   return {
     id: row.id,
     name: row.name,
+    logoUrl: row.logo_url,
     category: row.category,
     address: row.address,
     city: row.city,

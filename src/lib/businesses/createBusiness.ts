@@ -4,8 +4,8 @@ import { randomUUID } from "node:crypto";
 import { hashPin } from "@/lib/pin";
 import type { JoinData } from "./validateJoin";
 
-/** Creates a pending business and its first offer; returns the business's access_slug. */
-export async function createBusiness(data: JoinData): Promise<string> {
+/** Creates a pending business and its first offer; returns its id and access_slug. */
+export async function createBusiness(data: JoinData): Promise<{ id: string; accessSlug: string }> {
   const db = createAdminClient();
 
   const { data: business, error } = await db
@@ -41,5 +41,5 @@ export async function createBusiness(data: JoinData): Promise<string> {
     throw offerError;
   }
 
-  return business.access_slug;
+  return { id: business.id, accessSlug: business.access_slug };
 }
