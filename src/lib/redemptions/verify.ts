@@ -8,6 +8,7 @@ interface RedemptionRow {
   expires_at: string;
   redeemed_at: string | null;
   offers: { discount_percent: number };
+  businesses: { commission_percent: number };
   residents: { name: string | null } | null;
   apartments: { buildings: { address: string; city: string } };
 }
@@ -17,13 +18,16 @@ export interface CodeLookup {
   result: VerifyResult;
 }
 
-/** Finds this business's redemption by code and classifies it (valid / used / expired / invalid). */
+/** Finds this business's latest redemption with the code and classifies it (valid / used / expired / invalid). */
 export async function lookupCode(db: SupabaseClient, businessId: string, code: string): Promise<CodeLookup> {
   const { data: row, error } = await db
     .from("redemptions")
-    .select("id, status, expires_at, redeemed_at, offers(discount_percent), residents(name), apartments(buildings(address, city))")
+    .select("id, status, expires_at, redeemed_at, offers(discount_percent), businesses(commission_percent), residents(name), apartments(buildings(address, city))")
     .eq("business_id", businessId)
     .eq("code", code)
+    // Codes are reused over time (unique only while live), so the newest row is the one the resident is showing.
+    .order("issued_at", { ascending: false })
+    .limit(1)
     .maybeSingle<RedemptionRow>();
   if (error) throw error;
   if (!row) return { row, result: { status: "invalid" } };
@@ -42,6 +46,7 @@ export async function lookupCode(db: SupabaseClient, businessId: string, code: s
     result: {
       status: "valid",
       discountPercent: row.offers.discount_percent,
+      commissionPercent: Number(row.businesses.commission_percent),
       residentName: row.residents?.name?.trim().split(/\s+/)[0] || null, // first name only
       buildingAddress: `${address}, ${city}`,
     },

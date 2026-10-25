@@ -9,7 +9,7 @@ import type { IssuedCode } from "./types";
 export type IssueOutcome = { ok: true; code: IssuedCode } | { ok: false; reason: "not_found" | "used" | "sold_out" };
 
 /**
- * Issues this apartment's code for the business, valid 24h. One live-or-used code per apartment per business per
+ * Issues this apartment's 6-digit code for the business, valid 10 minutes (DB default). One live-or-used code per apartment per business per
  * month (the DB's partial unique index is the real guard); asking again while a code is live returns that code.
  */
 export async function issueCode(db: SupabaseClient, userId: string, m: Membership, businessId: string): Promise<IssueOutcome> {

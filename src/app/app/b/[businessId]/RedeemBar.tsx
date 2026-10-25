@@ -1,17 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { shortDate } from "@/components/resident/OfferTags";
 import { Button } from "@/components/ui";
 import { isApiError } from "@/lib/api/http";
 import { requestCode } from "@/lib/api/resident";
 import type { IssuedCode, ResidentOffer } from "@/lib/offers/types";
-import { shortDate } from "@/components/resident/OfferTags";
 import { CodeView } from "../../CodeView";
+
+// shortcut: polls while the code is on screen; switch to a push/realtime event when the native app ships.
+const POLL_MS = 4000;
 
 interface Props {
   offer: ResidentOffer;
   token: string;
-  /** Refreshes the feed after a code is issued, so every screen shows "קוד פעיל". */
+  /** Refreshes the feed (after a code is issued, and while it waits to be redeemed). */
   onIssued: () => void;
 }
 
@@ -20,6 +23,14 @@ export function RedeemBar({ offer: o, token, onIssued }: Props) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shown, setShown] = useState<IssuedCode | null>(null);
+  const redeemed = shown !== null && o.state === "used";
+
+  // While the code is on screen, check whether the business has redeemed it.
+  useEffect(() => {
+    if (!shown || redeemed) return;
+    const id = setInterval(onIssued, POLL_MS);
+    return () => clearInterval(id);
+  }, [shown, redeemed, onIssued]);
 
   /** Gets a new code (or the live one) and shows it full screen. */
   async function redeem() {
@@ -46,7 +57,7 @@ export function RedeemBar({ offer: o, token, onIssued }: Props) {
       {error && <p role="alert" className="text-center text-sm text-red-700">{error}</p>}
       {o.state === "available" && <Button onClick={redeem} disabled={pending}>{pending ? "מכינים קוד…" : "השתמש בהטבה"}</Button>}
       {o.state === "active" && o.activeCode && <Button variant="navy" onClick={() => setShown(o.activeCode!)}>הצגת הקוד</Button>}
-      {shown && <CodeView code={shown} onClose={() => setShown(null)} />}
+      {shown && <CodeView key={shown.code + shown.expiresAt} code={shown} redeemed={redeemed} onRenew={redeem} onClose={() => setShown(null)} />}
     </div>
   );
 }

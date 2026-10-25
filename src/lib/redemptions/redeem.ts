@@ -9,7 +9,7 @@ export async function redeemCode(db: SupabaseClient, businessId: string, code: s
   const { row, result } = await lookupCode(db, businessId, code);
   if (result.status !== "valid") return result;
 
-  const amounts = calcRedemption(amount, result.discountPercent);
+  const amounts = calcRedemption(amount, result.discountPercent, result.commissionPercent);
   const now = new Date().toISOString();
   const { data: updated, error } = await db
     .from("redemptions")

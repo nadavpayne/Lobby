@@ -15,7 +15,7 @@ interface Props {
   onUnauthorized: () => void;
 }
 
-/** Big code field (text keypad, auto-uppercase) plus QR scan. Checks automatically once 6 valid characters are in. */
+/** Big 6-digit code field (number keypad) plus QR scan. Checks automatically once 6 digits are in. */
 export function CodeEntry({ token, onResult, onUnauthorized }: Props) {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -67,19 +67,19 @@ export function CodeEntry({ token, onResult, onUnauthorized }: Props) {
         <input
           value={code}
           onChange={(e) => onChange(e.target.value)}
-          inputMode="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
           autoFocus
-          autoCapitalize="characters"
           autoComplete="off"
           autoCorrect="off"
           spellCheck={false}
           enterKeyHint="go"
           dir="ltr"
-          placeholder="••••••"
+          placeholder="000000"
           aria-invalid={!!error}
-          className={`${inputClass} py-4 text-center font-mono text-5xl font-bold uppercase tracking-[0.3em] placeholder:text-navy/20`}
+          className={`${inputClass} py-4 text-center font-mono text-5xl font-bold tracking-[0.3em] placeholder:text-navy/20`}
         />
-        <span className="text-sm text-navy/70">הקוד מופיע במסך של הדייר. אין בו O, I, L, 0 או 1.</span>
+        <span className="text-sm text-navy/70">6 ספרות שמופיעות במסך של הדייר. הקוד תקף 10 דקות.</span>
       </label>
       {error && <p role="alert" className="text-center text-lg text-red-700">{error}</p>}
       <button type="submit" disabled={pending || code.length !== 6} className={primaryButton}>

@@ -5,7 +5,7 @@ import { inputClass } from "@/components/Field";
 import { DetailRow, primaryButton, secondaryButton } from "@/components/ui";
 import { isApiError } from "@/lib/api/http";
 import { redeemCode } from "@/lib/api/terminal";
-import { calcRedemption, COMMISSION_PERCENT, formatShekels, parseAmount } from "@/lib/redemptions/money";
+import { calcRedemption, formatShekels, parseAmount } from "@/lib/redemptions/money";
 import type { RedeemResult, VerifyResult } from "@/lib/redemptions/types";
 
 interface Props {
@@ -52,7 +52,7 @@ function ValidCode({ token, code, result, onRedeemed, onBack, onUnauthorized }: 
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const amount = parseAmount(amountText);
-  const preview = amount === null ? null : calcRedemption(amount, result.discountPercent);
+  const preview = amount === null ? null : calcRedemption(amount, result.discountPercent, result.commissionPercent);
 
   async function confirm(e: FormEvent) {
     e.preventDefault();
@@ -100,7 +100,7 @@ function ValidCode({ token, code, result, onRedeemed, onBack, onUnauthorized }: 
           <DetailRow label={`הנחה (${result.discountPercent}%)`}><bdi dir="ltr">-{formatShekels(preview.discountAmount)}</bdi></DetailRow>
           <DetailRow label="הדייר משלם" strong><bdi dir="ltr">{formatShekels(preview.payAmount)}</bdi></DetailRow>
           <p className="text-sm text-navy/70">
-            עמלת לובי (<bdi dir="ltr">{COMMISSION_PERCENT}%</bdi>): <bdi dir="ltr">{formatShekels(preview.commissionAmount)}</bdi>
+            עמלת לובי (<bdi dir="ltr">{result.commissionPercent}%</bdi>): <bdi dir="ltr">{formatShekels(preview.commissionAmount)}</bdi>
           </p>
         </div>
       )}

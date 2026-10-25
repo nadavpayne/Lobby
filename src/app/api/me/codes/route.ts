@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   return Response.json(await codeHistory(auth.db, auth.m.apartmentId));
 }
 
-/** POST /api/me/codes — { businessId } → a code valid 24h (or the live one, if already issued). */
+/** POST /api/me/codes — { businessId } → a 6-digit code valid 10 minutes (or the live one, if already issued). */
 export async function POST(request: Request) {
   const auth = await requireMember(request);
   if (auth instanceof Response) return auth;

@@ -87,7 +87,7 @@ export async function seedDemo(db: SupabaseClient): Promise<{ businessId: string
   return { businessId: business.id, accessSlug: business.access_slug };
 }
 
-/** Makes DEMA24 a fresh, unused code again: clears the demo business's redemptions and failed attempts. */
+/** Makes the demo code a fresh, unused code again: clears the demo business's redemptions and failed attempts. */
 export async function resetDemoCode(db: SupabaseClient, businessId: string): Promise<void> {
   const business = one(await db.from("businesses").select("is_demo").eq("id", businessId).single<{ is_demo: boolean }>());
   if (!business.is_demo) throw new Error("resetDemoCode called for a non-demo business");
