@@ -46,7 +46,7 @@ export interface PlannedRedemption {
 
 const israelDay = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jerusalem", day: "numeric" });
 const CODE_TTL_MS = 10 * 60 * 1000;
-const MAX_PER_MONTH = 5;
+const MAX_PER_MONTH = 9;
 
 /** The last `count` calendar months up to and including now's, oldest first, e.g. ["2026-08", "2026-09", "2026-10"]. */
 export function lastMonths(now: Date, count: number): string[] {
