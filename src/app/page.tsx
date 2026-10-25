@@ -6,7 +6,6 @@ import { Hero } from "@/components/home/Hero";
 import { HomeFooter } from "@/components/home/HomeFooter";
 import { HomeMenu } from "@/components/home/HomeMenu";
 import { HowItWorks } from "@/components/home/HowItWorks";
-import { NavChips } from "@/components/home/NavChips";
 
 /** Public home page: explains the club to residents, house committees and businesses. */
 export default function Home() {
@@ -16,7 +15,6 @@ export default function Home() {
         <AppHeader>
           <HomeMenu />
         </AppHeader>
-        <NavChips />
       </div>
       <main className="flex-1">
         <Hero />
