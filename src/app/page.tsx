@@ -14,9 +14,12 @@ export default function Home() {
     <>
       <div className="sticky top-0 z-20">
         <AppHeader>
-          <Link href="/join" className="flex min-h-11 items-center rounded-xl bg-amber px-4 font-bold text-navy">
-            הצטרפות עסקים
-          </Link>
+          <div className="flex items-center gap-1">
+            <Link href="/app" className="flex min-h-11 items-center px-3 font-bold text-cream">כניסה</Link>
+            <Link href="/join" className="flex min-h-11 items-center rounded-xl bg-amber px-4 font-bold text-navy">
+              הצטרפות עסקים
+            </Link>
+          </div>
         </AppHeader>
         <NavChips />
       </div>

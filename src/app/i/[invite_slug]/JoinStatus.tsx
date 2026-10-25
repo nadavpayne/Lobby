@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { primaryButton } from "@/components/ui";
 import type { MyBuilding } from "@/lib/buildings/types";
 
 /** After joining (or when already a member): welcome, waiting for approval, or a different building. */
@@ -26,8 +28,9 @@ export function JoinStatus({ mine, sameBuilding }: { mine: MyBuilding; sameBuild
     <section className="flex flex-col gap-3 rounded-2xl bg-white p-6">
       <h1 className="text-2xl font-bold">ברוכים הבאים ללובי!</h1>
       <p className="text-lg">
-        אתם רשומים ב{where}, דירה {mine.apartmentNumber}. בקרוב תוכלו לקבל כאן קודי הנחה לעסקים בשכונה.
+        אתם רשומים ב{where}, דירה {mine.apartmentNumber}.
       </p>
+      <Link href="/app" className={primaryButton}>להטבות שלי</Link>
     </section>
   );
 }

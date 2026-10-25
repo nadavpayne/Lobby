@@ -7,7 +7,7 @@ export interface Membership {
   status: MemberStatus;
   apartmentId: string;
   apartmentNumber: string;
-  building: { id: string; address: string; city: string; apartmentCount: number | null; inviteSlug: string };
+  building: { id: string; address: string; city: string; apartmentCount: number | null; inviteSlug: string; active: boolean; isDemo: boolean };
 }
 
 interface Row {
@@ -16,7 +16,7 @@ interface Row {
   apartments: {
     id: string;
     apartment_number: string;
-    buildings: { id: string; address: string; city: string; apartment_count: number | null; invite_slug: string };
+    buildings: { id: string; address: string; city: string; apartment_count: number | null; invite_slug: string; active: boolean; is_demo: boolean };
   } | null;
 }
 
@@ -24,7 +24,7 @@ interface Row {
 export async function getMembership(db: SupabaseClient, userId: string): Promise<Membership | null> {
   const { data, error } = await db
     .from("residents")
-    .select("role, status, apartments(id, apartment_number, buildings(id, address, city, apartment_count, invite_slug))")
+    .select("role, status, apartments(id, apartment_number, buildings(id, address, city, apartment_count, invite_slug, active, is_demo))")
     .eq("id", userId)
     .maybeSingle<Row>();
   if (error) throw error;
@@ -36,6 +36,6 @@ export async function getMembership(db: SupabaseClient, userId: string): Promise
     status: data.status,
     apartmentId: apt.id,
     apartmentNumber: apt.apartment_number,
-    building: { id: b.id, address: b.address, city: b.city, apartmentCount: b.apartment_count, inviteSlug: b.invite_slug },
+    building: { id: b.id, address: b.address, city: b.city, apartmentCount: b.apartment_count, inviteSlug: b.invite_slug, active: b.active, isDemo: b.is_demo },
   };
 }
