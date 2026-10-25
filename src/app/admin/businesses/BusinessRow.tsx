@@ -82,6 +82,12 @@ export function BusinessRow({ token, business: b, focused, onChanged }: Props) {
                 <X aria-hidden className="size-4" /> דחיית העסק
               </Button>
             )}
+            {/* Redemptions and billing reference the business, so "remove" pauses it instead of deleting. */}
+            {b.status === "active" && (
+              <Button size="sm" variant="danger" className="ms-auto" onClick={() => confirm(`להסיר את ${b.name} מלובי? ההטבות שלו יוסתרו מהדיירים והוא לא יוכל לאמת קודים. ההיסטוריה והחיובים נשמרים, ואפשר להחזיר אותו דרך "שלב בצנרת".`) && apply(setBusinessStage(token, b.id, "paused"))}>
+                <X aria-hidden className="size-4" /> הסרת העסק
+              </Button>
+            )}
           </div>
           {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
           <h3 className="font-bold">הטבות</h3>
