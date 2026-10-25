@@ -16,6 +16,8 @@ type Form = Record<keyof OfferInput, string>;
 interface Props {
   token: string;
   businessName: string;
+  /** The business's logo, shown on the preview card like residents will see it. */
+  logoUrl: string | null;
   /** null = new offer. */
   offer: BizOffer | null;
   defaultCategory: string;
@@ -29,7 +31,6 @@ function initial(offer: BizOffer | null, category: string): Form {
     title: offer?.title ?? "10% הנחה על כל ",
     description: offer?.description ?? "",
     terms: offer?.terms ?? "",
-    imageUrl: offer?.imageUrl ?? "",
     discountPercent: String(offer?.discountPercent ?? 10),
     category: offer?.category ?? category,
     startsOn: offer?.startsOn ?? "",
@@ -38,11 +39,11 @@ function initial(offer: BizOffer | null, category: string): Form {
 }
 
 /** The form as the resident app will show it (for the live preview). */
-function previewOf(f: Form, businessName: string): ResidentOffer {
+function previewOf(f: Form, businessName: string, logoUrl: string | null): ResidentOffer {
   const today = new Date().toISOString().slice(0, 10);
   return {
-    businessId: "preview", businessName, category: f.category, address: "", businessDescription: null, logoUrl: null,
-    coverUrl: f.imageUrl.startsWith("https://") ? f.imageUrl : null, lat: null, lng: null, hours: null, branches: [],
+    businessId: "preview", businessName, category: f.category, address: "", businessDescription: null, logoUrl,
+    coverUrl: null, lat: null, lng: null, hours: null, branches: [],
     title: f.title || "כותרת ההטבה", discountPercent: Number(f.discountPercent) || 0, description: f.description, terms: f.terms || null,
     startsAt: f.startsOn ? `${f.startsOn}T00:00:00Z` : null, endsAt: f.endsOn ? `${f.endsOn}T12:00:00Z` : null,
     joinedAt: new Date().toISOString(), distanceMeters: null, featured: false, recentRedemptions: 0, remaining: null,
@@ -51,7 +52,7 @@ function previewOf(f: Form, businessName: string): ResidentOffer {
 }
 
 /** Create/edit an offer with a live preview of the resident card. Saving sends it to Lobby for approval. */
-export function OfferForm({ token, businessName, offer, defaultCategory, onSaved, onCancel }: Props) {
+export function OfferForm({ token, businessName, logoUrl, offer, defaultCategory, onSaved, onCancel }: Props) {
   const [f, setF] = useState<Form>(() => initial(offer, defaultCategory));
   const [errors, setErrors] = useState<OfferErrors>({});
   const [error, setError] = useState<string | null>(null);
@@ -100,9 +101,6 @@ export function OfferForm({ token, businessName, offer, defaultCategory, onSaved
             <Field label="מתחילה ב-" error={errors.startsOn} hint="ריק = מיד אחרי אישור"><input type="date" value={f.startsOn} onChange={set("startsOn")} className={inputClass} /></Field>
             <Field label="מסתיימת ב-" error={errors.endsOn} hint="ריק = הנחה קבועה"><input type="date" value={f.endsOn} onChange={set("endsOn")} className={inputClass} /></Field>
           </div>
-          <Field label="קישור לתמונה (לא חובה)" error={errors.imageUrl} hint="קישור https לתמונה של העסק או המנה">
-            <input value={f.imageUrl} onChange={set("imageUrl")} dir="ltr" inputMode="url" placeholder="https://" className={inputClass} aria-invalid={!!errors.imageUrl} />
-          </Field>
           <p className="rounded-2xl bg-sky p-3 text-sm">אחרי שמירה צוות לובי בודק את ההטבה, ורק אז היא מופיעה לדיירים. השהיה והפעלה לא דורשות אישור.</p>
           {error && <p role="alert" className="text-red-700">{error}</p>}
           <div className="grid grid-cols-2 gap-3">
@@ -114,7 +112,7 @@ export function OfferForm({ token, businessName, offer, defaultCategory, onSaved
       <aside className="flex flex-col gap-2">
         <h3 className="font-bold">כך הדיירים יראו את זה</h3>
         <div className="pointer-events-none" aria-hidden>
-          <BenefitCard offer={previewOf(f, businessName)} categories={categories} layout="grid" />
+          <BenefitCard offer={previewOf(f, businessName, logoUrl)} categories={categories} layout="grid" />
         </div>
       </aside>
     </div>

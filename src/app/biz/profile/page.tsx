@@ -10,13 +10,14 @@ import type { BizProfile } from "@/lib/biz/types";
 import { validateProfile, type ProfileErrors } from "@/lib/biz/validateProfile";
 import { CATEGORIES, type Category } from "@/lib/businesses/categories";
 import { useBiz } from "../BizShell";
+import { LogoUpload } from "../LogoUpload";
 import { CashiersCard } from "./CashiersCard";
 import { HoursEditor } from "./HoursEditor";
 import { StaffCard } from "./StaffCard";
 
 /** /biz/profile — business details, opening hours, branches, and staff terminal access. */
 export default function ProfileScreen() {
-  const { token } = useBiz();
+  const { token, setLogo } = useBiz();
   const [p, setP] = useState<BizProfile>();
   const [errors, setErrors] = useState<ProfileErrors>({});
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
@@ -37,7 +38,7 @@ export default function ProfileScreen() {
   if (!p) return message ? <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{message.text}</p> : <Skeleton className="h-96 w-full rounded-3xl" />;
 
   const set = <K extends keyof BizProfile>(key: K, value: BizProfile[K]) => setP({ ...p, [key]: value });
-  const field = (key: "description" | "phone" | "address" | "logoUrl" | "coverUrl") => ({
+  const field = (key: "description" | "phone" | "address") => ({
     value: p[key] ?? "",
     onChange: (e: { target: { value: string } }) => set(key, e.target.value),
     "aria-invalid": !!errors[key],
@@ -65,6 +66,7 @@ export default function ProfileScreen() {
         <form onSubmit={submit} className="flex flex-col gap-6" noValidate>
           <Card className="flex flex-col gap-4">
             <h2 className="text-xl font-bold">פרטים</h2>
+            <LogoUpload token={token} businessName={p.name} logoUrl={p.logoUrl} onUploaded={(logoUrl) => { set("logoUrl", logoUrl); setLogo(logoUrl); }} />
             <div className="flex flex-col gap-1">
               <DetailRow label="שם">{p.name}</DetailRow>
               <DetailRow label="קטגוריה">{CATEGORIES[p.category as Category] ?? p.category}</DetailRow>
@@ -75,10 +77,6 @@ export default function ProfileScreen() {
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="טלפון" error={errors.phone}><input {...field("phone")} inputMode="tel" dir="ltr" className={inputClass} /></Field>
               <Field label={`כתובת${p.city ? `, ${p.city}` : ""}`} error={errors.address}><input {...field("address")} className={inputClass} /></Field>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="קישור ללוגו" error={errors.logoUrl}><input {...field("logoUrl")} dir="ltr" inputMode="url" placeholder="https://" className={inputClass} /></Field>
-              <Field label="קישור לתמונת כיסוי" error={errors.coverUrl}><input {...field("coverUrl")} dir="ltr" inputMode="url" placeholder="https://" className={inputClass} /></Field>
             </div>
           </Card>
 

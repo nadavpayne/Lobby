@@ -12,6 +12,8 @@ export interface MyBusiness {
   /** owner = the full CRM; cashier = the register only. */
   role: "owner" | "cashier";
   email: string | null;
+  /** The business's one photo (logo / profile picture), or null until uploaded. */
+  logoUrl: string | null;
 }
 
 /** The business I own or work the register for. */
@@ -80,3 +82,16 @@ export const addCashier = (token: string, email: string) => apiFetch<Cashier[]>(
 
 /** Revokes a cashier; returns the updated list. */
 export const revokeCashier = (token: string, userId: string) => apiFetch<Cashier[]>("/api/biz/cashiers", { token, body: { action: "revoke", userId } });
+
+/** Uploads the business's one photo (its logo / profile picture); returns { logoUrl } or an error message. */
+export async function uploadLogo(token: string, image: Blob): Promise<{ logoUrl: string } | { error: string }> {
+  try {
+    const form = new FormData();
+    form.append("file", image, "logo.jpg");
+    const res = await fetch("/api/biz/logo", { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: form });
+    const json = await res.json().catch(() => ({}));
+    return res.ok ? json : { error: json.error ?? "ההעלאה נכשלה. נסו שוב." };
+  } catch {
+    return { error: "אין חיבור לאינטרנט. בדקו את החיבור ונסו שוב." };
+  }
+}

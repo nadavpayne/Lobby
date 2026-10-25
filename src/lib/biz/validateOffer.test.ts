@@ -2,16 +2,16 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { endOfIsraelDay, startOfIsraelDay, toIsraelDay, validateOffer } from "./validateOffer.ts";
 
-const good = { title: " 10% הנחה על כל התפריט ", description: "על כל המנות", terms: "", imageUrl: "", discountPercent: "10", category: "restaurants", startsOn: "", endsOn: "2026-12-31" };
+const good = { title: " 10% הנחה על כל התפריט ", description: "על כל המנות", terms: "", discountPercent: "10", category: "restaurants", startsOn: "", endsOn: "2026-12-31" };
 
 test("offer form: valid input is cleaned, bad fields get Hebrew errors", () => {
   const r = validateOffer(good);
   assert.ok(r.ok);
-  assert.deepEqual(r.data, { title: "10% הנחה על כל התפריט", description: "על כל המנות", terms: null, imageUrl: null, discountPercent: 10, category: "restaurants", startsOn: null, endsOn: "2026-12-31" });
+  assert.deepEqual(r.data, { title: "10% הנחה על כל התפריט", description: "על כל המנות", terms: null, discountPercent: 10, category: "restaurants", startsOn: null, endsOn: "2026-12-31" });
 
-  const bad = validateOffer({ ...good, title: "x", discountPercent: 0, category: "cars", imageUrl: "http://x", startsOn: "2026-12-01", endsOn: "2026-11-01" });
+  const bad = validateOffer({ ...good, title: "x", discountPercent: 0, category: "cars", startsOn: "2026-12-01", endsOn: "2026-11-01" });
   assert.ok(!bad.ok);
-  assert.deepEqual(Object.keys(bad.errors).sort(), ["category", "discountPercent", "endsOn", "imageUrl", "title"]);
+  assert.deepEqual(Object.keys(bad.errors).sort(), ["category", "discountPercent", "endsOn", "title"]);
 });
 
 test("offer dates: Israel midnight in summer and winter, and back", () => {

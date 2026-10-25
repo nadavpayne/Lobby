@@ -12,7 +12,6 @@ interface Row {
   address: string;
   city: string | null;
   logo_url: string | null;
-  cover_url: string | null;
   hours: WeekHours | null;
   commission_percent: number;
   access_slug: string;
@@ -23,7 +22,7 @@ interface Row {
 export async function getProfile(db: SupabaseClient, businessId: string, origin: string): Promise<BizProfile> {
   const { data, error } = await db
     .from("businesses")
-    .select("name, category, description, phone, address, city, logo_url, cover_url, hours, commission_percent, access_slug, branches(name, address)")
+    .select("name, category, description, phone, address, city, logo_url, hours, commission_percent, access_slug, branches(name, address)")
     .eq("id", businessId)
     .single<Row>();
   if (error) throw error;
@@ -35,7 +34,6 @@ export async function getProfile(db: SupabaseClient, businessId: string, origin:
     address: data.address,
     city: data.city,
     logoUrl: data.logo_url,
-    coverUrl: data.cover_url,
     hours: data.hours ?? {},
     branches: data.branches,
     commissionPercent: Number(data.commission_percent),
@@ -43,11 +41,11 @@ export async function getProfile(db: SupabaseClient, businessId: string, origin:
   };
 }
 
-/** Saves the editable details and replaces the branch list (redemptions keep their history; branch_id is set null). */
+/** Saves the editable details (not the logo: see saveLogo) and replaces the branch list (redemptions keep their history; branch_id is set null). */
 export async function saveProfile(db: SupabaseClient, businessId: string, p: ProfileInput, city: string | null): Promise<void> {
   const res = await db
     .from("businesses")
-    .update({ description: p.description, phone: p.phone, address: p.address, logo_url: p.logoUrl, cover_url: p.coverUrl, hours: p.hours })
+    .update({ description: p.description, phone: p.phone, address: p.address, hours: p.hours })
     .eq("id", businessId);
   if (res.error) throw res.error;
   const del = await db.from("branches").delete().eq("business_id", businessId);

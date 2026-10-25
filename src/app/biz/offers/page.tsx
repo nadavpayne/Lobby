@@ -55,6 +55,7 @@ export default function OffersScreen() {
       <OfferForm
         token={token}
         businessName={business.name}
+        logoUrl={business.logoUrl}
         offer={editing === "new" ? null : editing}
         defaultCategory={offers?.[0]?.category ?? "restaurants"}
         onCancel={() => setEditing(null)}

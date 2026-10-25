@@ -16,7 +16,6 @@ export function validateOffer(raw: unknown): OfferValidation {
   const title = text(r.title);
   const description = text(r.description);
   const terms = text(r.terms);
-  const imageUrl = text(r.imageUrl);
   const discountPercent = Number(r.discountPercent);
   const category = text(r.category);
   const startsOn = text(r.startsOn);
@@ -25,7 +24,6 @@ export function validateOffer(raw: unknown): OfferValidation {
   if (!title || title.length < 3 || title.length > 60) errors.title = "כותרת של 3–60 תווים, למשל „10% הנחה על כל התפריט”";
   if (!description || description.length > 300) errors.description = "תיאור קצר, עד 300 תווים";
   if (terms && terms.length > 300) errors.terms = "עד 300 תווים";
-  if (imageUrl && !/^https:\/\/\S+$/.test(imageUrl)) errors.imageUrl = "קישור לתמונה שמתחיל ב-https://";
   if (!Number.isInteger(discountPercent) || discountPercent < 1 || discountPercent > 100) errors.discountPercent = "אחוז הנחה שלם בין 1 ל-100";
   if (!category || !(category in CATEGORIES)) errors.category = "בחרו קטגוריה";
   if (startsOn && !DAY.test(startsOn)) errors.startsOn = "תאריך לא תקין";
@@ -33,7 +31,7 @@ export function validateOffer(raw: unknown): OfferValidation {
   if (startsOn && endsOn && endsOn < startsOn) errors.endsOn = "תאריך הסיום לפני תאריך ההתחלה";
 
   if (Object.keys(errors).length > 0) return { ok: false, errors };
-  return { ok: true, data: { title: title!, description: description!, terms, imageUrl, discountPercent, category: category!, startsOn, endsOn } };
+  return { ok: true, data: { title: title!, description: description!, terms, discountPercent, category: category!, startsOn, endsOn } };
 }
 
 const offsetFormat = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Jerusalem", timeZoneName: "shortOffset" });

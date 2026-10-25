@@ -23,6 +23,8 @@ interface Biz {
   token: string;
   business: MyBusiness;
   signOut: () => void;
+  /** Updates the logo everywhere after an upload. */
+  setLogo: (logoUrl: string) => void;
 }
 
 const BizContext = createContext<Biz | null>(null);
@@ -57,7 +59,7 @@ function Frame({ children }: { children: ReactNode }) {
       {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>}
       {!business && !error && <p className="pt-10 text-center text-lg text-navy/70">טוען…</p>}
       {business && (
-        <BizContext.Provider value={{ token, business, signOut }}>
+        <BizContext.Provider value={{ token, business, signOut, setLogo: (logoUrl) => setBusiness({ ...business, logoUrl }) }}>
           {business.status !== "active" && <p className="mb-4 rounded-2xl bg-peach p-4">{STATUS_NOTICE[business.status]}</p>}
           {children}
         </BizContext.Provider>

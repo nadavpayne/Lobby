@@ -41,7 +41,6 @@ export interface OfferInput {
   title: string;
   description: string;
   terms: string | null;
-  imageUrl: string | null;
   discountPercent: number;
   category: string;
   /** "YYYY-MM-DD" or null = from now / no end. */
@@ -80,8 +79,6 @@ export interface ProfileInput {
   description: string | null;
   phone: string;
   address: string;
-  logoUrl: string | null;
-  coverUrl: string | null;
   hours: WeekHours;
   branches: Branch[];
 }
@@ -92,6 +89,8 @@ export interface BizProfile extends ProfileInput {
   category: string;
   city: string | null;
   commissionPercent: number;
+  /** The business's one photo (logo / profile picture); changed through the logo upload, not this form. */
+  logoUrl: string | null;
   /** Link for staff phones/tablets at the register (PIN protected). */
   terminalUrl: string;
 }

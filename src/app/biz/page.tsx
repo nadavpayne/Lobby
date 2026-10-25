@@ -9,13 +9,14 @@ import { isApiError } from "@/lib/api/http";
 import type { BizDashboard } from "@/lib/biz/types";
 import { formatShekels } from "@/lib/redemptions/money";
 import { useBiz } from "./BizShell";
+import { LogoUpload } from "./LogoUpload";
 
 const dayMonth = (iso: string) => `${Number(iso.slice(8, 10))}.${Number(iso.slice(5, 7))}`;
 const money = (n: number) => <bdi dir="ltr">{formatShekels(n)}</bdi>;
 
 /** /biz — redemptions today/week/month, revenue through Lobby, commission owed, customers, last 30 days, top buildings. */
 export default function BizDashboardScreen() {
-  const { token } = useBiz();
+  const { token, business, setLogo } = useBiz();
   const [data, setData] = useState<BizDashboard>();
   const [error, setError] = useState<string | null>(null);
 
@@ -47,6 +48,13 @@ export default function BizDashboardScreen() {
         <h1 className="text-3xl font-bold">לוח בקרה</h1>
         <Link href="/biz/scan" className={buttonClass("primary", "md")}><ScanLine aria-hidden className="size-5" /> מימוש הטבה</Link>
       </div>
+
+      {!business.logoUrl && (
+        <Card tint="peach" className="flex flex-col gap-3">
+          <h2 className="text-lg font-bold">הוסיפו לוגו לעסק</h2>
+          <LogoUpload token={token} businessName={business.name} logoUrl={null} onUploaded={setLogo} />
+        </Card>
+      )}
 
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="מימושים">
         <StatTile tint="peach" icon={<Receipt />} label="מימושים היום" value={data.today.redemptions} hint={money(data.today.gmv)} />

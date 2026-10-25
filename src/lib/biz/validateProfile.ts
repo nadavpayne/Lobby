@@ -34,8 +34,6 @@ export function validateProfile(raw: unknown): ProfileValidation {
   const description = text(r.description);
   const phone = normalizeIsraeliPhone(text(r.phone) ?? "");
   const address = text(r.address);
-  const logoUrl = text(r.logoUrl);
-  const coverUrl = text(r.coverUrl);
   const hours = cleanHours(r.hours);
   const branches: Branch[] = Array.isArray(r.branches)
     ? r.branches.map((b) => ({ name: text(b?.name) ?? "", address: text(b?.address) ?? "" })).filter((b) => b.name || b.address)
@@ -44,15 +42,13 @@ export function validateProfile(raw: unknown): ProfileValidation {
   if (description && description.length > 400) errors.description = "עד 400 תווים";
   if (!phone) errors.phone = "מספר טלפון ישראלי";
   if (!address || address.length > 120) errors.address = "כתובת העסק";
-  if (logoUrl && !/^https:\/\/\S+$/.test(logoUrl)) errors.logoUrl = "קישור שמתחיל ב-https://";
-  if (coverUrl && !/^https:\/\/\S+$/.test(coverUrl)) errors.coverUrl = "קישור שמתחיל ב-https://";
   if (!hours) errors.hours = "שעות לא תקינות: שעת סגירה אחרי שעת פתיחה";
   if (branches.length > MAX_BRANCHES || branches.some((b) => !b.name || !b.address || b.name.length > 60 || b.address.length > 120)) {
     errors.branches = "לכל סניף צריך שם וכתובת";
   }
 
   if (Object.keys(errors).length > 0) return { ok: false, errors };
-  return { ok: true, data: { description, phone: phone!, address: address!, logoUrl, coverUrl, hours: hours!, branches } };
+  return { ok: true, data: { description, phone: phone!, address: address!, hours: hours!, branches } };
 }
 
 /** A staff terminal PIN: exactly 4 digits (same rule as at sign-up). */
