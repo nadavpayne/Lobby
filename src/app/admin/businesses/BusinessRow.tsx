@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Link2 } from "lucide-react";
+import { ChevronDown, Link2, X } from "lucide-react";
 import { useState } from "react";
 import { Button, Card, Tag } from "@/components/ui";
 import { setBusinessCommission, setBusinessStage } from "@/lib/api/admin";
@@ -10,9 +10,9 @@ import { CATEGORIES, type Category } from "@/lib/businesses/categories";
 import type { BusinessStatus } from "@/lib/businesses/types";
 import { OfferReview } from "./OfferReview";
 
-export const STAGE_LABEL: Record<BusinessStatus, string> = { lead: "ליד", pending: "במו״מ", active: "פעיל", paused: "מושהה" };
-const STAGE_TINT: Record<BusinessStatus, "white" | "sky" | "mint" | "rose"> = { lead: "white", pending: "sky", active: "mint", paused: "rose" };
-const STAGES: BusinessStatus[] = ["lead", "pending", "active", "paused"];
+export const STAGE_LABEL: Record<BusinessStatus, string> = { lead: "ליד", pending: "במו״מ", active: "פעיל", paused: "מושהה", declined: "נדחה" };
+const STAGE_TINT: Record<BusinessStatus, "white" | "sky" | "mint" | "rose"> = { lead: "white", pending: "sky", active: "mint", paused: "rose", declined: "rose" };
+const STAGES: BusinessStatus[] = ["lead", "pending", "active", "paused", "declined"];
 
 interface Props {
   token: string;
@@ -75,6 +75,11 @@ export function BusinessRow({ token, business: b, focused, onChanged }: Props) {
               <Link2 aria-hidden className="size-4" /> {copied ? "הועתק" : "קישור לקופה"}
             </Button>
             <span className="text-navy/50">נוסף {new Date(b.createdAt).toLocaleDateString("he-IL")}</span>
+            {(b.status === "lead" || b.status === "pending") && (
+              <Button size="sm" variant="danger" className="ms-auto" onClick={() => confirm(`לדחות את ${b.name}? העסק לא יוכל לאמת קודים, וההטבות שלו לא יוצגו לדיירים.`) && apply(setBusinessStage(token, b.id, "declined"))}>
+                <X aria-hidden className="size-4" /> דחיית העסק
+              </Button>
+            )}
           </div>
           {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
           <h3 className="font-bold">הטבות</h3>

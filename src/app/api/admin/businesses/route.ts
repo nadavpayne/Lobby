@@ -5,7 +5,7 @@ import type { BusinessStatus } from "@/lib/businesses/types";
 import { siteUrl } from "@/lib/siteUrl";
 import { badRequest, isUuid, notFound, requireAdmin } from "../requireAdmin";
 
-const STATUSES: BusinessStatus[] = ["lead", "pending", "active", "paused"];
+const STATUSES: BusinessStatus[] = ["lead", "pending", "active", "paused", "declined"];
 
 /** GET /api/admin/businesses — every business with stage, contract, offers and terminal link. */
 export async function GET(request: Request) {

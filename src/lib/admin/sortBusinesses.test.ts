@@ -15,5 +15,5 @@ test("pending first, then leads, active, paused; newest first within a group", (
     biz("l", "lead", "2026-10-21"),
   ];
   assert.deepEqual(sortForReview(list).map((b) => b.id), ["p-new", "p-old", "l", "a2", "a1", "x"]);
-  assert.deepEqual(countByStatus(list), { lead: 1, pending: 2, active: 2, paused: 1 });
+  assert.deepEqual(countByStatus(list), { lead: 1, pending: 2, active: 2, paused: 1, declined: 0 });
 });

@@ -14,7 +14,7 @@ import { BusinessRow, STAGE_LABEL } from "./BusinessRow";
 import { LeadForm } from "./LeadForm";
 
 type Filter = BusinessStatus | "review" | null;
-const needsReview = (b: AdminBusiness) => b.offers.some((o) => !o.approved && o.active);
+const needsReview = (b: AdminBusiness) => b.status !== "declined" && b.offers.some((o) => !o.approved && o.active);
 
 /** Businesses: pipeline (lead → negotiating → live → paused), contract rates, and the offer approval queue. */
 function BusinessesScreen() {
@@ -54,7 +54,7 @@ function BusinessesScreen() {
       <ChipRow label="סינון">
         <Chip selected={!filter} onClick={() => setFilter(null)}>הכל {list && `(${list.length})`}</Chip>
         <Chip selected={filter === "review"} onClick={() => setFilter("review")}>עסקים מחכים לאישור ({count("review")})</Chip>
-        {(["lead", "pending", "active", "paused"] as const).map((s) => <Chip key={s} selected={filter === s} onClick={() => setFilter(s)}>{STAGE_LABEL[s]} ({count(s)})</Chip>)}
+        {(["lead", "pending", "active", "paused", "declined"] as const).map((s) => <Chip key={s} selected={filter === s} onClick={() => setFilter(s)}>{STAGE_LABEL[s]} ({count(s)})</Chip>)}
       </ChipRow>
       {!list && !error && <Skeleton className="h-64 w-full rounded-3xl" />}
       {visible?.length === 0 && <EmptyState icon={<Store />} title="אין עסקים כאן" />}
