@@ -9,6 +9,8 @@ import type { AdminBusiness } from "@/lib/admin/types";
 import { CATEGORIES, type Category } from "@/lib/businesses/categories";
 import type { BusinessStatus } from "@/lib/businesses/types";
 import { BusinessLogo } from "@/components/resident/BusinessCover";
+import type { DisputeSignal } from "@/lib/disputes/types";
+import { DisputeSignalLine, DisputeSignalTag } from "./DisputeSignalBadge";
 import { OfferReview } from "./OfferReview";
 
 export const STAGE_LABEL: Record<BusinessStatus, string> = { lead: "ליד", pending: "במו״מ", active: "פעיל", paused: "מושהה", declined: "נדחה" };
@@ -20,10 +22,12 @@ interface Props {
   business: AdminBusiness;
   focused: boolean;
   onChanged: (b: AdminBusiness) => void;
+  /** This month's amount-dispute numbers, if any. */
+  signal?: DisputeSignal;
 }
 
 /** One business: stage, contact, contract rate, terminal link, and (expanded) its offers for review. */
-export function BusinessRow({ token, business: b, focused, onChanged }: Props) {
+export function BusinessRow({ token, business: b, focused, onChanged, signal }: Props) {
   const pendingOffers = b.offers.filter((o) => !o.approved && o.active).length;
   const [open, setOpen] = useState(focused || pendingOffers > 0);
   const [rate, setRate] = useState(String(b.commissionPercent));
@@ -49,6 +53,7 @@ export function BusinessRow({ token, business: b, focused, onChanged }: Props) {
             <span className="block truncate text-sm text-navy/60">{CATEGORIES[b.category as Category] ?? b.category} · {b.address}{b.city ? `, ${b.city}` : ""}</span>
           </span>
         </button>
+        <DisputeSignalTag signal={signal} />
         {pendingOffers > 0 && <Tag tint="amber">{pendingOffers} לאישור</Tag>}
         <Tag tint={STAGE_TINT[b.status]}>{STAGE_LABEL[b.status]}</Tag>
       </div>
@@ -90,6 +95,7 @@ export function BusinessRow({ token, business: b, focused, onChanged }: Props) {
             )}
           </div>
           {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
+          <DisputeSignalLine signal={signal} businessId={b.id} />
           <h3 className="font-bold">הטבות</h3>
           {b.offers.length === 0 && <p className="text-sm text-navy/60">עוד אין הטבות.</p>}
           {b.offers.map((o) => <OfferReview key={o.id} token={token} offer={o} onChanged={onChanged} />)}

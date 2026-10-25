@@ -2,11 +2,12 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export interface AuditEvent {
-  event: "token_issued" | "scan" | "redeemed" | "voided";
+  event: "token_issued" | "scan" | "redeemed" | "voided" | "dispute_created" | "dispute_status" | "dispute_dismissed";
   result?: string;
   businessId?: string | null;
   tokenId?: string | null;
   redemptionId?: string | null;
+  disputeId?: string | null;
   actorUserId?: string | null;
   period?: string | null;
   details?: Record<string, unknown>;
@@ -18,7 +19,7 @@ export async function audit(db: SupabaseClient, e: AuditEvent): Promise<string> 
     .from("audit_log")
     .insert({
       event: e.event, result: e.result ?? null, business_id: e.businessId ?? null, token_id: e.tokenId ?? null,
-      redemption_id: e.redemptionId ?? null, actor_user_id: e.actorUserId ?? null, period: e.period ?? null, details: e.details ?? {},
+      redemption_id: e.redemptionId ?? null, ...(e.disputeId && { dispute_id: e.disputeId }), actor_user_id: e.actorUserId ?? null, period: e.period ?? null, details: e.details ?? {},
     })
     .select("id")
     .single<{ id: string }>();

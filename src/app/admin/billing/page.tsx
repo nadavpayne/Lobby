@@ -58,7 +58,15 @@ export default function AdminBillingScreen() {
     { key: "period", header: "חודש", render: (l) => month(l.period) },
     { key: "count", header: "מימושים", align: "end", render: (l) => l.redemptions },
     { key: "gmv", header: "מחזור", align: "end", render: (l) => money(l.gmv) },
-    { key: "commission", header: "עמלה", align: "end", render: (l) => <span className="font-bold">{money(l.commission)}</span> },
+    {
+      key: "commission", header: "עמלה", align: "end",
+      render: (l) => (
+        <span className="font-bold">
+          {money(l.commission)}
+          {l.adjustmentsAgorot !== 0 && <span className="block text-sm font-normal text-navy/60">כולל תיקונים {money(l.adjustmentsAgorot / 100)}</span>}
+        </span>
+      ),
+    },
     { key: "status", header: "סטטוס", render: (l) => <Tag tint={STATUS[l.status][1]}>{STATUS[l.status][0]}</Tag> },
     {
       key: "action", header: "", render: (l) => l.status === "current" ? null : (

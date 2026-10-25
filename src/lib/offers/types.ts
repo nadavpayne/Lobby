@@ -1,3 +1,4 @@
+import type { ResidentDispute } from "../disputes/types";
 import type { WeekHours } from "./hours";
 
 /** Where an offer stands for my apartment this month. "active" = a QR is live right now; "upcoming" = starts later. */
@@ -66,12 +67,19 @@ export interface Feed {
 
 /** One line in "my benefits" (voided = the business cancelled it). */
 export interface CodeHistoryItem {
+  /** The redemption's id (what an amount report refers to). */
+  id: string;
   code: string;
   businessName: string;
   status: "redeemed" | "voided";
   redeemedAt: string;
   amount: number;
   discountAmount: number;
+  billAgorot: number;
+  /** The apartment's report about this redemption's amount, if any. */
+  dispute: ResidentDispute | null;
+  /** "הסכום לא נכון?" shows: redeemed, no report yet, still within the reporting window. */
+  canReport: boolean;
 }
 
 export interface CodeHistory {

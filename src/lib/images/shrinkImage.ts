@@ -7,9 +7,9 @@ const MAX_SIDE = 800;
  * huge camera files into a small upload; Vercel caps request bodies at 4.5 MB). Transparent PNG logos get a white
  * background. Rejects if the browser can't read the file as an image.
  */
-export async function shrinkImage(file: File): Promise<Blob> {
+export async function shrinkImage(file: File, maxSide = MAX_SIDE): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement("canvas");
   canvas.width = Math.round(bitmap.width * scale);
   canvas.height = Math.round(bitmap.height * scale);

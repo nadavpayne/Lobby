@@ -9,6 +9,7 @@ import type { SearchHit } from "@/lib/admin/search";
 import type { AdminBusiness } from "@/lib/admin/types";
 import type { BannerInput, BuildingLead, BusinessLead, NotificationInput } from "@/lib/admin/validate";
 import type { BusinessStatus } from "@/lib/businesses/types";
+import type { AdminDisputeDetail, AdminDisputeRow, DisputeSignal } from "@/lib/disputes/types";
 import { apiFetch, type ApiError } from "./http";
 
 // Client calls for the Lobby operator CRM (/admin). Every route checks the admin role on the server.
@@ -89,3 +90,16 @@ export const saveCategory = (token: string, slug: string, name: string, sort: nu
 
 export const sendAnnouncement = (token: string, n: NotificationInput) =>
   apiFetch<ContentData>("/api/admin/content", { token, body: { action: "notify", ...n } }) as Promise<ContentData | FormError>;
+
+/** The amount-dispute queue for a filter query ("status=active&business=…"). */
+export const fetchDisputes = (token: string, query: string) => apiFetch<AdminDisputeRow[]>(`/api/admin/disputes?${query}`, { token });
+
+/** One dispute with the resident's note, receipt link and the business's history. */
+export const fetchDispute = (token: string, id: string) => apiFetch<AdminDisputeDetail>(`/api/admin/disputes/${id}`, { token });
+
+/** Per-business dispute rates for a month ("YYYY-MM"). */
+export const fetchDisputeSignals = (token: string, period: string) => apiFetch<DisputeSignal[]>(`/api/admin/disputes?signals=${period}`, { token });
+
+/** Mark in review, correct the bill (shekels as typed) or dismiss with a reason the resident sees. */
+export const disputeAction = (token: string, id: string, action: { action: "review" } | { action: "correct"; bill: string; note: string } | { action: "dismiss"; note: string }) =>
+  apiFetch<{ ok: true }>("/api/admin/disputes", { token, body: { id, ...action } }) as Promise<{ ok: true } | FormError>;

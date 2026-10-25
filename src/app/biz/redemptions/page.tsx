@@ -54,7 +54,15 @@ export default function BizRedemptionsScreen() {
     { key: "time", header: "זמן", render: (r) => time.format(new Date(r.redeemedAt)) },
     { key: "apt", header: "דירה", render: (r) => <span>{r.building}<span className="block text-sm text-muted">דירה {r.apartment} · {r.customer}</span></span> },
     { key: "cashier", header: "קופה", render: (r) => <span className="text-sm">{r.cashier}</span> },
-    { key: "bill", header: "חשבון", align: "end", render: (r) => money(r.billAgorot) },
+    {
+      key: "bill", header: "חשבון", align: "end",
+      render: (r) => (
+        <span>
+          {money(r.billAgorot)}
+          {r.correctedFromAgorot !== null && <span className="mt-1 flex items-center justify-end gap-1 text-sm text-muted"><Tag tint="mint">תוקן</Tag> נרשם {money(r.correctedFromAgorot)}</span>}
+        </span>
+      ),
+    },
     { key: "discount", header: "הנחה", align: "end", render: (r) => money(r.discountAgorot) },
     { key: "commission", header: "עמלה", align: "end", render: (r) => money(r.commissionAgorot) },
     {

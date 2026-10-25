@@ -6,8 +6,10 @@ import { DataTable, EmptyState, Skeleton, StatTile, Tag, type Column } from "@/c
 import { fetchBilling } from "@/lib/api/biz";
 import { isApiError } from "@/lib/api/http";
 import type { BillingMonth } from "@/lib/biz/types";
+import { formatAgorot } from "@/lib/qr/money";
 import { formatShekels } from "@/lib/redemptions/money";
 import { useBiz } from "../BizShell";
+import { StatementCorrections } from "./StatementCorrections";
 
 const monthName = new Intl.DateTimeFormat("he-IL", { month: "long", year: "numeric", timeZone: "UTC" });
 const paidOn = new Intl.DateTimeFormat("he-IL", { day: "numeric", month: "numeric", year: "2-digit" });
@@ -23,7 +25,15 @@ const COLUMNS: Column<BillingMonth>[] = [
   { key: "month", header: "חודש", render: (m) => <span className="font-medium">{monthName.format(new Date(`${m.period}-01T00:00:00Z`))}</span> },
   { key: "redemptions", header: "מימושים", align: "end", render: (m) => m.redemptions },
   { key: "gmv", header: "הכנסות דרך לובי", align: "end", render: (m) => money(m.gmv) },
-  { key: "commission", header: "עמלה", align: "end", render: (m) => <span className="font-bold">{money(m.commission)}</span> },
+  {
+    key: "commission", header: "עמלה", align: "end",
+    render: (m) => (
+      <span className="font-bold">
+        {money(m.commission)}
+        {m.adjustmentsAgorot !== 0 && <span className="block text-sm font-normal text-navy/60">כולל תיקונים <bdi dir="ltr">{formatAgorot(m.adjustmentsAgorot)}</bdi></span>}
+      </span>
+    ),
+  },
   {
     key: "status", header: "סטטוס",
     render: (m) => <span className="inline-flex items-center gap-2"><Tag tint={STATUS[m.status][1]}>{STATUS[m.status][0]}</Tag>{m.paidAt && <span className="text-sm text-navy/60">{paidOn.format(new Date(m.paidAt))}</span>}</span>,
@@ -69,6 +79,7 @@ export default function BillingScreen() {
             rowKey={(m) => m.period}
             empty={<EmptyState icon={<ReceiptText />} title="עוד אין חיובים">החיוב הראשון יופיע אחרי המימוש הראשון.</EmptyState>}
           />
+          <StatementCorrections months={months} />
         </>
       )}
     </div>

@@ -37,7 +37,7 @@ export function QrSheet({ authToken, businessId, businessName, discountPercent, 
     <div role="dialog" aria-modal="true" aria-label={`מימוש הטבה ב${businessName}`} className="fixed inset-0 z-30 overflow-y-auto bg-cream text-navy">
       <div className="mx-auto flex min-h-full max-w-md flex-col gap-4 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
         {state.phase === "done" ? (
-          <DoneView done={state.done} onClose={onClose} />
+          <DoneView authToken={authToken} done={state.done} onClose={onClose} />
         ) : (
           <>
             <header className="flex items-center justify-between gap-3">

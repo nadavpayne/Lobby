@@ -1,6 +1,8 @@
 "use client";
 
 import { CalendarDays, Check } from "lucide-react";
+import { useState } from "react";
+import { DisputeSheet } from "@/components/resident/DisputeSheet";
 import { Button } from "@/components/ui";
 import { receiptTime, unlockDay } from "@/lib/qr/labels";
 import { formatAgorot } from "@/lib/qr/money";
@@ -8,9 +10,11 @@ import type { TokenStatus } from "@/lib/qr/types";
 
 const money = (agorot: number) => <bdi dir="ltr">{formatAgorot(agorot)}</bdi>;
 
-/** The resident's success screen: what they saved, the receipt, and when the next benefit here unlocks. */
-export function DoneView({ done, onClose }: { done: Extract<TokenStatus, { status: "used" }>; onClose: () => void }) {
+/** The resident's success screen: what they saved, the receipt (with "amount not right?"), and when the next benefit here unlocks. */
+export function DoneView({ authToken, done, onClose }: { authToken: string; done: Extract<TokenStatus, { status: "used" }>; onClose: () => void }) {
   const r = done.receipt;
+  const [reporting, setReporting] = useState(false);
+  const [reported, setReported] = useState(false);
   return (
     <div role="status" className="flex min-h-full flex-1 animate-pop-in flex-col gap-5">
       <span dir="ltr" className="self-end text-xl font-black tracking-tight">Lobby</span>
@@ -29,6 +33,15 @@ export function DoneView({ done, onClose }: { done: Extract<TokenStatus, { statu
         <div className="flex items-baseline justify-between"><span className="font-semibold">שילמתם</span><span className="text-2xl font-black">{money(r.paidAgorot)}</span></div>
         <p className="text-center text-xs text-muted">{receiptTime(r.redeemedAt)} · דירה {r.apartmentNumber}</p>
       </section>
+      {reported
+        ? <p className="-mt-2 text-center text-sm text-muted">הדיווח על הסכום נשלח. נבדוק ונחזור אליכם.</p>
+        : <button type="button" onClick={() => setReporting(true)} className="-mt-2 min-h-11 self-center text-sm text-muted underline">הסכום לא נכון?</button>}
+      <DisputeSheet
+        token={authToken}
+        target={reporting ? { redemptionId: r.redemptionId, businessName: done.businessName, redeemedAt: r.redeemedAt, billAgorot: r.billAgorot } : null}
+        onClose={() => setReporting(false)}
+        onReported={() => setReported(true)}
+      />
 
       <div className="flex items-start gap-2.5 rounded-2xl bg-warm p-3.5 text-sm leading-5">
         <CalendarDays aria-hidden className="mt-0.5 size-5 shrink-0" />

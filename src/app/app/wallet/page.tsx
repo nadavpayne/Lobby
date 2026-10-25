@@ -3,6 +3,8 @@
 import { CalendarCheck, PiggyBank, Ticket } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { DisputeSheet, type DisputeTarget } from "@/components/resident/DisputeSheet";
+import { DisputeStatus } from "@/components/resident/DisputeStatus";
 import { buttonClass, EmptyState, SkeletonCard, StatTile, Tag, type Tint } from "@/components/ui";
 import { isApiError } from "@/lib/api/http";
 import { fetchCodeHistory } from "@/lib/api/resident";
@@ -22,6 +24,8 @@ export default function WalletScreen() {
   const { token } = useResident();
   const [history, setHistory] = useState<CodeHistory>();
   const [error, setError] = useState<string | null>(null);
+  const [disputing, setDisputing] = useState<DisputeTarget | null>(null);
+  const [reloads, setReloads] = useState(0);
 
   useEffect(() => {
     let live = true;
@@ -33,7 +37,7 @@ export default function WalletScreen() {
     return () => {
       live = false;
     };
-  }, [token]);
+  }, [token, reloads]);
 
   const redeemedCount = history?.items.filter((i) => i.status === "redeemed").length ?? 0;
 
@@ -61,7 +65,7 @@ export default function WalletScreen() {
               {history.items.map((item) => {
                 const [label, tint] = STATUS[item.status];
                 return (
-                  <li key={item.code + item.redeemedAt} className={`flex flex-col gap-1 rounded-3xl bg-white p-4 shadow-soft ${item.status === "voided" ? "opacity-60" : ""}`}>
+                  <li key={item.id} className={`flex flex-col gap-1 rounded-3xl bg-white p-4 shadow-soft ${item.status === "voided" ? "opacity-60" : ""}`}>
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-lg font-bold">{item.businessName}</p>
                       <Tag tint={tint}>{label}</Tag>
@@ -72,6 +76,16 @@ export default function WalletScreen() {
                       {item.status === "redeemed" && <><bdi dir="ltr" className="font-bold">{formatShekels(item.discountAmount)}</bdi> מתוך </>}
                       <bdi dir="ltr">{formatShekels(item.amount)}</bdi>
                     </p>
+                    {item.dispute && <DisputeStatus dispute={item.dispute} billAgorot={item.billAgorot} />}
+                    {item.canReport && (
+                      <button
+                        type="button"
+                        onClick={() => setDisputing({ redemptionId: item.id, businessName: item.businessName, redeemedAt: item.redeemedAt, billAgorot: item.billAgorot })}
+                        className="min-h-11 self-start text-sm text-muted underline"
+                      >
+                        הסכום לא נכון?
+                      </button>
+                    )}
                   </li>
                 );
               })}
@@ -79,6 +93,7 @@ export default function WalletScreen() {
           )}
         </>
       )}
+      <DisputeSheet token={token} target={disputing} onClose={() => setDisputing(null)} onReported={() => setReloads((n) => n + 1)} />
     </div>
   );
 }

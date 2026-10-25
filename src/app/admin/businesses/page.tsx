@@ -5,8 +5,10 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useAccount } from "@/components/auth/RoleGate";
 import { Button, Chip, ChipRow, EmptyState, Skeleton } from "@/components/ui";
-import { fetchAdminBusinesses } from "@/lib/api/admin";
+import { fetchAdminBusinesses, fetchDisputeSignals } from "@/lib/api/admin";
 import { isApiError } from "@/lib/api/http";
+import type { DisputeSignal } from "@/lib/disputes/types";
+import { currentPeriod } from "@/lib/period";
 import { sortForReview } from "@/lib/admin/sortBusinesses";
 import type { AdminBusiness } from "@/lib/admin/types";
 import type { BusinessStatus } from "@/lib/businesses/types";
@@ -25,6 +27,11 @@ function BusinessesScreen() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>(params.get("filter") === "review" ? "review" : null);
   const [adding, setAdding] = useState(false);
+  const [signals, setSignals] = useState<Map<string, DisputeSignal>>(new Map());
+
+  useEffect(() => {
+    fetchDisputeSignals(token, currentPeriod()).then((res) => !isApiError(res) && setSignals(new Map(res.map((s) => [s.businessId, s]))));
+  }, [token]);
 
   useEffect(() => {
     let live = true;
@@ -59,7 +66,7 @@ function BusinessesScreen() {
       {!list && !error && <Skeleton className="h-64 w-full rounded-3xl" />}
       {visible?.length === 0 && <EmptyState icon={<Store />} title="אין עסקים כאן" />}
       <div className="flex flex-col gap-3">
-        {visible?.map((b) => <BusinessRow key={b.id} token={token} business={b} focused={b.id === focus} onChanged={upsert} />)}
+        {visible?.map((b) => <BusinessRow key={b.id} token={token} business={b} focused={b.id === focus} onChanged={upsert} signal={signals.get(b.id)} />)}
       </div>
       <LeadForm token={token} open={adding} onClose={() => setAdding(false)} onAdded={(b) => { upsert(b); setAdding(false); }} />
     </div>

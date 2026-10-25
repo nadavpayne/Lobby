@@ -1,3 +1,4 @@
+import type { StatementCorrection } from "@/lib/disputes/types";
 import type { WeekHours } from "@/lib/offers/hours";
 
 /** Count and money for one time window. */
@@ -62,7 +63,12 @@ export interface BillingMonth {
   period: string;
   redemptions: number;
   gmv: number;
+  /** What the month is charged, including corrections to earlier months carried into it. */
   commission: number;
+  /** Corrections to earlier, already-charged months included in this month's charge (agorot). */
+  adjustmentsAgorot: number;
+  /** Amount corrections (after a resident's report) that changed this month's charge. */
+  corrections: StatementCorrection[];
   /** current = month still running; open = invoiced, unpaid; paid. */
   status: "current" | "open" | "paid";
   paidAt: string | null;
