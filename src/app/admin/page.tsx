@@ -40,7 +40,7 @@ export default function AdminOverviewScreen() {
       <h1 className="text-3xl font-bold">סקירה</h1>
       {o.pendingOffers > 0 && (
         <Link href="/admin/businesses?filter=review" className="flex items-center gap-3 rounded-2xl bg-peach p-4 font-medium shadow-soft">
-          <BadgeCheck aria-hidden className="size-5" /> {o.pendingOffers} הטבות מחכות לאישור שלך
+          <BadgeCheck aria-hidden className="size-5" /> {o.pendingOffers === 1 ? "עסק אחד מחכה לאישור שלך" : `${o.pendingOffers} עסקים מחכים לאישור שלך`}
         </Link>
       )}
       <section aria-label="היקף" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -61,6 +61,7 @@ export default function AdminOverviewScreen() {
           <BarChart
             title="מימושים בכל אחד מששת החודשים האחרונים, החודש הנוכחי בכתום"
             highlightLast
+            showValues
             bars={o.monthly.map((m) => ({ label: m.period, value: m.redemptions, tooltip: `${label(m.period)} · ${m.redemptions} מימושים · עמלה ${formatShekels(m.commission)}`, tick: label(m.period) }))}
           />
         </Card>
@@ -69,6 +70,7 @@ export default function AdminOverviewScreen() {
           <BarChart
             title="דיירים שהצטרפו בכל אחד מששת החודשים האחרונים, החודש הנוכחי בכתום"
             highlightLast
+            showValues
             bars={o.monthly.map((m) => ({ label: m.period, value: m.newResidents, tooltip: `${label(m.period)} · ${m.newResidents} דיירים חדשים`, tick: label(m.period) }))}
           />
         </Card>

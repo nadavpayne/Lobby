@@ -53,7 +53,7 @@ function BusinessesScreen() {
       {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>}
       <ChipRow label="סינון">
         <Chip selected={!filter} onClick={() => setFilter(null)}>הכל {list && `(${list.length})`}</Chip>
-        <Chip selected={filter === "review"} onClick={() => setFilter("review")}>הטבות לאישור ({count("review")})</Chip>
+        <Chip selected={filter === "review"} onClick={() => setFilter("review")}>עסקים מחכים לאישור ({count("review")})</Chip>
         {(["lead", "pending", "active", "paused"] as const).map((s) => <Chip key={s} selected={filter === s} onClick={() => setFilter(s)}>{STAGE_LABEL[s]} ({count(s)})</Chip>)}
       </ChipRow>
       {!list && !error && <Skeleton className="h-64 w-full rounded-3xl" />}
