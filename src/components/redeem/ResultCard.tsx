@@ -4,12 +4,12 @@ import { useState, type FormEvent } from "react";
 import { inputClass } from "@/components/Field";
 import { DetailRow, primaryButton, secondaryButton } from "@/components/ui";
 import { isApiError } from "@/lib/api/http";
-import { redeemCode } from "@/lib/api/terminal";
+import type { RedeemApi } from "@/lib/api/redeemApi";
 import { calcRedemption, formatShekels, parseAmount } from "@/lib/redemptions/money";
 import type { RedeemResult, VerifyResult } from "@/lib/redemptions/types";
 
 interface Props {
-  token: string;
+  api: RedeemApi;
   code: string;
   result: VerifyResult;
   onRedeemed: (result: RedeemResult) => void;
@@ -47,7 +47,7 @@ export function ResultCard({ result, ...props }: Props) {
 }
 
 /** Valid code: shows the resident details, takes the full bill and confirms the redemption. */
-function ValidCode({ token, code, result, onRedeemed, onBack, onUnauthorized }: Omit<Props, "result"> & { result: Extract<VerifyResult, { status: "valid" }> }) {
+function ValidCode({ api, code, result, onRedeemed, onBack, onUnauthorized }: Omit<Props, "result"> & { result: Extract<VerifyResult, { status: "valid" }> }) {
   const [amountText, setAmountText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -59,7 +59,7 @@ function ValidCode({ token, code, result, onRedeemed, onBack, onUnauthorized }: 
     if (amount === null || pending) return;
     setPending(true);
     setError(null);
-    const res = await redeemCode(token, code, amount);
+    const res = await api.redeem(code, amount);
     setPending(false);
     if (!isApiError(res)) return onRedeemed(res);
     if (res.unauthorized) onUnauthorized();

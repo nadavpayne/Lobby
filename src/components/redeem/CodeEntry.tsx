@@ -4,19 +4,19 @@ import { useState, type FormEvent } from "react";
 import { inputClass } from "@/components/Field";
 import { primaryButton, secondaryButton } from "@/components/ui";
 import { isApiError } from "@/lib/api/http";
-import { verifyCode } from "@/lib/api/terminal";
+import type { RedeemApi } from "@/lib/api/redeemApi";
 import { isValidCode, normalizeCode } from "@/lib/codes";
 import { native } from "@/lib/native";
 import type { VerifyResult } from "@/lib/redemptions/types";
 
 interface Props {
-  token: string;
+  api: RedeemApi;
   onResult: (code: string, result: VerifyResult) => void;
   onUnauthorized: () => void;
 }
 
 /** Big 6-digit code field (number keypad) plus QR scan. Checks automatically once 6 digits are in. */
-export function CodeEntry({ token, onResult, onUnauthorized }: Props) {
+export function CodeEntry({ api, onResult, onUnauthorized }: Props) {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -26,7 +26,7 @@ export function CodeEntry({ token, onResult, onUnauthorized }: Props) {
     if (pending || value.length !== 6) return;
     setPending(true);
     setError(null);
-    const res = await verifyCode(token, value);
+    const res = await api.verify(value);
     setPending(false);
     if (!isApiError(res)) return onResult(value, res);
     if (res.unauthorized) onUnauthorized();

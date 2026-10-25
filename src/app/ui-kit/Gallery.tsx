@@ -3,7 +3,7 @@
 import { ChevronLeft, Clock, Coins, MapPin, Receipt, Store, Users } from "lucide-react";
 import { Suspense, useState, type ReactNode } from "react";
 import {
-  Button, Card, CategoryIcon, Chip, ChipRow, DataTable, EmptyState, Logo, Modal, Skeleton, SkeletonCard, StatTile, Tag,
+  BarChart, Button, Card, CategoryIcon, Chip, ChipRow, DataTable, EmptyState, Logo, Modal, Skeleton, SkeletonCard, StatTile, Tag,
   TINT_CYCLE, type Column,
 } from "@/components/ui";
 import { ResidentSamples } from "./ResidentSamples";
@@ -108,6 +108,16 @@ export function Gallery() {
           <StatTile label="לקוחות חדשים" value="37" icon={<Users />} tint="mint" />
           <StatTile label="עמלה לתשלום" value="₪716" tint="navy" hint="לחודש אוקטובר" />
         </div>
+      </Section>
+
+      <Section title="גרף עמודות">
+        <Card className="max-w-2xl">
+          <BarChart
+            title="מימושים ליום, דוגמה"
+            highlightLast
+            bars={[3, 5, 2, 0, 6, 8, 4, 7, 9, 5, 3, 6, 10, 7].map((v, i) => ({ label: `d${i}`, value: v, tooltip: `${i + 12}.10 · ${v} מימושים`, tick: i % 4 === 0 ? `${i + 12}.10` : i === 13 ? "היום" : undefined }))}
+          />
+        </Card>
       </Section>
 
       <Section title="טבלה">

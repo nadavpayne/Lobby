@@ -16,8 +16,13 @@ export function HeroBanner({ offers }: { offers: ResidentOffer[] }) {
   const track = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
 
-  /** Scrolls a slide into view (RTL-safe: uses the slide element, not scroll math). */
-  const go = (i: number) => track.current?.children[i]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+  /** Scrolls the banner (only it, never the page) to slide i. In RTL, scrollLeft runs from 0 to negative. */
+  const go = (i: number) => {
+    const el = track.current;
+    if (!el) return;
+    const rtl = getComputedStyle(el).direction === "rtl";
+    el.scrollTo({ left: (rtl ? -1 : 1) * i * el.clientWidth, behavior: "smooth" });
+  };
 
   useEffect(() => {
     if (offers.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;

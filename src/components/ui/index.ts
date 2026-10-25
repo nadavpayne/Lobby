@@ -1,5 +1,6 @@
 // Lobby design system: one component library for the resident app, the business CRM and the admin CRM.
 // Directional icons (arrows, chevrons) get className "rtl:-scale-x-100" so they point the right way.
+export { BarChart, type Bar } from "./BarChart";
 export { Button, buttonClass, primaryButton, secondaryButton } from "./Button";
 export { Card } from "./Card";
 export { CategoryIcon } from "./CategoryIcon";

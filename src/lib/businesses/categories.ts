@@ -17,3 +17,9 @@ export const CATEGORIES = {
 } as const;
 
 export type Category = keyof typeof CATEGORIES;
+
+/** Icon per category (same names as the categories table's icon column), for previews outside the resident feed. */
+export const CATEGORY_ICONS: Record<Category, string> = {
+  food: "utensils", grocery: "shopping-basket", bakery: "croissant", beauty: "sparkles", fitness: "dumbbell",
+  health: "heart-pulse", pets: "paw-print", services: "wrench", home: "sofa", kids: "baby", other: "store",
+};

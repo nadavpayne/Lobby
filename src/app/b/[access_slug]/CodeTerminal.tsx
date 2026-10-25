@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { CodeEntry } from "@/components/redeem/CodeEntry";
+import { RedeemedCard } from "@/components/redeem/RedeemedCard";
+import { ResultCard } from "@/components/redeem/ResultCard";
+import { terminalRedeemApi } from "@/lib/api/redeemApi";
 import { STATUS_NOTICE } from "@/lib/businesses/statusNotice";
 import type { RedeemResult, VerifyResult } from "@/lib/redemptions/types";
 import type { Session } from "./BusinessTerminal";
-import { CodeEntry } from "./CodeEntry";
 import { DemoReset } from "./DemoReset";
-import { RedeemedCard } from "./RedeemedCard";
-import { ResultCard } from "./ResultCard";
 
 type Step =
   | { kind: "code" }
@@ -18,6 +19,7 @@ type Step =
 export function CodeTerminal({ session, onLogout }: { session: Session; onLogout: () => void }) {
   const [step, setStep] = useState<Step>({ kind: "code" });
   const next = () => setStep({ kind: "code" });
+  const api = useMemo(() => terminalRedeemApi(session.token), [session.token]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -31,11 +33,11 @@ export function CodeTerminal({ session, onLogout }: { session: Session; onLogout
       {session.status !== "active" && <p className="rounded-xl bg-amber/20 p-4">{STATUS_NOTICE[session.status]}</p>}
 
       {step.kind === "code" && (
-        <CodeEntry token={session.token} onUnauthorized={onLogout} onResult={(code, result) => setStep({ kind: "result", code, result })} />
+        <CodeEntry api={api} onUnauthorized={onLogout} onResult={(code, result) => setStep({ kind: "result", code, result })} />
       )}
       {step.kind === "result" && (
         <ResultCard
-          token={session.token}
+          api={api}
           code={step.code}
           result={step.result}
           onUnauthorized={onLogout}

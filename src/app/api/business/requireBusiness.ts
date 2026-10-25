@@ -1,5 +1,4 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { WINDOW_MINUTES } from "@/lib/businesses/attempts";
 import { getBusinessFromRequest, type Business } from "@/lib/businesses/auth";
 import { STATUS_NOTICE } from "@/lib/businesses/statusNotice";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -12,7 +11,3 @@ export async function requireActiveBusiness(request: Request): Promise<{ db: Sup
   if (business.status !== "active") return Response.json({ error: STATUS_NOTICE[business.status] }, { status: 403 });
   return { db, business };
 }
-
-/** 429 response after too many wrong codes. */
-export const tooManyCodes = () =>
-  Response.json({ error: `יותר מדי קודים שגויים. נסו שוב בעוד ${WINDOW_MINUTES} דקות.` }, { status: 429 });
