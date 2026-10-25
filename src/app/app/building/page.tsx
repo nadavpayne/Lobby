@@ -6,6 +6,7 @@ import { buttonClass, Card, DetailRow, StatTile } from "@/components/ui";
 import { useResident } from "../ResidentGate";
 import { Approvals } from "./Approvals";
 import { BuildingStatsCard } from "./BuildingStatsCard";
+import { NotificationsCard } from "./NotificationsCard";
 
 /** "0521234567" → "972521234567" for wa.me links. */
 const whatsappNumber = (phone: string) => phone.replace(/\D/g, "").replace(/^0/, "972");
@@ -22,6 +23,7 @@ export default function BuildingScreen() {
         <h1 className="text-3xl font-bold">{building.name ?? "הבניין"}</h1>
         <p className="text-navy/70">{building.address}, {building.city}</p>
       </div>
+      <NotificationsCard token={token} />
       <Approvals token={token} isCommittee={isCommittee} />
       {building.neighbors !== undefined && (
         <StatTile tint="lilac" icon={<Users />} label="שכנים בלובי" value={building.neighbors} hint="חשבונות פעילים בבניין, כולל שלכם" />

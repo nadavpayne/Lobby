@@ -1,18 +1,30 @@
 "use client";
 
-import { Store } from "lucide-react";
+import { Building2, LayoutDashboard, Megaphone, ReceiptText, Store, Ticket, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import { RoleGate, useAccount } from "@/components/auth/RoleGate";
 import { CrmShell } from "@/components/shell/CrmShell";
 import type { NavItem } from "@/components/shell/types";
+import { GlobalSearch } from "./GlobalSearch";
 
-// Grows with part 5 (overview, buildings, residents, redemptions, billing, content).
-const NAV: NavItem[] = [{ href: "/admin", label: "עסקים", icon: Store }];
+const NAV: NavItem[] = [
+  { href: "/admin", label: "סקירה", icon: LayoutDashboard },
+  { href: "/admin/buildings", label: "בניינים", icon: Building2 },
+  { href: "/admin/businesses", label: "עסקים", icon: Store },
+  { href: "/admin/residents", label: "דיירים", icon: Users },
+  { href: "/admin/redemptions", label: "מימושים", icon: Ticket },
+  { href: "/admin/billing", label: "חיובים", icon: ReceiptText },
+  { href: "/admin/content", label: "תוכן", icon: Megaphone },
+];
 
-/** The CRM frame once an admin is signed in. */
+/** The CRM frame once an admin is signed in, with global search in the top bar. */
 function Frame({ children }: { children: ReactNode }) {
-  const { email, signOut } = useAccount();
-  return <CrmShell appName="ניהול" nav={NAV} account={email} onSignOut={signOut}>{children}</CrmShell>;
+  const { token, email, signOut } = useAccount();
+  return (
+    <CrmShell appName="ניהול לובי" nav={NAV} account={email} onSignOut={signOut} topBar={<GlobalSearch token={token} />}>
+      {children}
+    </CrmShell>
+  );
 }
 
 /** Admin app: admin accounts only, inside the shared CRM shell. */

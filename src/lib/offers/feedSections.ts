@@ -1,7 +1,7 @@
-import type { ResidentOffer } from "./types";
+import type { Feed, ResidentOffer } from "./types";
 
 export interface FeedSection {
-  key: "hot" | "new" | "near" | "upcoming" | "permanent";
+  key: "featured" | "hot" | "new" | "near" | "upcoming" | "permanent";
   title: string;
   offers: ResidentOffer[];
 }
@@ -15,6 +15,7 @@ export function feedSections(offers: ResidentOffer[], now = new Date()): FeedSec
   const newSince = now.getTime() - NEW_DAYS * 24 * 60 * 60 * 1000;
 
   const sections: FeedSection[] = [
+    { key: "featured", title: "מומלצות", offers: live.filter((o) => o.featured) },
     { key: "hot", title: "החמות ביותר", offers: live.filter((o) => o.recentRedemptions > 0).sort((a, b) => b.recentRedemptions - a.recentRedemptions) },
     { key: "new", title: "חדש בלובי", offers: live.filter((o) => Date.parse(o.joinedAt) >= newSince).sort((a, b) => Date.parse(b.joinedAt) - Date.parse(a.joinedAt)) },
     { key: "near", title: "ליד הבניין", offers: live.filter((o) => o.distanceMeters !== null).sort((a, b) => a.distanceMeters! - b.distanceMeters!) },
@@ -28,4 +29,26 @@ export function feedSections(offers: ResidentOffer[], now = new Date()): FeedSec
 export function heroOffers(offers: ResidentOffer[]): ResidentOffer[] {
   const live = offers.filter((o) => o.state !== "upcoming");
   return [...live].sort((a, b) => b.recentRedemptions - a.recentRedemptions).slice(0, 3);
+}
+
+/** One slide of the home hero. */
+export interface HeroSlide {
+  key: string;
+  badge: string;
+  kicker: string | null;
+  title: string;
+  href: string | null;
+  imageUrl: string | null;
+}
+
+/** Hero slides: the operator's banners when there are any, otherwise the 3 hottest offers. */
+export function heroSlides(feed: Pick<Feed, "offers" | "banners">): HeroSlide[] {
+  if (feed.banners.length > 0) {
+    return feed.banners.map((b) => ({
+      key: b.id, badge: "✨ חדש בלובי", kicker: b.subtitle, title: b.title, href: b.businessId && `/app/b/${b.businessId}`, imageUrl: b.imageUrl,
+    }));
+  }
+  return heroOffers(feed.offers).map((o) => ({
+    key: o.businessId, badge: "🔥 הכי מבוקש בבניינים", kicker: o.businessName, title: o.title, href: `/app/b/${o.businessId}`, imageUrl: null,
+  }));
 }

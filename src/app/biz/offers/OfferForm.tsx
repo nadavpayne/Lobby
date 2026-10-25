@@ -45,7 +45,7 @@ function previewOf(f: Form, businessName: string): ResidentOffer {
     coverUrl: f.imageUrl.startsWith("https://") ? f.imageUrl : null, lat: null, lng: null, hours: null, branches: [],
     title: f.title || "כותרת ההטבה", discountPercent: Number(f.discountPercent) || 0, description: f.description, terms: f.terms || null,
     startsAt: f.startsOn ? `${f.startsOn}T00:00:00Z` : null, endsAt: f.endsOn ? `${f.endsOn}T12:00:00Z` : null,
-    joinedAt: new Date().toISOString(), distanceMeters: null, recentRedemptions: 0, remaining: null,
+    joinedAt: new Date().toISOString(), distanceMeters: null, featured: false, recentRedemptions: 0, remaining: null,
     state: f.startsOn && f.startsOn > today ? "upcoming" : "available",
   };
 }

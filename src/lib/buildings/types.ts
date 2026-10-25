@@ -1,5 +1,5 @@
 export type MemberRole = "resident" | "committee";
-export type MemberStatus = "active" | "pending";
+export type MemberStatus = "active" | "pending" | "blocked";
 
 /** The signed-in user's building as the app shows it. inviteUrl is only given to the committee; the optional fields come from GET /api/me/building. */
 export interface MyBuilding {

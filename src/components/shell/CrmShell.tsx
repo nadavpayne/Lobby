@@ -22,7 +22,7 @@ export function CrmShell({ appName, nav, account, onSignOut, topBar, children }:
     <div className="flex min-h-dvh">
       <SideNav items={nav} appName={appName} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-navy/10 bg-cream/90 px-4 pt-safe pb-3 backdrop-blur md:px-8">
+        <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-navy/10 bg-cream/90 px-4 pt-safe pb-3 backdrop-blur md:px-8 print:hidden">
           <Logo className="size-8 md:hidden" />
           <div className="min-w-0 flex-1">{topBar}</div>
           {account && <span className="hidden truncate text-sm text-navy/70 sm:block">{account}</span>}

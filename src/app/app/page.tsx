@@ -7,7 +7,7 @@ import { Carousel } from "@/components/resident/Carousel";
 import { HeroBanner } from "@/components/resident/HeroBanner";
 import { SavingsCounter } from "@/components/resident/SavingsCounter";
 import { CategoryIcon, ChipRow, EmptyState, Skeleton, SkeletonCard } from "@/components/ui";
-import { feedSections, heroOffers } from "@/lib/offers/feedSections";
+import { feedSections, heroSlides } from "@/lib/offers/feedSections";
 import { useFeed } from "@/lib/offers/useFeed";
 import { useResident } from "./ResidentGate";
 
@@ -39,7 +39,7 @@ export default function HomeScreen() {
 
   return (
     <div className="flex animate-pop-in flex-col gap-6">
-      <HeroBanner offers={heroOffers(feed.offers)} />
+      <HeroBanner slides={heroSlides(feed)} />
       <SavingsCounter saved={feed.savedTotal} />
       <ChipRow label="קטגוריות">
         {feed.categories.map((c) => (

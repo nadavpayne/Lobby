@@ -9,7 +9,7 @@ import { isCurrent, type NavItem } from "./types";
 export function SideNav({ items, appName }: { items: NavItem[]; appName: string }) {
   const path = usePathname();
   return (
-    <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col gap-6 bg-navy p-4 text-cream md:flex">
+    <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col gap-6 bg-navy p-4 text-cream md:flex print:hidden">
       <div className="flex items-center gap-2 pt-2">
         <Logo className="size-10" tone="dark" />
         <div dir="ltr" className="flex flex-col text-start leading-tight">

@@ -26,6 +26,8 @@ export interface ResidentOffer {
   joinedAt: string;
   /** From my building; null when either address has no coordinates. */
   distanceMeters: number | null;
+  /** Starred by the Lobby operator (drives "מומלצות"). */
+  featured: boolean;
   /** Redeemed in the last 30 days, all buildings (drives "החמות ביותר"). */
   recentRedemptions: number;
   /** Left for this building when the offer has a quantity limit, else null. */
@@ -43,9 +45,21 @@ export interface FeedCategory {
   icon: string;
 }
 
+/** A hero banner set by the Lobby operator. */
+export interface FeedBanner {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  imageUrl: string | null;
+  /** Opens this business's page when tapped. */
+  businessId: string | null;
+}
+
 /** Everything the resident home feed needs in one response. */
 export interface Feed {
   offers: ResidentOffer[];
+  /** Operator banners for my city; empty = show the hottest offers instead. */
+  banners: FeedBanner[];
   categories: FeedCategory[];
   /** What my apartment saved since joining. */
   savedTotal: number;

@@ -17,6 +17,7 @@ interface OfferRow {
   ends_at: string | null;
   active: boolean;
   approved_at: string | null;
+  featured: boolean;
 }
 
 export interface BusinessWithOffers {
@@ -43,7 +44,7 @@ export async function findBusinesses(db: SupabaseClient, m: Membership, business
     .from("businesses")
     .select(
       "id, name, category, address, description, logo_url, cover_url, lat, lng, hours, created_at, " +
-        "offers(id, title, discount_percent, description, terms, quantity_limit, starts_at, ends_at, active, approved_at), branches(name, address)",
+        "offers(id, title, discount_percent, description, terms, quantity_limit, starts_at, ends_at, active, approved_at, featured), branches(name, address)",
     )
     .eq("status", "active")
     .eq("city", m.building.city)
@@ -157,6 +158,7 @@ export async function listOffers(db: SupabaseClient, m: Membership): Promise<Res
       endsAt: offer.ends_at,
       joinedAt: b.created_at,
       distanceMeters: home && b.lat !== null && b.lng !== null ? distanceMeters(home, { lat: b.lat, lng: b.lng }) : null,
+      featured: offer.featured,
       recentRedemptions: recent.get(b.id) ?? 0,
       remaining,
       state,

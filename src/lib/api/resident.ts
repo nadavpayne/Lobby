@@ -1,3 +1,4 @@
+import type { ResidentNotification } from "@/lib/buildings/notifications";
 import type { CodeHistory, Feed, IssuedCode } from "@/lib/offers/types";
 import { apiFetch } from "./http";
 
@@ -9,3 +10,6 @@ export const requestCode = (token: string, businessId: string) => apiFetch<Issue
 
 /** My apartment's codes and savings. */
 export const fetchCodeHistory = (token: string) => apiFetch<CodeHistory>("/api/me/codes", { token });
+
+/** Lobby announcements for my building, city or everyone. */
+export const fetchNotifications = (token: string) => apiFetch<ResidentNotification[]>("/api/me/notifications", { token });

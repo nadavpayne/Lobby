@@ -8,12 +8,13 @@ import { isCurrent, type NavItem } from "./types";
 export function BottomNav({ items, className = "" }: { items: NavItem[]; className?: string }) {
   const path = usePathname();
   return (
-    <nav aria-label="ניווט באפליקציה" className={`fixed inset-x-0 bottom-0 z-20 border-t border-navy/10 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur ${className}`}>
-      <ul className="mx-auto flex max-w-lg">
+    <nav aria-label="ניווט באפליקציה" className={`fixed inset-x-0 bottom-0 z-20 border-t border-navy/10 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur print:hidden ${className}`}>
+      {/* More than 5 items (admin) scroll sideways instead of squeezing. */}
+      <ul className={`mx-auto flex max-w-lg ${items.length > 5 ? "no-scrollbar overflow-x-auto" : ""}`}>
         {items.map(({ href, label, icon: Icon }) => {
           const current = isCurrent(path, href, items[0].href);
           return (
-            <li key={href} className="flex-1">
+            <li key={href} className={`flex-1 ${items.length > 5 ? "min-w-[4.5rem]" : ""}`}>
               <Link
                 href={href}
                 aria-current={current ? "page" : undefined}

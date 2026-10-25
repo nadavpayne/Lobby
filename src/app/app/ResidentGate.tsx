@@ -88,6 +88,9 @@ function useGate(): Gate {
       </Blocked>,
     );
   }
+  if (building.status === "blocked") {
+    return blocked(<Blocked title="החשבון חסום" onSignOut={signOut}>החשבון הזה הושעה על ידי צוות לובי. לפרטים פנו אלינו.</Blocked>);
+  }
   if (building.status === "pending") {
     return blocked(
       <Blocked title="ממתינים לאישור" onSignOut={signOut}>

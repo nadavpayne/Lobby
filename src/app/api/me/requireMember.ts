@@ -10,6 +10,7 @@ export async function requireMember(request: Request): Promise<{ db: SupabaseCli
   if (!user) return Response.json({ error: "צריך להתחבר" }, { status: 401 });
   const m = await getMembership(db, user.id);
   if (!m) return Response.json({ error: "החשבון לא משויך לבניין" }, { status: 403 });
+  if (m.status === "blocked") return Response.json({ error: "החשבון חסום. לפרטים פנו לצוות לובי." }, { status: 403 });
   if (m.status !== "active") return Response.json({ error: "החשבון ממתין לאישור" }, { status: 403 });
   if (!m.building.active) return Response.json({ error: "הבניין לא פעיל כרגע בלובי" }, { status: 403 });
   return { db, userId: user.id, m };

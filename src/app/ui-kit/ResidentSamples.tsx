@@ -5,6 +5,7 @@ import { Carousel } from "@/components/resident/Carousel";
 import { HeroBanner } from "@/components/resident/HeroBanner";
 import { HoursList } from "@/components/resident/HoursList";
 import { SavingsCounter } from "@/components/resident/SavingsCounter";
+import { heroSlides } from "@/lib/offers/feedSections";
 import type { FeedCategory, ResidentOffer } from "@/lib/offers/types";
 
 // Sample data for the gallery only.
@@ -17,7 +18,7 @@ const HOURS = { sun: [["08:00", "21:00"]], mon: [["08:00", "21:00"]], fri: [["08
 /** A sample offer with overrides. */
 const sample = (id: string, o: Partial<ResidentOffer>): ResidentOffer => ({
   businessId: id, businessName: "פיצה מרגריטה", category: "food", address: "רוטשילד 60", businessDescription: null, logoUrl: null,
-  coverUrl: null, lat: null, lng: null, hours: HOURS, branches: [], title: "10% הנחה על כל התפריט", discountPercent: 10,
+  coverUrl: null, lat: null, lng: null, hours: HOURS, branches: [], title: "10% הנחה על כל התפריט", discountPercent: 10, featured: false,
   description: "", terms: null, startsAt: null, endsAt: null, joinedAt: "2026-07-01T00:00:00Z", distanceMeters: 113,
   recentRedemptions: 13, remaining: null, state: "available", ...o,
 });
@@ -34,7 +35,7 @@ const OFFERS = [
 export function ResidentSamples() {
   return (
     <div className="flex max-w-lg flex-col gap-6">
-      <HeroBanner offers={OFFERS.slice(0, 3)} />
+      <HeroBanner slides={heroSlides({ offers: OFFERS, banners: [] })} />
       <SavingsCounter saved={115.3} />
       <Carousel title="החמות ביותר" moreHref="/ui-kit">
         {OFFERS.map((o) => <BenefitCard key={o.businessId} offer={o} categories={CATEGORIES} />)}
