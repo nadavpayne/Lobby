@@ -96,7 +96,7 @@ export function JoinForm() {
 
       <fieldset className="flex flex-col gap-4">
         <legend className="mb-3 text-xl font-bold">ההטבה לדיירים</legend>
-        <Field label="אחוז הנחה" hint="לפחות 10%" error={errors.discountPercent}>
+        <Field label="אחוז הנחה" error={errors.discountPercent}>
           <input {...control("discountPercent")} type="number" inputMode="numeric" min={10} max={50} defaultValue={10} dir="ltr" />
         </Field>
         <Field label="תיאור ההטבה" error={errors.description}>
