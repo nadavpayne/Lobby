@@ -4,6 +4,7 @@ import { LayoutDashboard, ListChecks, Megaphone, ReceiptText, ScanLine, Store, U
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { RoleGate, useAccount } from "@/components/auth/RoleGate";
 import { CrmShell } from "@/components/shell/CrmShell";
+import { Loading } from "@/components/ui";
 import type { NavItem } from "@/components/shell/types";
 import { fetchMyBusiness, type MyBusiness } from "@/lib/api/biz";
 import { isApiError } from "@/lib/api/http";
@@ -57,7 +58,7 @@ function Frame({ children }: { children: ReactNode }) {
   return (
     <CrmShell appName="העסק שלי" nav={NAV} account={business?.name} onSignOut={signOut}>
       {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>}
-      {!business && !error && <p className="pt-10 text-center text-lg text-navy/70">טוען…</p>}
+      {!business && !error && <Loading />}
       {business && (
         <BizContext.Provider value={{ token, business, signOut, setLogo: (logoUrl) => setBusiness({ ...business, logoUrl }) }}>
           {business.status !== "active" && <p className="mb-4 rounded-2xl bg-peach p-4">{STATUS_NOTICE[business.status]}</p>}

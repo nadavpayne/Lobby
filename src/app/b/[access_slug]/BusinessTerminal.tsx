@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { secondaryButton } from "@/components/ui";
+import { secondaryButton, Loading } from "@/components/ui";
 import { isApiError, type ApiError } from "@/lib/api/http";
 import { fetchBusiness } from "@/lib/api/terminal";
 import { clearToken, loadToken, saveToken } from "@/lib/businesses/tokenStore";
@@ -56,7 +56,7 @@ export function BusinessTerminal({ slug }: { slug: string }) {
       </div>
     );
   }
-  if (session === undefined) return <p className="pt-10 text-center text-lg text-navy/70">טוען…</p>;
+  if (session === undefined) return <Loading />;
   if (!session) {
     return (
       <PinForm

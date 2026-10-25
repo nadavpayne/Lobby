@@ -1,13 +1,14 @@
 "use client";
 
 import { EmailCodeLogin } from "@/components/auth/EmailCodeLogin";
+import { Loading } from "@/components/ui";
 import type { InviteBuilding } from "@/lib/buildings/inviteBuilding";
 import { useMyBuilding } from "@/lib/buildings/useMyBuilding";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
 import { ApartmentForm } from "./ApartmentForm";
 import { JoinStatus } from "./JoinStatus";
 
-const loading = <p className="pt-10 text-center text-lg text-navy/70">טוען…</p>;
+const loading = <Loading />;
 
 /** Invite flow: sign in with email → pick apartment → active or waiting for approval. */
 export function JoinBuilding({ inviteSlug, building }: { inviteSlug: string; building: InviteBuilding }) {

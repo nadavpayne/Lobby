@@ -1,12 +1,13 @@
 "use client";
 
 import { EmailCodeLogin } from "@/components/auth/EmailCodeLogin";
+import { Loading } from "@/components/ui";
 import { useMyBuilding } from "@/lib/buildings/useMyBuilding";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
 import { BuildingForm } from "./BuildingForm";
 import { InviteLink } from "./InviteLink";
 
-const loading = <p className="pt-10 text-center text-lg text-navy/70">טוען…</p>;
+const loading = <Loading />;
 
 /** Sign in, then: already in a building → show it (invite link for the committee); otherwise the registration form. */
 export function RegisterBuilding() {

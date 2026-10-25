@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import { Loading } from "@/components/ui";
 import { getBuildingByInvite } from "@/lib/buildings/inviteBuilding";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { JoinBuilding } from "./JoinBuilding";
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
   referrer: "no-referrer", // the URL is the building's private invite link
 };
 
-const loading = <p className="pt-10 text-center text-lg text-navy/70">טוען…</p>;
+const loading = <Loading />;
 
 /** /i/[invite_slug] — residents join their building. Path is a future universal/app link: keep it stable. */
 export default function InvitePage({ params }: PageProps<"/i/[invite_slug]">) {

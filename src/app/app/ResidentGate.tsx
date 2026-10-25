@@ -7,7 +7,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { EmailCodeLogin } from "@/components/auth/EmailCodeLogin";
 import { ResidentShell } from "@/components/shell/ResidentShell";
 import type { NavItem } from "@/components/shell/types";
-import { secondaryButton } from "@/components/ui";
+import { secondaryButton, Loading } from "@/components/ui";
 import type { MyBuilding } from "@/lib/buildings/types";
 import { useMyBuilding } from "@/lib/buildings/useMyBuilding";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
@@ -35,7 +35,7 @@ export function useResident(): Resident {
   return resident;
 }
 
-const loading = <p className="pt-10 text-center text-lg text-navy/70">טוען…</p>;
+const loading = <Loading />;
 
 /** Plain header + content column for the screens before the app opens (login, waiting, errors). */
 function Frame({ children }: { children: ReactNode }) {

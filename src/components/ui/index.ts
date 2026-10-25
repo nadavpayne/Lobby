@@ -8,6 +8,7 @@ export { Chip, ChipRow } from "./Chip";
 export { DataTable, type Column } from "./DataTable";
 export { DetailRow } from "./DetailRow";
 export { EmptyState } from "./EmptyState";
+export { Loading } from "./Loading";
 export { Logo } from "./Logo";
 export { Modal } from "./Modal";
 export { Skeleton, SkeletonCard } from "./Skeleton";

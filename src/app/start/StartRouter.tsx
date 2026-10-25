@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { EmailCodeLogin } from "@/components/auth/EmailCodeLogin";
-import { buttonClass } from "@/components/ui";
+import { buttonClass, Loading } from "@/components/ui";
 import { useRoles } from "@/lib/auth/useRoles";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
 
@@ -18,7 +18,7 @@ export function StartRouter() {
     if (home) router.replace(home);
   }, [home, router]);
 
-  const loading = <p className="pt-10 text-center text-lg text-navy/70">טוען…</p>;
+  const loading = <Loading />;
   if (!supabase || session === undefined) return loading;
   if (!session) {
     // Creating accounts is allowed so a business owner from /join can sign in the first time;

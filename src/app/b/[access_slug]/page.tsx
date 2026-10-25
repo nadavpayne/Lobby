@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import { Loading } from "@/components/ui";
 import { BusinessTerminal } from "./BusinessTerminal";
 
 export const metadata: Metadata = {
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   referrer: "no-referrer", // the URL itself is the business's secret link
 };
 
-const loading = <p className="pt-10 text-center text-lg text-navy/70">טוען…</p>;
+const loading = <Loading />;
 
 /** /b/[access_slug] — business verification terminal. Path is a future universal/app link: keep it stable. */
 export default function TerminalPage({ params }: PageProps<"/b/[access_slug]">) {

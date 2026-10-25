@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { createContext, useContext, type ReactNode } from "react";
 import { AppHeader } from "@/components/AppHeader";
-import { buttonClass } from "@/components/ui";
+import { buttonClass, Loading } from "@/components/ui";
 import { canOpen, type AppHome } from "@/lib/auth/homeFor";
 import { useRoles } from "@/lib/auth/useRoles";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
@@ -49,7 +49,7 @@ interface Props {
 export function RoleGate({ app, loginTitle, allowSignUp = false, children }: Props) {
   const { supabase, session } = useSupabaseSession();
   const { roles, error } = useRoles(supabase, session?.access_token);
-  const loading = <p className="pt-10 text-center text-lg text-navy/70">טוען…</p>;
+  const loading = <Loading />;
 
   if (!supabase) return <Frame><p role="alert">Supabase לא מוגדר: מלאו את המפתחות ב-.env.local.</p></Frame>;
   if (session === undefined) return <Frame>{loading}</Frame>;
