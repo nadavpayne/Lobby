@@ -7,7 +7,7 @@ const STEPS = [
 /** Three-step explanation of the flow. Phones swipe through the steps sideways (the next card peeks in); desktop shows three columns. */
 export function HowItWorks() {
   return (
-    <section id="how" className="scroll-mt-36 bg-white py-14">
+    <section id="how" className="scroll-mt-36 bg-linear-to-b from-cream via-white to-cream py-14">
       <div className="mx-auto max-w-5xl px-4">
         <h2 className="mb-8 text-3xl font-bold">איך זה עובד</h2>
         <ol className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0">
