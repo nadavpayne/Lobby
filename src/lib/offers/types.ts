@@ -9,6 +9,9 @@ export interface ResidentOffer {
   businessId: string;
   businessName: string;
   category: string;
+  /** Taxonomy IDs (1–2 of the category's subcategories, any tags): search matches their labels. */
+  subcategories: string[];
+  tags: string[];
   address: string;
   businessDescription: string | null;
   logoUrl: string | null;

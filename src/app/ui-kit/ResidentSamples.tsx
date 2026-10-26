@@ -17,7 +17,7 @@ const HOURS = { sun: [["08:00", "21:00"]], mon: [["08:00", "21:00"]], fri: [["08
 
 /** A sample offer with overrides. */
 const sample = (id: string, o: Partial<ResidentOffer>): ResidentOffer => ({
-  businessId: id, businessName: "פיצה מרגריטה", category: "food", address: "רוטשילד 60", businessDescription: null, logoUrl: null,
+  businessId: id, businessName: "פיצה מרגריטה", category: "food", subcategories: [], tags: [], address: "רוטשילד 60", businessDescription: null, logoUrl: null,
   coverUrl: null, lat: null, lng: null, hours: HOURS, branches: [], title: "10% הנחה על כל התפריט", discountPercent: 10, featured: false,
   description: "", terms: null, startsAt: null, endsAt: null, joinedAt: "2026-07-01T00:00:00Z", distanceMeters: 113, withinRadius: true,
   recentRedemptions: 13, remaining: null, state: "available", ...o,

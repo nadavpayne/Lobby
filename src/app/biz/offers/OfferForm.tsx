@@ -42,7 +42,7 @@ function initial(offer: BizOffer | null, category: string): Form {
 function previewOf(f: Form, businessName: string, logoUrl: string | null): ResidentOffer {
   const today = new Date().toISOString().slice(0, 10);
   return {
-    businessId: "preview", businessName, category: f.category, address: "", businessDescription: null, logoUrl,
+    businessId: "preview", businessName, category: f.category, subcategories: [], tags: [], address: "", businessDescription: null, logoUrl,
     coverUrl: null, lat: null, lng: null, hours: null, branches: [],
     title: f.title || "כותרת ההטבה", discountPercent: Number(f.discountPercent) || 0, description: f.description, terms: f.terms || null,
     startsAt: f.startsOn ? `${f.startsOn}T00:00:00Z` : null, endsAt: f.endsOn ? `${f.endsOn}T12:00:00Z` : null,

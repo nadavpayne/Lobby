@@ -24,6 +24,8 @@ export interface BusinessWithOffers {
   id: string;
   name: string;
   category: string;
+  subcategories: string[];
+  tags: string[];
   address: string;
   description: string | null;
   logo_url: string | null;
@@ -45,7 +47,7 @@ export async function findBusinesses(db: SupabaseClient, m: Membership, business
   let query = db
     .from("businesses")
     .select(
-      "id, name, category, address, description, logo_url, cover_url, lat, lng, hours, created_at, " +
+      "id, name, category, subcategories, tags, address, description, logo_url, cover_url, lat, lng, hours, created_at, " +
         "offers(id, title, discount_percent, description, terms, quantity_limit, starts_at, ends_at, active, approved_at, featured), branches(name, address)",
     )
     .eq("status", "active")
@@ -133,6 +135,8 @@ export async function listOffers(db: SupabaseClient, m: Membership): Promise<Res
       businessId: b.id,
       businessName: b.name,
       category: b.category,
+      subcategories: b.subcategories ?? [],
+      tags: b.tags ?? [],
       address: b.address,
       businessDescription: b.description,
       logoUrl: b.logo_url,

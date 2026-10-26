@@ -5,10 +5,11 @@ import Link from "next/link";
 import { PullToRefresh } from "@/components/native/PullToRefresh";
 import { PushPrompt } from "@/components/native/PushPrompt";
 import { BenefitCard } from "@/components/resident/BenefitCard";
+import { BenefitSearch } from "@/components/resident/BenefitSearch";
 import { Carousel } from "@/components/resident/Carousel";
 import { HeroBanner } from "@/components/resident/HeroBanner";
 import { SavingsCounter } from "@/components/resident/SavingsCounter";
-import { CategoryIcon, ChipRow, EmptyState, Skeleton, SkeletonCard } from "@/components/ui";
+import { EmptyState, Skeleton, SkeletonCard } from "@/components/ui";
 import { feedSections, heroSlides, type FeedSection } from "@/lib/offers/feedSections";
 import { useFeed } from "@/lib/offers/useFeed";
 import { useResident } from "./ResidentGate";
@@ -30,7 +31,7 @@ function FeedSkeleton() {
   );
 }
 
-/** Home: hero, savings, category chips, and the benefit carousels for my building. */
+/** Home: search and category picker, then hero, savings and the benefit carousels for my building. */
 export default function HomeScreen() {
   const { token, building } = useResident();
   const { feed, error, reload } = useFeed(token);
@@ -48,30 +49,24 @@ export default function HomeScreen() {
   return (
     <div className="flex animate-pop-in flex-col gap-6">
       <PullToRefresh onRefresh={reload} />
-      <HeroBanner slides={heroSlides(feed)} />
-      <SavingsCounter saved={feed.savedTotal} />
-      <PushPrompt token={token} text="נשלח התראה כשעסק ליד הבית מצטרף ללובי, וכשמימוש שלכם הושלם בקופה." />
-      <ChipRow label="קטגוריות">
-        {feed.home && (
+      <BenefitSearch
+        offers={feed.offers}
+        categories={feed.categories}
+        lead={feed.home && (
           <Link href="/app/map" className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-navy px-4 font-medium text-cream transition active:scale-95">
             <MapPin aria-hidden className="size-4" /> ליד הבית
           </Link>
         )}
-        {feed.categories.map((c) => (
-          <Link
-            key={c.slug}
-            href={`/app/categories?c=${c.slug}`}
-            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-navy/15 bg-white px-4 font-medium transition active:scale-95"
-          >
-            <CategoryIcon name={c.icon} /> {c.name}
-          </Link>
+      >
+        <HeroBanner slides={heroSlides(feed)} />
+        <SavingsCounter saved={feed.savedTotal} />
+        <PushPrompt token={token} text="נשלח התראה כשעסק ליד הבית מצטרף ללובי, וכשמימוש שלכם הושלם בקופה." />
+        {feedSections(feed.offers).map((s) => (
+          <Carousel key={s.key} title={s.title} {...MORE[s.key]}>
+            {s.offers.map((o) => <BenefitCard key={o.businessId} offer={o} categories={feed.categories} />)}
+          </Carousel>
         ))}
-      </ChipRow>
-      {feedSections(feed.offers).map((s) => (
-        <Carousel key={s.key} title={s.title} {...MORE[s.key]}>
-          {s.offers.map((o) => <BenefitCard key={o.businessId} offer={o} categories={feed.categories} />)}
-        </Carousel>
-      ))}
+      </BenefitSearch>
     </div>
   );
 }
