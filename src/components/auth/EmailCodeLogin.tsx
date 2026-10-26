@@ -8,7 +8,6 @@ import { primaryButton } from "@/components/ui";
 import { googleEnabled } from "@/lib/auth/authActions";
 import { native } from "@/lib/native";
 import { GoogleButton } from "./GoogleButton";
-import { PasswordLogin } from "./PasswordLogin";
 
 const RESEND_SECONDS = 60; // Supabase's default minimum gap between codes to the same email
 // Must match Supabase → Authentication → Email → "Email OTP Length" (set to 6 in both projects).
@@ -36,7 +35,7 @@ interface Props {
 export function EmailCodeLogin({ supabase, shouldCreateUser, title, subtitle }: Props) {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
-  const [step, setStep] = useState<"email" | "code" | "password">("email");
+  const [step, setStep] = useState<"email" | "code">("email");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [resendIn, setResendIn] = useState(0);
@@ -101,26 +100,8 @@ export function EmailCodeLogin({ supabase, shouldCreateUser, title, subtitle }: 
         </>
       )}
 
-      {step !== "code" && (
-        <div role="tablist" aria-label="דרך הכניסה" className="grid grid-cols-2 rounded-2xl bg-navy/5 p-1">
-          {([["email", "קוד למייל"], ["password", "סיסמה"]] as const).map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              role="tab"
-              aria-selected={step === value}
-              onClick={() => { setStep(value); setError(null); }}
-              className={`min-h-11 rounded-xl font-bold ${step === value ? "bg-white text-navy shadow-soft" : "text-navy/60"}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      )}
 
-      {step === "password" ? (
-        <PasswordLogin supabase={supabase} email={email} onEmailChange={setEmail} />
-      ) : step === "email" ? (
+      {step === "email" ? (
         <form onSubmit={sendCode} className="flex flex-col gap-5">
           <Field label="אימייל" error={error ?? undefined}>
             <input
