@@ -55,13 +55,13 @@ export function BannersCard({ token, banners, businesses, onChanged }: Props) {
   return (
     <Card className="flex flex-col gap-4">
       <h2 className="text-xl font-bold">באנרים בדף הבית</h2>
-      <p className="-mt-3 text-sm text-navy/60">בלי באנר פעיל, הדיירים רואים את ההטבות החמות ביותר.</p>
+      <p className="-mt-3 text-sm text-muted">בלי באנר פעיל, הדיירים רואים את ההטבות החמות ביותר.</p>
       <ul className="flex flex-col gap-2">
         {banners.map((b) => (
           <li key={b.id} className="flex items-center gap-2 rounded-2xl bg-cream p-3">
             <span className="min-w-0 flex-1">
               <span className="block truncate font-medium">{b.title}</span>
-              <span className="block truncate text-sm text-navy/60">{b.subtitle ?? ""}{b.city ? ` · ${b.city}` : " · כל הערים"}</span>
+              <span className="block truncate text-sm text-muted">{b.subtitle ?? ""}{b.city ? ` · ${b.city}` : " · כל הערים"}</span>
             </span>
             {!b.active && <Tag tint="white">כבוי</Tag>}
             <button type="button" aria-label="עריכה" onClick={() => edit(b)} className="grid size-9 place-items-center rounded-lg hover:bg-navy/5"><Pencil aria-hidden className="size-4" /></button>

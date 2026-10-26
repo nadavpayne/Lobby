@@ -24,7 +24,7 @@ export function DataTable<Row>({ columns, rows, rowKey, empty, onRowClick }: Pro
     <div className="overflow-x-auto rounded-3xl bg-white shadow-soft">
       <table className="w-full text-start">
         <thead>
-          <tr className="border-b border-navy/10 text-sm text-navy/60">
+          <tr className="border-b border-navy/10 text-sm text-muted">
             {columns.map((c) => (
               <th key={c.key} scope="col" className={`whitespace-nowrap px-4 py-3 font-medium ${c.align === "end" ? "text-end" : "text-start"}`}>
                 {c.header}

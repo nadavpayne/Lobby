@@ -44,7 +44,7 @@ export function NotificationSettings({ token, audience }: { token: string; audie
           <label key={p.type} className="flex min-h-16 cursor-pointer items-center gap-3 border-b border-navy/10 last:border-0">
             <span className="flex flex-1 flex-col">
               <span className="font-medium">{p.label}</span>
-              <span className="text-sm text-navy/60">{p.hint}</span>
+              <span className="text-sm text-muted">{p.hint}</span>
             </span>
             <input type="checkbox" role="switch" checked={prefs[p.type]} onChange={(e) => toggle(p.type, e.target.checked)} className="size-6 accent-navy" />
           </label>

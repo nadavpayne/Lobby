@@ -51,7 +51,7 @@ export function NotificationPhone() {
               <div className="flex items-center gap-2 text-xs max-md:text-sm">
                 <span className="grid size-5 place-items-center rounded-md bg-amber text-[0.65rem] font-bold text-navy">L</span>
                 <span className="font-bold">לובי · {msg.business}</span>
-                <span className="ms-auto text-navy/50">עכשיו</span>
+                <span className="ms-auto text-muted">עכשיו</span>
               </div>
               <p className="mt-1.5 text-sm leading-snug max-md:text-lg">{msg.text}</p>
             </li>

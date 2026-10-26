@@ -51,12 +51,12 @@ function ResidentsScreen() {
       key: "name", header: "שם", render: (r) => (
         <Link href={`/admin/residents/${r.id}`} className="group font-medium">
           <span className="group-hover:underline">{r.name ?? "ללא שם"}</span>
-          {r.role === "committee" && <span className="ms-1 text-sm text-navy/60">(ועד)</span>}
-          {r.phone && <span dir="ltr" className="block text-sm font-normal text-navy/60">{r.phone}</span>}
+          {r.role === "committee" && <span className="ms-1 text-sm text-muted">(ועד)</span>}
+          {r.phone && <span dir="ltr" className="block text-sm font-normal text-muted">{r.phone}</span>}
         </Link>
       ),
     },
-    { key: "building", header: "בניין", render: (r) => <span>{r.building}<span className="block text-sm text-navy/60">דירה {r.apartment}</span></span> },
+    { key: "building", header: "בניין", render: (r) => <span>{r.building}<span className="block text-sm text-muted">דירה {r.apartment}</span></span> },
     { key: "joined", header: "הצטרף", render: (r) => date.format(new Date(r.joinedAt)) },
     { key: "used", header: "מימושים", align: "end", render: (r) => r.redemptions },
     { key: "saved", header: "חיסכון", align: "end", render: (r) => <bdi dir="ltr">{formatAgorot(r.savedAgorot)}</bdi> },
@@ -89,7 +89,7 @@ function ResidentsScreen() {
       </label>
       {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>}
       {!list && !error && <Skeleton className="h-64 w-full rounded-3xl" />}
-      {list && <p className="text-sm text-navy/60">{list.length === 200 ? "200 התוצאות האחרונות. חפשו כדי לצמצם." : `${list.length} דיירים`}</p>}
+      {list && <p className="text-sm text-muted">{list.length === 200 ? "200 התוצאות האחרונות. חפשו כדי לצמצם." : `${list.length} דיירים`}</p>}
       {list && <DataTable columns={columns} rows={list} rowKey={(r) => r.id} empty={<EmptyState icon={<Users />} title={building && !q ? "עוד אין דיירים בבניין הזה" : "לא נמצאו דיירים"} />} />}
     </div>
   );

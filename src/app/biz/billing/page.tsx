@@ -30,13 +30,13 @@ const COLUMNS: Column<BillingMonth>[] = [
     render: (m) => (
       <span className="font-bold">
         {money(m.commission)}
-        {m.adjustmentsAgorot !== 0 && <span className="block text-sm font-normal text-navy/60">כולל תיקונים <bdi dir="ltr">{formatAgorot(m.adjustmentsAgorot)}</bdi></span>}
+        {m.adjustmentsAgorot !== 0 && <span className="block text-sm font-normal text-muted">כולל תיקונים <bdi dir="ltr">{formatAgorot(m.adjustmentsAgorot)}</bdi></span>}
       </span>
     ),
   },
   {
     key: "status", header: "סטטוס",
-    render: (m) => <span className="inline-flex items-center gap-2"><Tag tint={STATUS[m.status][1]}>{STATUS[m.status][0]}</Tag>{m.paidAt && <span className="text-sm text-navy/60">{paidOn.format(new Date(m.paidAt))}</span>}</span>,
+    render: (m) => <span className="inline-flex items-center gap-2"><Tag tint={STATUS[m.status][1]}>{STATUS[m.status][0]}</Tag>{m.paidAt && <span className="text-sm text-muted">{paidOn.format(new Date(m.paidAt))}</span>}</span>,
   },
 ];
 

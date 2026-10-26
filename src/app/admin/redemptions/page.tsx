@@ -17,7 +17,7 @@ const select = "min-h-11 rounded-xl border border-navy/25 bg-white px-3";
 const COLUMNS: Column<LogRow>[] = [
   { key: "time", header: "זמן", render: (r) => time.format(new Date(r.redeemedAt ?? r.issuedAt)) },
   { key: "business", header: "עסק", render: (r) => <span className="font-medium">{r.business}</span> },
-  { key: "building", header: "בניין", render: (r) => <span>{r.building}<span className="block text-sm text-navy/60">דירה {r.apartment}{r.resident ? ` · ${r.resident}` : ""}</span></span> },
+  { key: "building", header: "בניין", render: (r) => <span>{r.building}<span className="block text-sm text-muted">דירה {r.apartment}{r.resident ? ` · ${r.resident}` : ""}</span></span> },
   { key: "status", header: "סטטוס", render: (r) => <Tag tint={STATUS[r.status][1]}>{STATUS[r.status][0]}</Tag> },
   { key: "amount", header: "חשבון", align: "end", render: (r) => money(r.amount) },
   { key: "discount", header: "הנחה", align: "end", render: (r) => money(r.discount) },

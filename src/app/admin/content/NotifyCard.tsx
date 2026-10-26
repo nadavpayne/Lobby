@@ -46,7 +46,7 @@ export function NotifyCard({ token, sent, cities, buildings, onChanged }: Props)
   return (
     <Card className="flex flex-col gap-4">
       <h2 className="text-xl font-bold">הודעות לדיירים</h2>
-      <p className="-mt-3 text-sm text-navy/60">ההודעה מופיעה בלשונית „הבניין” באפליקציה. התראות פוש יתווספו עם האפליקציה בחנויות.</p>
+      <p className="-mt-3 text-sm text-muted">ההודעה מופיעה בלשונית „הבניין” באפליקציה. התראות פוש יתווספו עם האפליקציה בחנויות.</p>
       <form onSubmit={submit} className="flex flex-col gap-3" noValidate>
         <Field label="כותרת" error={errors.title}><input value={f.title} onChange={set("title")} maxLength={60} className={inputClass} /></Field>
         <Field label="הודעה" error={errors.body}><textarea value={f.body} onChange={set("body")} maxLength={300} rows={3} className={`${inputClass} py-2`} /></Field>
@@ -70,7 +70,7 @@ export function NotifyCard({ token, sent, cities, buildings, onChanged }: Props)
         <ul className="flex flex-col gap-2 border-t border-navy/10 pt-3">
           {sent.map((n) => (
             <li key={n.id} className="rounded-2xl bg-cream p-3">
-              <div className="flex flex-wrap items-center gap-2"><span className="font-medium">{n.title}</span><Tag tint="sky">{audience(n)}</Tag><span className="text-sm text-navy/60">{when.format(new Date(n.createdAt))}</span></div>
+              <div className="flex flex-wrap items-center gap-2"><span className="font-medium">{n.title}</span><Tag tint="sky">{audience(n)}</Tag><span className="text-sm text-muted">{when.format(new Date(n.createdAt))}</span></div>
               <p className="text-sm">{n.body}</p>
             </li>
           ))}

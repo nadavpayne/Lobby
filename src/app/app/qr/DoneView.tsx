@@ -23,11 +23,11 @@ export function DoneView({ authToken, done, onClose }: { authToken: string; done
         <span aria-hidden className="grid size-24 place-items-center rounded-full bg-navy text-white ring-8 ring-amber">
           <Check className="size-12" strokeWidth={2.5} />
         </span>
-        <h1 className="mt-3 text-3xl leading-[38px] font-extrabold">ההטבה מומשה!</h1>
-        <p className="text-[17px]">חסכתם <strong className="font-extrabold">{money(r.discountAgorot)}</strong> ב{done.businessName}</p>
+        <h1 className="mt-3 text-3xl leading-[2.375rem] font-extrabold">ההטבה מומשה!</h1>
+        <p className="text-[1.0625rem]">חסכתם <strong className="font-extrabold">{money(r.discountAgorot)}</strong> ב{done.businessName}</p>
       </div>
 
-      <section className="flex flex-col gap-3 rounded-[28px] bg-white p-5 text-[15px] shadow-lift">
+      <section className="flex flex-col gap-3 rounded-[28px] bg-white p-5 text-[0.9375rem] shadow-lift">
         <div className="flex justify-between"><span className="text-muted">סכום החשבון</span>{money(r.billAgorot)}</div>
         <div className="flex justify-between"><span className="text-muted">הנחת Lobby (<bdi dir="ltr">{r.discountRate}%</bdi>)</span><span className="font-bold">−{money(r.discountAgorot)}</span></div>
         <div className="h-px bg-hairline" />

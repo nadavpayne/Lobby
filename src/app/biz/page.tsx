@@ -87,7 +87,7 @@ export default function BizDashboardScreen() {
         </Card>
         <Card className="flex flex-col gap-3">
           <h2 className="text-lg font-bold">הבניינים שמביאים לקוחות</h2>
-          <p className="-mt-2 text-sm text-navy/60">90 הימים האחרונים</p>
+          <p className="-mt-2 text-sm text-muted">90 הימים האחרונים</p>
           {data.topBuildings.length === 0 && <p className="text-navy/70">עוד אין מימושים.</p>}
           <ul className="flex flex-col gap-3">
             {data.topBuildings.map((b) => (

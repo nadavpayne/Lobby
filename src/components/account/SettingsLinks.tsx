@@ -33,7 +33,7 @@ export function SettingsLinks({ base }: { base: "/app" | "/biz" }) {
           </Link>
         </details>
       </Card>
-      <p className="text-center text-sm text-navy/50">לובי · גרסה <bdi dir="ltr">{process.env.NEXT_PUBLIC_APP_VERSION}</bdi></p>
+      <p className="text-center text-sm text-muted">לובי · גרסה <bdi dir="ltr">{process.env.NEXT_PUBLIC_APP_VERSION}</bdi></p>
     </>
   );
 }

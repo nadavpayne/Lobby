@@ -61,8 +61,8 @@ export function ConfirmScreen({ scan, businessName, station, onApprove, onReject
         {header}
         <div role="status" className="flex flex-1 animate-pop-in flex-col items-center justify-center gap-4 text-center">
           <span aria-hidden className="grid size-24 place-items-center rounded-full bg-amber text-navy"><Check className="size-12" strokeWidth={2.5} /></span>
-          <h2 className="text-[28px] leading-9 font-extrabold">ההטבה מומשה</h2>
-          <p className="max-w-[280px] text-[15px] leading-[22px] text-muted">נגבו {money(r.paidAgorot)} מתוך {money(r.billAgorot)}. ההנחה ({money(r.discountAgorot)}) נרשמה.</p>
+          <h2 className="text-[1.75rem] leading-9 font-extrabold">ההטבה מומשה</h2>
+          <p className="max-w-[280px] text-[0.9375rem] leading-[1.375rem] text-muted">נגבו {money(r.paidAgorot)} מתוך {money(r.billAgorot)}. ההנחה ({money(r.discountAgorot)}) נרשמה.</p>
         </div>
         <Button variant="navy" onClick={onNext} autoFocus>סריקה הבאה</Button>
       </div>
@@ -76,7 +76,7 @@ export function ConfirmScreen({ scan, businessName, station, onApprove, onReject
         <div className="flex items-center gap-3">
           <span aria-hidden className="grid size-11 shrink-0 place-items-center rounded-full bg-navy text-white"><Check className="size-[22px]" strokeWidth={2.5} /></span>
           <div>
-            <p className="text-[17px] font-bold">הקוד תקין</p>
+            <p className="text-[1.0625rem] font-bold">הקוד תקין</p>
             <p className="text-sm text-muted">חבר מועדון Lobby · דירה {scan.apartmentNumber}</p>
           </div>
         </div>
@@ -90,7 +90,7 @@ export function ConfirmScreen({ scan, businessName, station, onApprove, onReject
       <section className="flex flex-col gap-3.5 rounded-[28px] bg-white p-5 shadow-lift">
         <label htmlFor="bill" className="text-sm font-semibold">סכום החשבון לפני הנחה</label>
         <div className="flex h-[60px] items-center gap-2 rounded-xl border-2 border-navy px-3.5 focus-within:ring-2 focus-within:ring-amber">
-          <span aria-hidden className="text-[26px] font-bold text-muted">₪</span>
+          <span aria-hidden className="text-[1.625rem] font-bold text-muted">₪</span>
           <input
             id="bill"
             value={amount}
@@ -104,7 +104,7 @@ export function ConfirmScreen({ scan, businessName, station, onApprove, onReject
             className="min-w-0 flex-1 rounded-lg bg-transparent text-right text-3xl font-extrabold placeholder:text-navy/20"
           />
         </div>
-        <div className="flex justify-between text-[15px]">
+        <div className="flex justify-between text-[0.9375rem]">
           <span className="text-muted">הנחת Lobby (<bdi dir="ltr">{scan.discountRate}%</bdi>)</span>
           <span className="font-bold">−{money(preview?.discountAgorot ?? 0)}</span>
         </div>

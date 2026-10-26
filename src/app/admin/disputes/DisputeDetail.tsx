@@ -78,14 +78,14 @@ export function DisputeDetail({ token, id, onClose, onChanged }: Props) {
           <div className="flex flex-wrap items-center gap-2">
             <Tag tint={STATUS_LABEL[shown.status][1]}>{STATUS_LABEL[shown.status][0]}</Tag>
             <span className="font-bold">{shown.businessName}</span>
-            <span className="text-sm text-navy/60">· דווח {ageLabel(shown.createdAt)}</span>
+            <span className="text-sm text-muted">· דווח {ageLabel(shown.createdAt)}</span>
           </div>
           <dl className="grid grid-cols-2 gap-2 rounded-2xl bg-cream p-3 text-sm">
-            <dt className="text-navy/60">סיבה</dt><dd>{REASON_LABEL[shown.reason]}</dd>
-            <dt className="text-navy/60">מימוש</dt><dd><bdi dir="ltr">{when.format(new Date(shown.redeemedAt))}</bdi> · {shown.building}, דירה {shown.apartment}</dd>
-            <dt className="text-navy/60">נרשם בקופה</dt><dd>{money(shown.original.billAgorot)} (הנחה {money(shown.original.discountAgorot)}, עמלה {money(shown.original.commissionAgorot)})</dd>
-            <dt className="text-navy/60">לפי הדייר</dt><dd className="font-bold">{shown.claimedBillAgorot === null ? "—" : money(shown.claimedBillAgorot)}</dd>
-            {shown.redemption.status === "voided" && <><dt className="text-navy/60">שימו לב</dt><dd className="text-red-700">המימוש בוטל על ידי העסק</dd></>}
+            <dt className="text-muted">סיבה</dt><dd>{REASON_LABEL[shown.reason]}</dd>
+            <dt className="text-muted">מימוש</dt><dd><bdi dir="ltr">{when.format(new Date(shown.redeemedAt))}</bdi> · {shown.building}, דירה {shown.apartment}</dd>
+            <dt className="text-muted">נרשם בקופה</dt><dd>{money(shown.original.billAgorot)} (הנחה {money(shown.original.discountAgorot)}, עמלה {money(shown.original.commissionAgorot)})</dd>
+            <dt className="text-muted">לפי הדייר</dt><dd className="font-bold">{shown.claimedBillAgorot === null ? "—" : money(shown.claimedBillAgorot)}</dd>
+            {shown.redemption.status === "voided" && <><dt className="text-muted">שימו לב</dt><dd className="text-red-700">המימוש בוטל על ידי העסק</dd></>}
           </dl>
           {shown.note && <blockquote className="rounded-2xl border-s-4 border-amber bg-white p-3">{shown.note}</blockquote>}
           {shown.photoUrl && (
@@ -108,7 +108,7 @@ export function DisputeDetail({ token, id, onClose, onChanged }: Props) {
                   {" "}(שינוי בעמלה: {money(preview.commissionAgorot - shown.original.commissionAgorot)}{charged ? ", ייכנס לחיוב של החודש הנוכחי" : ""})
                 </p>
               )}
-              <label className="flex flex-col gap-1 text-sm font-bold">הערה לדייר <span className="font-normal text-navy/60">חובה בדחייה, הדייר יראה אותה</span>
+              <label className="flex flex-col gap-1 text-sm font-bold">הערה לדייר <span className="font-normal text-muted">חובה בדחייה, הדייר יראה אותה</span>
                 <input value={note} onChange={(e) => setNote(e.target.value)} maxLength={300} className={field} />
               </label>
               <div className="flex flex-wrap gap-2">
@@ -120,7 +120,7 @@ export function DisputeDetail({ token, id, onClose, onChanged }: Props) {
 
           <section className="flex flex-col gap-1 border-t border-navy/10 pt-3 text-sm">
             <h3 className="font-bold">דיווחים קודמים על העסק ({shown.history.length})</h3>
-            {shown.history.length === 0 && <p className="text-navy/60">אין.</p>}
+            {shown.history.length === 0 && <p className="text-muted">אין.</p>}
             {shown.history.slice(0, 10).map((h) => (
               <p key={h.id} className="flex items-center gap-2"><Tag tint={STATUS_LABEL[h.status][1]}>{STATUS_LABEL[h.status][0]}</Tag>{REASON_LABEL[h.reason]} · {ageLabel(h.createdAt)}</p>
             ))}

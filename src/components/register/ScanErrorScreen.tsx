@@ -62,8 +62,8 @@ export function ScanErrorScreen({ error: e, businessName, station, onNext }: Pro
 
       <div className="flex flex-col items-center gap-3.5 pt-8 text-center">
         <span aria-hidden className={`grid size-24 place-items-center rounded-full [&>svg]:size-12 ${used ? "bg-navy text-white" : "bg-highlight text-navy"}`}>{icon}</span>
-        <h2 className="mt-3 text-[28px] leading-9 font-extrabold">{content[0]}</h2>
-        <p className="max-w-[300px] text-[15px] leading-[22px] text-muted">{content[1]}</p>
+        <h2 className="mt-3 text-[1.75rem] leading-9 font-extrabold">{content[0]}</h2>
+        <p className="max-w-[300px] text-[0.9375rem] leading-[1.375rem] text-muted">{content[1]}</p>
       </div>
 
       <section className="flex flex-col gap-2.5 rounded-[20px] bg-white p-4 text-sm">
@@ -76,7 +76,7 @@ export function ScanErrorScreen({ error: e, businessName, station, onNext }: Pro
         )}
         {e.code === "ALREADY_REDEEMED_THIS_MONTH" && e.previous && (
           <>
-            <p className="text-[13px] font-semibold">המימוש הקודם</p>
+            <p className="text-[0.8125rem] font-semibold">המימוש הקודם</p>
             <Row label="תאריך">{receiptTime(e.previous.redeemedAt)}</Row>
             <Row label="סכום החשבון">{money(e.previous.billAgorot)}</Row>
             <Row label="הנחה שניתנה" strong>{money(e.previous.discountAgorot)}</Row>

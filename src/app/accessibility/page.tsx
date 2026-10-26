@@ -37,7 +37,7 @@ export default function AccessibilityPage() {
         את הבעיה ואת הדפדפן או קורא המסך שבו השתמשתם.
       </p>
 
-      <p className="text-base text-navy/60">ההצהרה עודכנה בתאריך {LEGAL.updated}.</p>
+      <p className="text-base text-muted">ההצהרה עודכנה בתאריך {LEGAL.updated}.</p>
     </LegalPage>
   );
 }

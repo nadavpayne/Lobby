@@ -57,7 +57,7 @@ function NoteForm({ customer: c, token, onSaved }: Omit<Props, "customer" | "onC
       <label className="flex flex-col gap-1.5">
         <span className="font-medium">תגיות</span>
         <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="VIP, משפחה גדולה" className={inputClass} />
-        <span className="text-sm text-navy/60">מפרידים בפסיק</span>
+        <span className="text-sm text-muted">מפרידים בפסיק</span>
       </label>
       {error && <p role="alert" className="text-red-700">{error}</p>}
       <Button onClick={save} disabled={pending}>{pending ? "שומרים…" : "שמירה"}</Button>

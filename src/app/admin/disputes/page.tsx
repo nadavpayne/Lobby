@@ -17,13 +17,13 @@ const money = (a: number | null) => (a === null ? "—" : <bdi dir="ltr">{format
 const select = "min-h-11 rounded-xl border border-navy/25 bg-white px-3";
 
 const COLUMNS: Column<AdminDisputeRow>[] = [
-  { key: "business", header: "עסק", render: (d) => <span className="font-medium">{d.businessName}<span className="block text-sm font-normal text-navy/60">{REASON_LABEL[d.reason]}</span></span> },
-  { key: "date", header: "מימוש", render: (d) => <span>{day.format(new Date(d.redeemedAt))}<span className="block text-sm text-navy/60">{d.building} · דירה {d.apartment}</span></span> },
+  { key: "business", header: "עסק", render: (d) => <span className="font-medium">{d.businessName}<span className="block text-sm font-normal text-muted">{REASON_LABEL[d.reason]}</span></span> },
+  { key: "date", header: "מימוש", render: (d) => <span>{day.format(new Date(d.redeemedAt))}<span className="block text-sm text-muted">{d.building} · דירה {d.apartment}</span></span> },
   { key: "recorded", header: "נרשם", align: "end", render: (d) => money(d.recordedBillAgorot) },
   { key: "claimed", header: "לפי הדייר", align: "end", render: (d) => money(d.claimedBillAgorot) },
   { key: "diff", header: "הפרש", align: "end", render: (d) => (d.claimedBillAgorot === null ? "—" : <span className="font-bold">{money(d.claimedBillAgorot - d.recordedBillAgorot)}</span>) },
   { key: "photo", header: "קבלה", render: (d) => (d.hasPhoto ? <Camera aria-label="יש צילום קבלה" className="size-5" /> : <span className="text-navy/40">אין</span>) },
-  { key: "status", header: "סטטוס", render: (d) => <span className="flex flex-col items-start gap-1"><Tag tint={STATUS_LABEL[d.status][1]}>{STATUS_LABEL[d.status][0]}</Tag><span className="text-sm text-navy/60">{ageLabel(d.createdAt)}</span></span> },
+  { key: "status", header: "סטטוס", render: (d) => <span className="flex flex-col items-start gap-1"><Tag tint={STATUS_LABEL[d.status][1]}>{STATUS_LABEL[d.status][0]}</Tag><span className="text-sm text-muted">{ageLabel(d.createdAt)}</span></span> },
 ];
 
 /** Residents' "the amount isn't right" reports: the queue (oldest open first) and each report's detail. */

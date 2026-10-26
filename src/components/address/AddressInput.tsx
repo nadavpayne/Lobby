@@ -154,7 +154,7 @@ export function AddressInput({ label = "כתובת", hint, error, initialText = 
               {s.secondary && <span className="text-sm text-navy/70">{s.secondary}</span>}
             </li>
           ))}
-          <li role="presentation" dir="ltr" className="px-3 py-1 text-end text-xs text-navy/60">powered by Google</li>
+          <li role="presentation" dir="ltr" className="px-3 py-1 text-end text-xs text-muted">powered by Google</li>
         </ul>
       )}
 

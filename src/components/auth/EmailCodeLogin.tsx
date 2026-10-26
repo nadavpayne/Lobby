@@ -94,7 +94,7 @@ export function EmailCodeLogin({ supabase, shouldCreateUser, title, subtitle }: 
       {googleEnabled && !native.isApp && step !== "code" && (
         <>
           <GoogleButton supabase={supabase} />
-          <div className="flex items-center gap-3 text-navy/60" aria-hidden>
+          <div className="flex items-center gap-3 text-muted" aria-hidden>
             <span className="h-px flex-1 bg-hairline" />או<span className="h-px flex-1 bg-hairline" />
           </div>
         </>

@@ -67,7 +67,7 @@ export default function CommitteeReportScreen() {
         <article className="mx-auto flex w-full max-w-2xl flex-col gap-6 rounded-3xl bg-white p-8 shadow-soft print:max-w-none print:rounded-none print:p-0 print:shadow-none">
           <header className="flex items-center justify-between gap-4 border-b border-navy/10 pb-4">
             <div>
-              <p className="text-navy/60">דוח חודשי לוועד הבית · {title(r.period)}</p>
+              <p className="text-muted">דוח חודשי לוועד הבית · {title(r.period)}</p>
               <h1 className="text-3xl font-bold">{r.building.name ?? r.building.address}</h1>
               <p>{r.building.address}, {r.building.city}</p>
             </div>
@@ -93,12 +93,12 @@ export default function CommitteeReportScreen() {
             <h2 className="mb-2 text-lg font-bold">איפה השתמשו בהטבות</h2>
             {r.byBusiness.length === 0 ? <p className="text-navy/70">לא היו מימושים בחודש הזה.</p> : (
               <table className="w-full text-start">
-                <thead><tr className="border-b border-navy/10 text-sm text-navy/60"><th className="py-2 text-start font-medium">עסק</th><th className="py-2 text-end font-medium">מימושים</th><th className="py-2 text-end font-medium">חיסכון</th></tr></thead>
+                <thead><tr className="border-b border-navy/10 text-sm text-muted"><th className="py-2 text-start font-medium">עסק</th><th className="py-2 text-end font-medium">מימושים</th><th className="py-2 text-end font-medium">חיסכון</th></tr></thead>
                 <tbody>{r.byBusiness.map((b) => <tr key={b.name} className="border-b border-navy/5"><td className="py-2">{b.name}</td><td className="py-2 text-end tabular-nums">{b.redemptions}</td><td className="py-2 text-end"><bdi dir="ltr">{formatShekels(b.saved)}</bdi></td></tr>)}</tbody>
               </table>
             )}
           </section>
-          <footer className="text-sm text-navy/60">הופק על ידי לובי, מועדון ההטבות של הבניין{r.building.committeeName ? ` · לכבוד ${r.building.committeeName}` : ""}.</footer>
+          <footer className="text-sm text-muted">הופק על ידי לובי, מועדון ההטבות של הבניין{r.building.committeeName ? ` · לכבוד ${r.building.committeeName}` : ""}.</footer>
         </article>
       )}
     </div>

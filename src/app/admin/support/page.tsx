@@ -61,7 +61,7 @@ export default function SupportRequestsScreen() {
             <div className="flex flex-wrap items-center gap-2">
               <Tag tint={STATUS[r.status][1]}>{STATUS[r.status][0]}</Tag>
               <span className="font-bold">{label(SUPPORT_TOPICS, r.topic)}</span>
-              <span className="text-sm text-navy/60">{label(SUPPORT_ROLES, r.role)} · <bdi dir="ltr">{when.format(new Date(r.createdAt))}</bdi>{r.emailed ? "" : " · לא נשלח במייל"}</span>
+              <span className="text-sm text-muted">{label(SUPPORT_ROLES, r.role)} · <bdi dir="ltr">{when.format(new Date(r.createdAt))}</bdi>{r.emailed ? "" : " · לא נשלח במייל"}</span>
             </div>
             <p className="whitespace-pre-line">{r.message}</p>
             <div className="flex flex-wrap items-center gap-3 text-sm">

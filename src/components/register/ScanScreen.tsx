@@ -91,7 +91,7 @@ export function ScanScreen({ businessName, station, busy, error, onCode, onSignO
     <div className="flex min-h-[calc(100dvh-8rem)] flex-col gap-5 rounded-[28px] bg-navy-deep px-5 pt-6 pb-6 text-white md:min-h-[680px]">
       <header className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-[22px] font-extrabold">סריקת הטבה</h1>
+          <h1 className="text-[1.375rem] font-extrabold">סריקת הטבה</h1>
           <p className="text-sm text-mist">{businessName} · {station}</p>
         </div>
         {onSignOut && (
@@ -121,7 +121,7 @@ export function ScanScreen({ businessName, station, busy, error, onCode, onSignO
           <Corners />
         </div>
         <div className="flex flex-col items-center gap-1.5 text-center">
-          <p className="text-[17px] font-semibold">כוונו את המצלמה לקוד בטלפון של הדייר</p>
+          <p className="text-[1.0625rem] font-semibold">כוונו את המצלמה לקוד בטלפון של הדייר</p>
           <p className="max-w-[290px] text-sm leading-5 text-mist">הבדיקה אוטומטית: שהקוד בתוקף, ושהדירה עוד לא מימשה הטבה אצלכם החודש</p>
           {error && <p role="alert" className="mt-2 rounded-xl bg-red-500/20 px-3 py-2 text-sm">{error}</p>}
         </div>

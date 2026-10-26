@@ -20,7 +20,7 @@ export function StatementCorrections({ months }: { months: BillingMonth[] }) {
             {m.corrections.map((c) => (
               <li key={c.correctedAt + c.apartment} className="rounded-xl bg-cream p-2">
                 מימוש מ-<bdi dir="ltr">{day.format(new Date(c.redeemedAt))}</bdi>, דירה {c.apartment}: חשבון {money(c.oldBillAgorot)} ← {money(c.newBillAgorot)},
-                עמלה {money(c.oldCommissionAgorot)} ← {money(c.newCommissionAgorot)} <span className="text-navy/60">(תוקן ב-<bdi dir="ltr">{day.format(new Date(c.correctedAt))}</bdi>)</span>
+                עמלה {money(c.oldCommissionAgorot)} ← {money(c.newCommissionAgorot)} <span className="text-muted">(תוקן ב-<bdi dir="ltr">{day.format(new Date(c.correctedAt))}</bdi>)</span>
               </li>
             ))}
           </ul>

@@ -56,13 +56,13 @@ function BuildingsScreen() {
       key: "name", header: "בניין", render: (b) => (
         <Link href={`/admin/residents?building=${b.id}`} className={`group font-medium ${b.id === focus ? "rounded bg-amber/30 px-1" : ""}`}>
           <span className="group-hover:underline">{b.name ?? b.address}</span>
-          <span className="block text-sm font-normal text-navy/60">{b.address}, {b.city}</span>
+          <span className="block text-sm font-normal text-muted">{b.address}, {b.city}</span>
         </Link>
       ),
     },
     { key: "stage", header: "שלב", render: (b) => <Tag tint={STAGE_TINT[b.pipeline]}>{STAGE_LABEL[b.pipeline]}</Tag> },
-    { key: "contact", header: "ועד", render: (b) => <span>{b.committeeName ?? "—"}{b.committeePhone && <a href={`tel:${b.committeePhone}`} dir="ltr" className="block text-sm text-navy/60 underline">{b.committeePhone}</a>}</span> },
-    { key: "join", header: "הצטרפות", align: "end", render: (b) => <span>{b.apartmentsJoined}/{b.apartmentCount}<span className="block text-sm text-navy/60">{b.apartmentCount ? Math.round((b.apartmentsJoined / b.apartmentCount) * 100) : 0}%</span></span> },
+    { key: "contact", header: "ועד", render: (b) => <span>{b.committeeName ?? "—"}{b.committeePhone && <a href={`tel:${b.committeePhone}`} dir="ltr" className="block text-sm text-muted underline">{b.committeePhone}</a>}</span> },
+    { key: "join", header: "הצטרפות", align: "end", render: (b) => <span>{b.apartmentsJoined}/{b.apartmentCount}<span className="block text-sm text-muted">{b.apartmentCount ? Math.round((b.apartmentsJoined / b.apartmentCount) * 100) : 0}%</span></span> },
     { key: "month", header: "מימושים החודש", align: "end", render: (b) => b.redemptionsThisMonth },
     { key: "saved", header: "חיסכון הדיירים", align: "end", render: (b) => <bdi dir="ltr">{formatShekels(b.savedThisMonth)}</bdi> },
     {

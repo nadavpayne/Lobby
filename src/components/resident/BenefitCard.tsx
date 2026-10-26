@@ -38,7 +38,7 @@ export function BenefitCard({ offer: o, categories, layout = "carousel" }: Props
         <BusinessLogo name={o.businessName} logoUrl={o.logoUrl} className="absolute -bottom-6 end-4 size-12" />
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4 pt-3">
-        <p className="text-sm text-navy/60">{o.businessName} · {style.name}</p>
+        <p className="text-sm text-muted">{o.businessName} · {style.name}</p>
         <h3 className="text-lg leading-snug font-bold">{o.title}</h3>
         <div className="mt-auto pt-1"><OfferTags offer={o} /></div>
       </div>

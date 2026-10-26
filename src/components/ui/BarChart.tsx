@@ -65,7 +65,7 @@ export function BarChart({ bars, title, highlightLast = false, showValues = fals
           })}
         </div>
       </div>
-      <div className="flex gap-0.5 text-xs text-navy/60" aria-hidden>
+      <div className="flex gap-0.5 text-xs text-muted" aria-hidden>
         {bars.map((b) => <span key={b.label} className="flex-1 text-center whitespace-nowrap">{b.tick ?? ""}</span>)}
       </div>
       <table className="sr-only">

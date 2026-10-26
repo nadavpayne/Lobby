@@ -76,7 +76,7 @@ export default function ProfileScreen() {
               <DetailRow label="קטגוריה">{CATEGORIES[p.category as Category] ?? p.category}</DetailRow>
               <DetailRow label="עמלת לובי"><bdi dir="ltr">{p.commissionPercent}%</bdi></DetailRow>
             </div>
-            <p className="text-sm text-navy/60">לשינוי שם, קטגוריה או תנאי העמלה כתבו לצוות לובי.</p>
+            <p className="text-sm text-muted">לשינוי שם, קטגוריה או תנאי העמלה כתבו לצוות לובי.</p>
             <Field label="על העסק" error={errors.description} hint="מופיע בדף העסק אצל הדיירים"><textarea {...field("description")} maxLength={400} rows={3} className={`${inputClass} py-2`} /></Field>
             <Field label="טלפון" error={errors.phone}><input {...field("phone")} inputMode="tel" dir="ltr" className={`${inputClass} sm:max-w-xs`} /></Field>
             {addressLookupOn ? (
@@ -100,7 +100,7 @@ export default function ProfileScreen() {
 
           <Card className="flex flex-col gap-3">
             <h2 className="text-xl font-bold">סניפים</h2>
-            <p className="-mt-2 text-sm text-navy/60">אם יש לכם יותר מסניף אחד, הוסיפו את כולם. הדיירים יראו את הרשימה בדף העסק.</p>
+            <p className="-mt-2 text-sm text-muted">אם יש לכם יותר מסניף אחד, הוסיפו את כולם. הדיירים יראו את הרשימה בדף העסק.</p>
             {p.branches.map((b, i) => (
               <div key={`${i}-${p.branches.length}`} className={addressLookupOn ? "flex flex-col gap-2 rounded-2xl border border-navy/10 p-3" : "grid grid-cols-[1fr_1fr_auto] gap-2"}>
                 <input aria-label="שם הסניף" value={b.name} placeholder="שם הסניף" onChange={(e) => setBranch(i, { name: e.target.value })} className={inputClass} />

@@ -28,7 +28,7 @@ export function NotificationsCard({ token }: { token: string }) {
       <ul className="flex flex-col gap-3">
         {items.map((n) => (
           <li key={n.id} className="flex flex-col gap-0.5">
-            <span className="flex items-baseline justify-between gap-2"><span className="font-bold">{n.title}</span><span className="shrink-0 text-sm text-navy/60">{when.format(new Date(n.createdAt))}</span></span>
+            <span className="flex items-baseline justify-between gap-2"><span className="font-bold">{n.title}</span><span className="shrink-0 text-sm text-muted">{when.format(new Date(n.createdAt))}</span></span>
             <span>{n.body}</span>
           </li>
         ))}

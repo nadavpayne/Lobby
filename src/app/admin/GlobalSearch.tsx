@@ -43,17 +43,17 @@ export function GlobalSearch({ token }: { token: string }) {
       </label>
       {showing && (
         <div className="absolute inset-x-0 top-full z-30 mt-2 overflow-hidden rounded-2xl bg-white shadow-lift">
-          {hits.length === 0 && <p className="p-4 text-navy/60">לא נמצאו תוצאות</p>}
+          {hits.length === 0 && <p className="p-4 text-muted">לא נמצאו תוצאות</p>}
           <ul>
             {hits.map((h) => {
               const Icon = ICON[h.kind];
               return (
                 <li key={`${h.kind}-${h.id}`}>
                   <Link href={h.href} onClick={() => setOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-cream">
-                    <Icon aria-hidden className="size-4 shrink-0 text-navy/60" />
+                    <Icon aria-hidden className="size-4 shrink-0 text-muted" />
                     <span className="min-w-0">
                       <span className="block truncate font-medium">{h.title}</span>
-                      <span className="block truncate text-sm text-navy/60">{h.subtitle}</span>
+                      <span className="block truncate text-sm text-muted">{h.subtitle}</span>
                     </span>
                   </Link>
                 </li>

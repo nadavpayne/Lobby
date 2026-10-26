@@ -18,7 +18,7 @@ export function BottomNav({ items, className = "" }: { items: NavItem[]; classNa
               <Link
                 href={href}
                 aria-current={current ? "page" : undefined}
-                className={`flex min-h-16 flex-col items-center justify-center gap-0.5 text-xs transition active:scale-95 ${current ? "font-bold text-navy" : "text-navy/55"}`}
+                className={`flex min-h-16 flex-col items-center justify-center gap-0.5 text-xs transition active:scale-95 ${current ? "font-bold text-navy" : "text-muted"}`}
               >
                 <span className={`grid h-8 w-14 place-items-center rounded-full transition ${current ? "bg-peach" : ""}`}>
                   <Icon aria-hidden className="size-5" strokeWidth={current ? 2.5 : 2} />

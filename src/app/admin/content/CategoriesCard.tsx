@@ -39,7 +39,7 @@ export function CategoriesCard({ token, categories, onChanged }: { token: string
   return (
     <Card className="flex flex-col gap-3">
       <h2 className="text-xl font-bold">קטגוריות</h2>
-      <p className="-mt-2 text-sm text-navy/60">השם והסדר של הצ׳יפים באפליקציית הדיירים. קטגוריה מוסתרת לא מופיעה כצ׳יפ.</p>
+      <p className="-mt-2 text-sm text-muted">השם והסדר של הצ׳יפים באפליקציית הדיירים. קטגוריה מוסתרת לא מופיעה כצ׳יפ.</p>
       <ul className="flex flex-col gap-2">{categories.map((c) => <CategoryRow key={`${c.slug}-${c.name}-${c.sort}-${c.active}`} token={token} c={c} onChanged={onChanged} />)}</ul>
     </Card>
   );

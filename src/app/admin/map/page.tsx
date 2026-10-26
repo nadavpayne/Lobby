@@ -115,7 +115,7 @@ export default function AdminMapScreen() {
       ) : (
         <MapView center={markers[0]?.point ?? ISRAEL} label="כל הבניינים והעסקים" markers={markers} cluster showPin={false} className="h-[32rem]" />
       )}
-      <p className="text-sm text-navy/60">ב = בניין (ירוק: פעיל, ורוד: עוד לא הצטרף) · ע = עסק (כתום: פעיל, אפרסק: בדרך) · מספר = כמה מקומות קרובים, לחצו כדי להתקרב.</p>
+      <p className="text-sm text-muted">ב = בניין (ירוק: פעיל, ורוד: עוד לא הצטרף) · ע = עסק (כתום: פעיל, אפרסק: בדרך) · מספר = כמה מקומות קרובים, לחצו כדי להתקרב.</p>
     </div>
   );
 }

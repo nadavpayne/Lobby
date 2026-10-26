@@ -44,7 +44,7 @@ export default function BusinessScreen() {
       </div>
 
       <header className="flex flex-col gap-2 pt-6">
-        <p className="text-navy/60">{o.businessName} · {style.name}</p>
+        <p className="text-muted">{o.businessName} · {style.name}</p>
         <h1 className="text-3xl leading-tight font-bold">{o.title}</h1>
         <OfferTags offer={o} />
       </header>

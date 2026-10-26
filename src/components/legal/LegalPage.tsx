@@ -17,7 +17,7 @@ export function LegalPage({ title, children }: { title: string; children: ReactN
             [&_li]:mt-1 [&_ol]:list-decimal [&_ol]:ps-6 [&_ul]:list-disc [&_ul]:ps-6"
         >
           <h1 className="text-3xl font-bold md:text-4xl">{title}</h1>
-          <p className="text-base text-navy/60">עודכן לאחרונה: {LEGAL.updated}</p>
+          <p className="text-base text-muted">עודכן לאחרונה: {LEGAL.updated}</p>
           {children}
         </article>
         <LegalLinks className="mt-6 text-navy/80" />

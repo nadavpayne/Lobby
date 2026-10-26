@@ -49,8 +49,8 @@ export function BusinessRow({ token, business: b, focused, onChanged, signal }: 
           <ChevronDown aria-hidden className={`size-5 shrink-0 transition ${open ? "" : "rotate-90 rtl:-rotate-90"}`} />
           <BusinessLogo name={b.name} logoUrl={b.logoUrl} className="size-12 shrink-0" />
           <span className="min-w-0">
-            <span className="block truncate text-lg font-bold">{b.name}{b.isDemo && <span className="ms-2 text-sm font-normal text-navy/50">(הדגמה)</span>}</span>
-            <span className="block truncate text-sm text-navy/60">{CATEGORIES[b.category as Category] ?? b.category} · {b.address}{b.city ? `, ${b.city}` : ""}</span>
+            <span className="block truncate text-lg font-bold">{b.name}{b.isDemo && <span className="ms-2 text-sm font-normal text-muted">(הדגמה)</span>}</span>
+            <span className="block truncate text-sm text-muted">{CATEGORIES[b.category as Category] ?? b.category} · {b.address}{b.city ? `, ${b.city}` : ""}</span>
           </span>
         </button>
         <DisputeSignalTag signal={signal} />
@@ -81,7 +81,7 @@ export function BusinessRow({ token, business: b, focused, onChanged, signal }: 
             <Button size="sm" variant="ghost" onClick={async () => { await navigator.clipboard.writeText(b.verifyUrl).catch(() => null); setCopied(true); }}>
               <Link2 aria-hidden className="size-4" /> {copied ? "הועתק" : "קישור לקופה"}
             </Button>
-            <span className="text-navy/50">נוסף {new Date(b.createdAt).toLocaleDateString("he-IL")}</span>
+            <span className="text-muted">נוסף {new Date(b.createdAt).toLocaleDateString("he-IL")}</span>
             {(b.status === "lead" || b.status === "pending") && (
               <Button size="sm" variant="danger" className="ms-auto" onClick={() => confirm(`לדחות את ${b.name}? העסק לא יוכל לאמת קודים, וההטבות שלו לא יוצגו לדיירים.`) && apply(setBusinessStage(token, b.id, "declined"))}>
                 <X aria-hidden className="size-4" /> דחיית העסק
@@ -97,7 +97,7 @@ export function BusinessRow({ token, business: b, focused, onChanged, signal }: 
           {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
           <DisputeSignalLine signal={signal} businessId={b.id} />
           <h3 className="font-bold">הטבות</h3>
-          {b.offers.length === 0 && <p className="text-sm text-navy/60">עוד אין הטבות.</p>}
+          {b.offers.length === 0 && <p className="text-sm text-muted">עוד אין הטבות.</p>}
           {b.offers.map((o) => <OfferReview key={o.id} token={token} offer={o} onChanged={onChanged} />)}
         </div>
       )}

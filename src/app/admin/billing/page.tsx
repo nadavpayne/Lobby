@@ -63,7 +63,7 @@ export default function AdminBillingScreen() {
       render: (l) => (
         <span className="font-bold">
           {money(l.commission)}
-          {l.adjustmentsAgorot !== 0 && <span className="block text-sm font-normal text-navy/60">כולל תיקונים {money(l.adjustmentsAgorot / 100)}</span>}
+          {l.adjustmentsAgorot !== 0 && <span className="block text-sm font-normal text-muted">כולל תיקונים {money(l.adjustmentsAgorot / 100)}</span>}
         </span>
       ),
     },

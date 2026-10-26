@@ -51,6 +51,16 @@ html, body {
   overflow-x: clip;
 }
 
+/* iPhone and iPad (Safari and the app's web view): the root size follows Settings → Text Size, so every rem in the
+   app scales with it (17px at the default size, Apple's body default). Touch devices only: on a Mac the same
+   keyword means 13px. */
+@supports (-webkit-touch-callout: none) {
+  html {
+    font: -apple-system-body;
+    font-family: var(--font-sans);
+  }
+}
+
 /* Keyboard focus: a navy ring with a light gap, so it reads on the cream page and on the navy header alike. */
 :focus-visible {
   outline: 3px solid var(--color-navy);

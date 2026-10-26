@@ -83,7 +83,7 @@ function BuildingFields({ token, building: b, onSaved }: { token: string; buildi
         <Field label="איש קשר בוועד"><input value={f.committeeName} onChange={set("committeeName")} className={inputClass} /></Field>
         <Field label="טלפון" error={errors.committeePhone}><input value={f.committeePhone} onChange={set("committeePhone")} inputMode="tel" dir="ltr" className={inputClass} /></Field>
       </div>
-      <p className="text-sm text-navy/60">רק בניין בשלב „הצטרף” מקבל דיירים דרך קישור ההצטרפות.</p>
+      <p className="text-sm text-muted">רק בניין בשלב „הצטרף” מקבל דיירים דרך קישור ההצטרפות.</p>
       {error && <p role="alert" className="text-red-700">{error}</p>}
       <Button type="submit" disabled={pending}>{pending ? "שומרים…" : "שמירה"}</Button>
       {b && <DeleteBuilding token={token} building={b} onDeleted={onSaved} onError={setError} />}

@@ -60,7 +60,7 @@ export function QrSheet({ authToken, businessId, businessName, discountPercent, 
             <div className="flex items-center gap-3 rounded-[20px] bg-white px-4 py-3.5">
               <span aria-hidden className="grid size-12 shrink-0 place-items-center rounded-full bg-navy text-xl font-extrabold text-white">{businessName.trim().charAt(0)}</span>
               <div className="min-w-0">
-                <p className="truncate text-[17px] font-bold">{businessName}</p>
+                <p className="truncate text-[1.0625rem] font-bold">{businessName}</p>
                 <p className="text-sm text-muted">הטבה לחברי Lobby</p>
               </div>
               <span className="ms-auto shrink-0 rounded-full bg-highlight px-3 py-1.5 text-sm font-extrabold"><bdi dir="ltr">{discountPercent}%</bdi> הנחה</span>
@@ -68,7 +68,7 @@ export function QrSheet({ authToken, businessId, businessName, discountPercent, 
 
             <section className="flex flex-col items-center gap-4 rounded-[28px] bg-white p-6 shadow-lift">
               <div className="text-center">
-                <h2 className="text-[22px] leading-7 font-extrabold">הציגו את הקוד בקופה</h2>
+                <h2 className="text-[1.375rem] leading-7 font-extrabold">הציגו את הקוד בקופה</h2>
                 <p className="text-sm text-muted">הקופאי סורק, וההנחה נכנסת מיד</p>
               </div>
 
@@ -89,7 +89,7 @@ export function QrSheet({ authToken, businessId, businessName, discountPercent, 
                   <div className="h-px w-full bg-hairline" />
                   <div className="text-center">
                     <p className="text-xs text-muted">לא נסרק? קוד גיבוי</p>
-                    <p dir="ltr" className="text-[26px] font-extrabold tracking-[4px] tabular-nums">{state.token.backupCode}</p>
+                    <p dir="ltr" className="text-[1.625rem] font-extrabold tracking-[4px] tabular-nums">{state.token.backupCode}</p>
                   </div>
                 </>
               )}
