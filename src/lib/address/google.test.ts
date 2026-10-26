@@ -23,6 +23,25 @@ test("a picked suggestion becomes Lobby's normalized address", () => {
   assert.equal(addressProblem(parseGooglePlace(herzl10)), null);
 });
 
+test("Hebrew postal fields win over English address components (Google's real answer for הרצל 10)", () => {
+  const a = parseGooglePlace({
+    id: "ChIJaY9L85xMHRURelB1BqxmUIs",
+    formattedAddress: "Herzl St 10, Tel Aviv-Yafo",
+    shortFormattedAddress: "הרצל 10, תל אביב-יפו",
+    postalAddress: { locality: "תל אביב-יפו", addressLines: ["הרצל 10"] },
+    location: { latitude: 32.0625289, longitude: 34.769963 },
+    addressComponents: [
+      { longText: "10", types: ["street_number"] },
+      { longText: "Herzl Street", types: ["route"] },
+      { longText: "Tel Aviv-Yafo", types: ["locality", "political"] },
+    ],
+  });
+  assert.equal(a.street, "הרצל");
+  assert.equal(a.houseNumber, "10");
+  assert.equal(a.city, "תל אביב-יפו");
+  assert.equal(a.formattedAddress, "הרצל 10, תל אביב-יפו");
+});
+
 test("an address without a house number is rejected", () => {
   const street = parseGooglePlace({ ...herzl10, addressComponents: herzl10.addressComponents.filter((c) => !c.types.includes("street_number")) });
   assert.equal(street.houseNumber, "");

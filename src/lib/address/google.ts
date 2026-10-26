@@ -3,7 +3,8 @@ import type { AddressProvider, AddressSuggestion, ResolvedAddress } from "./type
 
 const API = "https://places.googleapis.com/v1";
 // Essentials-tier fields only: no photos, ratings or other Pro/Enterprise fields.
-const DETAILS_FIELDS = "id,formattedAddress,location,addressComponents";
+// addressComponents often come back in English for Israeli streets; postalAddress/shortFormattedAddress stay in Hebrew.
+const DETAILS_FIELDS = "id,formattedAddress,shortFormattedAddress,postalAddress,location,addressComponents";
 
 interface GoogleComponent {
   longText?: string;
@@ -13,6 +14,8 @@ interface GoogleComponent {
 interface GooglePlace {
   id?: string;
   formattedAddress?: string;
+  shortFormattedAddress?: string;
+  postalAddress?: { locality?: string; postalCode?: string; addressLines?: string[] };
   location?: { latitude?: number; longitude?: number };
   addressComponents?: GoogleComponent[];
 }
@@ -21,21 +24,26 @@ interface GoogleSuggestion {
   placePrediction?: { placeId?: string; structuredFormat?: { mainText?: { text?: string }; secondaryText?: { text?: string } } };
 }
 
-/** Maps a Place Details response to Lobby's normalized address. */
+/** Maps a Place Details response to Lobby's normalized address (Hebrew postal fields first, components as fallback). */
 export function parseGooglePlace(place: GooglePlace): ResolvedAddress {
   const part = (...types: string[]) =>
     types.map((t) => place.addressComponents?.find((c) => c.types?.includes(t))?.longText).find(Boolean) ?? "";
   const { latitude, longitude } = place.location ?? {};
   if (!place.id || typeof latitude !== "number" || typeof longitude !== "number") throw new Error("Google place without id/location");
+  const houseNumber = part("street_number");
+  const line = place.postalAddress?.addressLines?.[0]?.trim() ?? "";
+  // "הרצל 10" → "הרצל" (the number is a separate field).
+  const words = line.split(/\s+/).filter(Boolean);
+  const lineStreet = words.includes(houseNumber) ? words.filter((w) => w !== houseNumber).join(" ") : "";
   return {
     providerPlaceId: place.id,
     lat: latitude,
     lng: longitude,
-    street: part("route"),
-    houseNumber: part("street_number"),
-    city: part("locality", "administrative_area_level_2"),
-    postalCode: part("postal_code"),
-    formattedAddress: place.formattedAddress ?? "",
+    street: lineStreet || part("route"),
+    houseNumber,
+    city: place.postalAddress?.locality || part("locality", "administrative_area_level_2"),
+    postalCode: place.postalAddress?.postalCode || part("postal_code"),
+    formattedAddress: place.shortFormattedAddress || place.formattedAddress || "",
   };
 }
 

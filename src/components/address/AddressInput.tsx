@@ -44,7 +44,9 @@ export function AddressInput({ label = "כתובת", hint, error, initialText = 
   const [picked, setPicked] = useState<PickedAddress | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const session = useRef(crypto.randomUUID());
+  const session = useRef("");
+  /** The current billing session for this address (created in the browser on first use). */
+  const sessionId = () => (session.current ||= crypto.randomUUID());
   const [typed, setTyped] = useState(false);
   const [left, setLeft] = useState(false);
 
@@ -52,7 +54,7 @@ export function AddressInput({ label = "כתובת", hint, error, initialText = 
   useEffect(() => {
     if (!typed || picked || text.trim().length < MIN_CHARS) return;
     const timer = setTimeout(async () => {
-      const res = await fetchSuggestions(text.trim(), session.current);
+      const res = await fetchSuggestions(text.trim(), sessionId());
       if (isApiError(res)) return setProblem(res.error);
       setProblem(null);
       setSuggestions(res.suggestions);
@@ -78,11 +80,12 @@ export function AddressInput({ label = "כתובת", hint, error, initialText = 
 
   /** Resolves a suggestion on our server and keeps it only if it's an exact building address. */
   async function choose(s: AddressSuggestion) {
+    setTyped(false); // filling in the pick is not typing: no new search
     setSuggestions([]);
     setText([s.main, s.secondary].filter(Boolean).join(", "));
     setBusy(true);
-    const res = await resolveSuggestion(s.placeId, session.current);
-    session.current = crypto.randomUUID(); // the pick ends Google's billing session
+    const res = await resolveSuggestion(s.placeId, sessionId());
+    session.current = ""; // the pick ends Google's billing session
     setBusy(false);
     if (isApiError(res)) return setProblem(res.error);
     setProblem(res.problem);
