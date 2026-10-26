@@ -14,6 +14,8 @@ export interface AdminResident {
   joinedAt: string;
   redemptions: number;
   lastRedemption: string | null;
+  /** Total discount the resident got across all redemptions. */
+  savedAgorot: number;
 }
 
 interface Row {
@@ -46,14 +48,15 @@ export async function listResidents(db: SupabaseClient, q: string, buildingId: s
 
   const { data: used, error: usedError } = await db
     .from("redemptions")
-    .select("resident_id, redeemed_at")
+    .select("resident_id, redeemed_at, discount_agorot")
     .in("resident_id", rows.map((r) => r.id))
     .eq("status", "redeemed");
   if (usedError) throw usedError;
-  const activity = new Map<string, { count: number; last: string }>();
+  const activity = new Map<string, { count: number; last: string; saved: number }>();
   for (const u of used) {
-    const a = activity.get(u.resident_id) ?? { count: 0, last: u.redeemed_at };
+    const a = activity.get(u.resident_id) ?? { count: 0, last: u.redeemed_at, saved: 0 };
     a.count++;
+    a.saved += u.discount_agorot ?? 0;
     if (u.redeemed_at > a.last) a.last = u.redeemed_at;
     activity.set(u.resident_id, a);
   }
@@ -63,6 +66,7 @@ export async function listResidents(db: SupabaseClient, q: string, buildingId: s
     building: r.apartments!.buildings.name ?? r.apartments!.buildings.address, buildingId: r.apartments!.buildings.id,
     apartment: r.apartments!.apartment_number, joinedAt: r.created_at,
     redemptions: activity.get(r.id)?.count ?? 0, lastRedemption: activity.get(r.id)?.last ?? null,
+    savedAgorot: activity.get(r.id)?.saved ?? 0,
   }));
 }
 

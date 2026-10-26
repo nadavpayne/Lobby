@@ -5,6 +5,7 @@ import type { AdminMap } from "@/lib/admin/map";
 import type { OfferAction } from "@/lib/admin/offers";
 import type { AdminOverview } from "@/lib/admin/overview";
 import type { LogRow } from "@/lib/admin/redemptions";
+import type { ResidentDetail } from "@/lib/admin/residentDetail";
 import type { AdminResident } from "@/lib/admin/residents";
 import type { SearchHit } from "@/lib/admin/search";
 import type { AdminBusiness } from "@/lib/admin/types";
@@ -58,7 +59,10 @@ export const offerAction = (token: string, id: string, action: OfferAction) => a
 export const fetchResidents = (token: string, q: string, building: string | null) =>
   apiFetch<AdminResident[]>(`/api/admin/residents?q=${encodeURIComponent(q)}${building ? `&building=${building}` : ""}`, { token });
 
-export const setResidentBlocked = (token: string, id: string, blocked: boolean) =>
+/** One resident's details and coupon history. */
+export const fetchResident = (token: string, id: string) => apiFetch<ResidentDetail>(`/api/admin/residents/${id}`, { token });
+
+export const setResidentBlocked =(token: string, id: string, blocked: boolean) =>
   apiFetch<{ ok: true }>("/api/admin/residents", { token, body: { id, status: blocked ? "blocked" : "active" } });
 
 export const fetchLog = (token: string, query: string) => apiFetch<LogRow[]>(`/api/admin/redemptions?${query}`, { token });
