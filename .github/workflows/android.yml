@@ -32,7 +32,7 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon --stacktrace > build.log 2>&1 || {
             tail -n 60 build.log
-            echo "::error title=Gradle failed::$(grep -E 'What went wrong|error:|Exception|> ' build.log | head -n 25 | tr '\n' ' ' | cut -c1-3000)"
+            echo "::error title=Gradle failed::$( (grep -A 14 'What went wrong' build.log; grep -E '^e: |error:' build.log | head -n 10) | tr '\n' ' ' | cut -c1-3000)"
             exit 1
           }
         working-directory: android
