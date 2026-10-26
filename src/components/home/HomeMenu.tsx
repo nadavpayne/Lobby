@@ -7,6 +7,8 @@ import { AccountMenu } from "./AccountMenu";
 
 const ITEMS = [
   ["/start", "כניסה"],
+  // Residents can't self-register (only via the committee's link), so sign-up means registering a building.
+  ["/building/new", "הרשמה לוועד בית"],
   ["/join", "הצטרפות עסקים"],
 ] as const;
 
