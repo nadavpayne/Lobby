@@ -61,14 +61,21 @@ const DB_ERRORS: Record<string, [number, string]> = {
 };
 
 /**
- * Deletes the account now: re-authentication with the code, then the database part in one transaction, then
- * receipt photos, cashier logins, every session and finally the login itself.
+ * Deletes the account now: re-authentication with the code, then eraseAccount.
  */
 export async function deleteAccount(db: SupabaseClient, user: User, accessToken: string, code: unknown, handoverTo: unknown): Promise<DeleteOutcome> {
   if (typeof code !== "string" || !(await codeIsValid(user, code.trim()))) return { ok: false, status: 401, error: "הקוד שגוי או שפג תוקפו. שלחו קוד חדש." };
   const handover = typeof handoverTo === "string" && handoverTo ? handoverTo : null;
+  return eraseAccount(db, user.id, handover, accessToken);
+}
 
-  const { data, error } = await db.rpc("delete_account_data", { p_user: user.id, p_handover: handover });
+/**
+ * The deletion itself, for the account holder (after re-authentication) or the Lobby admin: the database part in one
+ * transaction (refuses admin accounts), then receipt photos, cashier logins, the holder's sessions when their token is
+ * known, and finally the login. Deleting the login also ends every refresh token, so no device stays signed in.
+ */
+export async function eraseAccount(db: SupabaseClient, userId: string, handover: string | null, accessToken?: string): Promise<DeleteOutcome> {
+  const { data, error } = await db.rpc("delete_account_data", { p_user: userId, p_handover: handover });
   if (error) throw error;
   const result = data as { code: string; receipts?: string[]; cashiers?: string[]; building_id?: string | null; committee_left_building?: boolean };
   if (result.code !== "OK") {
@@ -80,8 +87,8 @@ export async function deleteAccount(db: SupabaseClient, user: User, accessToken:
   for (const id of result.cashiers ?? []) await deleteLoginIfUnused(db, id);
   if (result.committee_left_building && result.building_id) await alertCommitteeLeft(db, result.building_id);
 
-  await db.auth.admin.signOut(accessToken, "global"); // every device
-  const removed = await db.auth.admin.deleteUser(user.id);
+  if (accessToken) await db.auth.admin.signOut(accessToken, "global"); // every device
+  const removed = await db.auth.admin.deleteUser(userId);
   if (removed.error) throw removed.error;
   return { ok: true };
 }

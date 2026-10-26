@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+import { eraseAccount } from "@/lib/account/deleteAccount";
 import { listResidents, setResidentStatus } from "@/lib/admin/residents";
 import { badRequest, isUuid, notFound, requireAdmin } from "../requireAdmin";
 
@@ -12,11 +13,19 @@ export async function GET(request: Request) {
   return Response.json(await listResidents(auth.db, (p.get("q") ?? "").slice(0, 50), isUuid(building) ? building : null));
 }
 
-/** POST /api/admin/residents — { id, status: "active" | "blocked" } blocks or unblocks a resident. */
+/**
+ * POST /api/admin/residents — { id, action: "delete" } deletes the resident's account (same as their own deletion,
+ * without the email code), or { id, status: "active" | "blocked" } blocks or unblocks a resident.
+ */
 export async function POST(request: Request) {
   const auth = await requireAdmin(request);
   if (auth instanceof Response) return auth;
   const body = await request.json().catch(() => null);
-  if (!isUuid(body?.id) || (body.status !== "active" && body.status !== "blocked")) return badRequest();
+  if (!isUuid(body?.id)) return badRequest();
+  if (body.action === "delete") {
+    const outcome = await eraseAccount(auth.db, body.id, null);
+    return outcome.ok ? Response.json({ ok: true }) : Response.json({ error: outcome.error }, { status: outcome.status });
+  }
+  if (body.status !== "active" && body.status !== "blocked") return badRequest();
   return (await setResidentStatus(auth.db, body.id, body.status)) ? Response.json({ ok: true }) : notFound("הדייר");
 }

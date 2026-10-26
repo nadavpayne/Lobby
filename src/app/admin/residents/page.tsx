@@ -1,13 +1,13 @@
 "use client";
 
-import { Ban, Search, Undo2, Users } from "lucide-react";
+import { Search, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useAccount } from "@/components/auth/RoleGate";
 import { inputClass } from "@/components/Field";
 import { Button, DataTable, EmptyState, Skeleton, Tag, type Column } from "@/components/ui";
-import { fetchResidents, setResidentBlocked } from "@/lib/api/admin";
+import { deleteResident, fetchResidents } from "@/lib/api/admin";
 import { isApiError } from "@/lib/api/http";
 import type { AdminResident } from "@/lib/admin/residents";
 import { formatAgorot } from "@/lib/qr/money";
@@ -37,13 +37,14 @@ function ResidentsScreen() {
     };
   }, [token, q, building]);
 
-  /** Blocks or unblocks after confirming. */
-  async function toggle(r: AdminResident) {
-    const block = r.status !== "blocked";
-    if (block && !confirm(`לחסום את ${r.name ?? "הדייר"}? הוא לא יוכל להיכנס לאפליקציה ולקבל קודים.`)) return;
-    const res = await setResidentBlocked(token, r.id, block);
+  /** Deletes the resident's account after confirming, and drops them from the list. */
+  async function remove(r: AdminResident) {
+    const who = r.name ?? "הדייר";
+    const committee = r.role === "committee" ? " הוא חבר ועד, והבניין יישאר בלי ועד אם אין עוד חברי ועד." : "";
+    if (!confirm(`למחוק את החשבון של ${who}? אי אפשר לבטל את זה: הוא יוצא מהאפליקציה בכל המכשירים ופרטיו נמחקים. המימושים שלו נשמרים בלי שם.${committee}`)) return;
+    const res = await deleteResident(token, r.id);
     if (isApiError(res)) return setError(res.error);
-    setList((l) => l?.map((x) => (x.id === r.id ? { ...x, status: block ? "blocked" : "active" } : x)));
+    setList((l) => l?.filter((x) => x.id !== r.id));
   }
 
   const columns: Column<AdminResident>[] = [
@@ -64,8 +65,8 @@ function ResidentsScreen() {
     { key: "status", header: "סטטוס", render: (r) => <Tag tint={STATUS[r.status][1]}>{STATUS[r.status][0]}</Tag> },
     {
       key: "action", header: "", render: (r) => (
-        <Button size="sm" variant={r.status === "blocked" ? "secondary" : "ghost"} onClick={() => toggle(r)}>
-          {r.status === "blocked" ? <><Undo2 aria-hidden className="size-4" /> שחרור</> : <><Ban aria-hidden className="size-4" /> חסימה</>}
+        <Button size="sm" variant="ghost" className="text-red-700" onClick={() => remove(r)}>
+          <Trash2 aria-hidden className="size-4" /> מחיקת משתמש
         </Button>
       ),
     },

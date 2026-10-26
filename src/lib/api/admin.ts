@@ -62,10 +62,11 @@ export const fetchResidents = (token: string, q: string, building: string | null
 /** One resident's details and coupon history. */
 export const fetchResident = (token: string, id: string) => apiFetch<ResidentDetail>(`/api/admin/residents/${id}`, { token });
 
-export const setResidentBlocked =(token: string, id: string, blocked: boolean) =>
-  apiFetch<{ ok: true }>("/api/admin/residents", { token, body: { id, status: blocked ? "blocked" : "active" } });
+/** Deletes a resident's account for good (their coupon history stays, without their name). */
+export const deleteResident = (token: string, id: string) =>
+  apiFetch<{ ok: true }>("/api/admin/residents", { token, body: { id, action: "delete" } });
 
-export const fetchLog = (token: string, query: string) => apiFetch<LogRow[]>(`/api/admin/redemptions?${query}`, { token });
+export const fetchLog =(token: string, query: string) => apiFetch<LogRow[]>(`/api/admin/redemptions?${query}`, { token });
 
 /** Downloads the log as CSV (fetch with the token, then save via a temporary link). */
 export async function downloadLogCsv(token: string, query: string): Promise<string | null> {
