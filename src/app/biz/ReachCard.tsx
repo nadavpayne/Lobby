@@ -4,7 +4,7 @@ import { Building2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MapView } from "@/components/address/MapView";
-import { Card } from "@/components/ui";
+import { Card, Skeleton } from "@/components/ui";
 import { fetchReach } from "@/lib/api/biz";
 import { isApiError } from "@/lib/api/http";
 import type { BizReach } from "@/lib/biz/reach";
@@ -13,18 +13,30 @@ import { formatDistance } from "@/lib/geo/distance";
 /** The business on the map and how many Lobby households live around it (counts only, no addresses). */
 export function ReachCard({ token, name }: { token: string; name: string }) {
   const [reach, setReach] = useState<BizReach | null>(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let live = true;
     fetchReach(token).then((res) => {
-      if (live && !isApiError(res)) setReach(res);
+      if (!live) return;
+      if (isApiError(res)) setFailed(true);
+      else setReach(res);
     });
     return () => {
       live = false;
     };
   }, [token]);
 
-  if (!reach) return null;
+  if (failed) return null;
+  if (!reach) {
+    return (
+      <Card className="flex flex-col gap-3" aria-label="טוען">
+        <Skeleton className="h-6 w-1/3" />
+        <div className="grid grid-cols-2 gap-3"><Skeleton className="h-24 rounded-2xl" /><Skeleton className="h-24 rounded-2xl" /></div>
+        <Skeleton className="h-48 rounded-xl" />
+      </Card>
+    );
+  }
   return (
     <Card className="flex flex-col gap-3">
       <h2 className="flex items-center gap-2 text-lg font-bold"><Building2 aria-hidden className="size-5" /> דיירי לובי סביבכם</h2>

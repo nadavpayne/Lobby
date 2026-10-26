@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { RoleGate, useAccount } from "@/components/auth/RoleGate";
 import { RegisterFlow } from "@/components/register/RegisterFlow";
+import { Loading } from "@/components/ui";
 import { fetchMyBusiness, type MyBusiness } from "@/lib/api/biz";
 import { isApiError } from "@/lib/api/http";
 import { accountRegister } from "@/lib/api/register";
@@ -29,6 +30,7 @@ function Register() {
   return (
     <main className="mx-auto w-full max-w-md flex-1 px-3 pt-safe pb-4">
       {error && <p role="alert" className="mt-6 rounded-xl bg-red-50 p-4 text-red-800">{error}</p>}
+      {!business && !error && <div className="mt-6"><Loading /></div>}
       {business && <RegisterFlow api={api} businessName={business.name} station={email.split("@")[0]} onSignOut={signOut} onUnauthorized={signOut} />}
     </main>
   );

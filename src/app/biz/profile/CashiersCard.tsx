@@ -3,7 +3,7 @@
 import { UserMinus, UserPlus } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { inputClass } from "@/components/Field";
-import { Button, Card } from "@/components/ui";
+import { Button, Card, Skeleton } from "@/components/ui";
 import { addCashier, fetchCashiers, revokeCashier } from "@/lib/api/biz";
 import { isApiError } from "@/lib/api/http";
 import type { Cashier } from "@/lib/biz/cashiers";
@@ -49,6 +49,7 @@ export function CashiersCard({ token }: { token: string }) {
         <h2 className="text-xl font-bold">קופאים</h2>
         <p className="text-sm text-muted">כניסה אישית לכל עובד: סורקים ומאשרים הטבות, בלי גישה לדוחות ובלי אפשרות לבטל מימוש. כל מימוש נרשם עם שם הקופאי.</p>
       </div>
+      {!list && <div role="status" aria-label="טוען" className="flex flex-col gap-2"><Skeleton className="h-12 rounded-2xl" /><Skeleton className="h-12 rounded-2xl" /></div>}
       {list && list.length === 0 && <p className="text-sm text-muted">עוד אין קופאים.</p>}
       <ul className="flex flex-col gap-2">
         {list?.map((c) => (

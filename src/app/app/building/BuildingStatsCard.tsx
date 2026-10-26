@@ -2,7 +2,7 @@
 
 import { HandCoins, Home, Ticket, Users } from "lucide-react";
 import { useEffect, useState } from "react";
-import { StatTile } from "@/components/ui";
+import { Skeleton, StatTile } from "@/components/ui";
 import { fetchBuildingStats } from "@/lib/api/committee";
 import { isApiError } from "@/lib/api/http";
 import type { BuildingStats } from "@/lib/buildings/types";
@@ -26,7 +26,13 @@ export function BuildingStatsCard({ token }: { token: string }) {
   }, [token]);
 
   if (error) return <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>;
-  if (!stats) return null;
+  if (!stats) {
+    return (
+      <div role="status" aria-label="טוען את נתוני הבניין" className="grid grid-cols-2 gap-3">
+        {Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-24 rounded-3xl" />)}
+      </div>
+    );
+  }
 
   return (
     <section className="flex flex-col gap-3">

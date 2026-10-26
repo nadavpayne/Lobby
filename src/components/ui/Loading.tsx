@@ -1,9 +1,16 @@
-/** Full-screen "טוען…" state: a spinning amber ring above the text, so the page never looks frozen. */
+import { Skeleton } from "./Skeleton";
+
+/** Full-page loading state: a skeleton of a typical screen (title, a banner, a row of cards), so the page never looks frozen. */
 export function Loading() {
   return (
-    <div role="status" className="flex flex-col items-center gap-3 pt-10 text-lg text-navy/70">
-      <span aria-hidden className="size-10 animate-spin rounded-full border-4 border-navy/15 border-t-amber" />
-      טוען…
+    <div role="status" aria-label="טוען" className="flex w-full flex-col gap-5 pt-2">
+      <Skeleton className="h-9 w-1/2" />
+      <Skeleton className="h-36 w-full rounded-3xl" />
+      <div className="grid grid-cols-2 gap-3">
+        <Skeleton className="h-24 rounded-3xl" />
+        <Skeleton className="h-24 rounded-3xl" />
+      </div>
+      <Skeleton className="h-20 w-full rounded-3xl" />
     </div>
   );
 }
