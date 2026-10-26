@@ -38,6 +38,7 @@ export function AccountMenu({ account }: { account: HomeAccount }) {
       </li>
       <Section title="העסק שלי" links={businessLinks(account.roles)} />
       <Section title="עוד" links={otherApps(account.roles)} />
+      <Section title="החשבון שלי" links={[{ href: "/account/password", label: "קביעת סיסמה" }]} />
       <li className="border-t border-hairline">
         <button type="button" onClick={account.signOut} className={`${linkClass} w-full gap-2 text-red-700`}>
           <LogOut aria-hidden className="size-4" />
