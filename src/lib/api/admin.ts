@@ -1,6 +1,7 @@
 import type { BillingLine } from "@/lib/admin/billing";
 import type { AdminBuilding, CommitteeReport } from "@/lib/admin/buildings";
 import type { ContentData } from "@/lib/admin/content";
+import type { AdminMap } from "@/lib/admin/map";
 import type { OfferAction } from "@/lib/admin/offers";
 import type { AdminOverview } from "@/lib/admin/overview";
 import type { LogRow } from "@/lib/admin/redemptions";
@@ -19,6 +20,9 @@ import { apiFetch, type ApiError } from "./http";
 export type FormError = ApiError & { errors?: Record<string, string> };
 
 export const fetchOverview = (token: string) => apiFetch<AdminOverview>("/api/admin/overview", { token });
+
+/** Everything with a location for the admin map, plus this month's Google usage. */
+export const fetchAdminMap = (token: string) => apiFetch<AdminMap>("/api/admin/map", { token });
 
 export const searchAll = (token: string, q: string) => apiFetch<SearchHit[]>(`/api/admin/search?q=${encodeURIComponent(q)}`, { token });
 

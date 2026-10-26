@@ -1,5 +1,6 @@
 import type { BusinessStatus } from "@/lib/businesses/types";
 import type { Cashier } from "@/lib/biz/cashiers";
+import type { BizReach } from "@/lib/biz/reach";
 import type { BizRedemption, BizTotals } from "@/lib/biz/redemptionsLog";
 import type { BillingMonth, BizDashboard, BizOffer, BizProfile, Customer, OfferInput, ProfileInput } from "@/lib/biz/types";
 import { apiFetch } from "./http";
@@ -21,6 +22,9 @@ export const fetchMyBusiness = (token: string) => apiFetch<MyBusiness>("/api/biz
 
 /** Dashboard numbers, daily series and top buildings. */
 export const fetchDashboard = (token: string) => apiFetch<BizDashboard>("/api/biz/dashboard", { token });
+
+/** The storefront and how many Lobby households are within 500 m / 1 km. */
+export const fetchReach = (token: string) => apiFetch<BizReach>("/api/biz/reach", { token });
 
 /** Lobby customers who redeemed here, with my notes and tags. */
 export const fetchCustomers = (token: string) => apiFetch<Customer[]>("/api/biz/customers", { token });

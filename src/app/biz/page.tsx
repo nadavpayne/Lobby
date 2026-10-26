@@ -10,6 +10,7 @@ import type { BizDashboard } from "@/lib/biz/types";
 import { formatShekels } from "@/lib/redemptions/money";
 import { useBiz } from "./BizShell";
 import { LogoUpload } from "./LogoUpload";
+import { ReachCard } from "./ReachCard";
 
 const dayMonth = (iso: string) => `${Number(iso.slice(8, 10))}.${Number(iso.slice(5, 7))}`;
 const money = (n: number) => <bdi dir="ltr">{formatShekels(n)}</bdi>;
@@ -98,6 +99,8 @@ export default function BizDashboardScreen() {
           </ul>
         </Card>
       </div>
+
+      <ReachCard token={token} name={business.name} />
     </div>
   );
 }

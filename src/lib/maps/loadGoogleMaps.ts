@@ -6,6 +6,8 @@ type LatLng = { lat: number; lng: number };
 export interface GoogleMap {
   setCenter(p: LatLng): void;
   fitBounds(bounds: unknown, padding?: number): void;
+  getZoom(): number | undefined;
+  addListener(event: "idle", fn: () => void): { remove(): void };
 }
 
 export interface GoogleMarker {
