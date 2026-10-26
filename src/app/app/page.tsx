@@ -1,6 +1,6 @@
 "use client";
 
-import { Store } from "lucide-react";
+import { MapPin, Store } from "lucide-react";
 import Link from "next/link";
 import { PullToRefresh } from "@/components/native/PullToRefresh";
 import { PushPrompt } from "@/components/native/PushPrompt";
@@ -52,6 +52,11 @@ export default function HomeScreen() {
       <SavingsCounter saved={feed.savedTotal} />
       <PushPrompt token={token} text="נשלח התראה כשעסק ליד הבית מצטרף ללובי, וכשמימוש שלכם הושלם בקופה." />
       <ChipRow label="קטגוריות">
+        {feed.home && (
+          <Link href="/app/map" className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-navy px-4 font-medium text-cream transition active:scale-95">
+            <MapPin aria-hidden className="size-4" /> ליד הבית
+          </Link>
+        )}
         {feed.categories.map((c) => (
           <Link
             key={c.slug}

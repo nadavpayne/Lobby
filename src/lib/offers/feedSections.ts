@@ -14,11 +14,12 @@ export function feedSections(offers: ResidentOffer[], now = new Date()): FeedSec
   const live = offers.filter((o) => o.state !== "upcoming");
   const newSince = now.getTime() - NEW_DAYS * 24 * 60 * 60 * 1000;
 
+  // Near my building comes first: location is what Lobby is about.
   const sections: FeedSection[] = [
+    { key: "near", title: "ליד הבניין", offers: live.filter((o) => o.withinRadius).sort((a, b) => a.distanceMeters! - b.distanceMeters!) },
     { key: "featured", title: "מומלצות", offers: live.filter((o) => o.featured) },
     { key: "hot", title: "החמות ביותר", offers: live.filter((o) => o.recentRedemptions > 0).sort((a, b) => b.recentRedemptions - a.recentRedemptions) },
     { key: "new", title: "חדש בלובי", offers: live.filter((o) => Date.parse(o.joinedAt) >= newSince).sort((a, b) => Date.parse(b.joinedAt) - Date.parse(a.joinedAt)) },
-    { key: "near", title: "ליד הבניין", offers: live.filter((o) => o.withinRadius).sort((a, b) => a.distanceMeters! - b.distanceMeters!) },
     { key: "upcoming", title: "נפתחות בקרוב", offers: offers.filter((o) => o.state === "upcoming").sort((a, b) => Date.parse(a.startsAt!) - Date.parse(b.startsAt!)) },
     { key: "permanent", title: "הנחות קבועות", offers: live.filter((o) => !o.endsAt) },
   ];
