@@ -1,5 +1,6 @@
-// Generates the iOS app icon (1024×1024, opaque) and splash screens from the Lobby house mark.
+// Generates the iOS and Android app icons and splash screens from the Lobby house mark.
 // Run: node scripts/make-app-icons.mjs   (after changing the logo)
+import { existsSync, readdirSync, renameSync } from "node:fs";
 import sharp from "sharp";
 
 const NAVY = "#14254A";
@@ -24,4 +25,27 @@ for (const name of ["splash-2732x2732.png", "splash-2732x2732-1.png", "splash-27
   await sharp(art(2732, 0.16)).removeAlpha().png().toFile(`${out}/Splash.imageset/${name}`);
 }
 await sharp(art(1024, 0.6)).removeAlpha().png().toFile("native/app-store-icon-1024.png");
+
+// Android: launcher icons per density (legacy square/round 48dp, adaptive foreground 108dp on the navy background
+// color in values/ic_launcher_background.xml) and every splash.png at the size Capacitor generated it.
+const res = "android/app/src/main/res";
+const DENSITIES = { mdpi: 1, hdpi: 1.5, xhdpi: 2, xxhdpi: 3, xxxhdpi: 4 };
+const circle = (size) => Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}"/></svg>`);
+for (const [d, k] of Object.entries(DENSITIES)) {
+  const icon = Math.round(48 * k), fg = Math.round(108 * k);
+  await sharp(art(icon, 0.6)).png().toFile(`${res}/mipmap-${d}/ic_launcher.png`);
+  await sharp(art(icon, 0.6)).composite([{ input: circle(icon), blend: "dest-in" }]).png().toFile(`${res}/mipmap-${d}/ic_launcher_round.png`);
+  // The adaptive mask crops to the middle ~66%, so the mark sits at 40% of the 108dp canvas.
+  await sharp(art(fg, 0.4)).png().toFile(`${res}/mipmap-${d}/ic_launcher_foreground.png`);
+}
+for (const dir of readdirSync(res).filter((n) => n.startsWith("drawable"))) {
+  const file = `${res}/${dir}/splash.png`;
+  if (!existsSync(file)) continue;
+  const { width, height } = await sharp(file).metadata();
+  const side = Math.max(width, height);
+  const square = await sharp(art(side, 0.16)).png().toBuffer();
+  // Written beside and renamed: sharp can't overwrite the file it just read the size of.
+  await sharp(square).extract({ left: Math.round((side - width) / 2), top: Math.round((side - height) / 2), width, height }).png().toFile(`${file}.tmp`);
+  renameSync(`${file}.tmp`, file);
+}
 console.log("icons and splash written");

@@ -6,6 +6,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Field, inputClass } from "@/components/Field";
 import { primaryButton } from "@/components/ui";
 import { googleEnabled } from "@/lib/auth/authActions";
+import { native } from "@/lib/native";
 import { GoogleButton } from "./GoogleButton";
 import { PasswordLogin } from "./PasswordLogin";
 
@@ -89,8 +90,9 @@ export function EmailCodeLogin({ supabase, shouldCreateUser, title, subtitle }: 
         {subtitle && <p className="text-lg">{subtitle}</p>}
       </div>
 
-      {/* Google always creates the account if it's new; the role checks after sign-in still decide what it can open. */}
-      {googleEnabled && step !== "code" && (
+      {/* Google always creates the account if it's new; the role checks after sign-in still decide what it can open.
+          Website only: Google blocks its sign-in inside app web views, and Apple would then require Sign in with Apple. */}
+      {googleEnabled && !native.isApp && step !== "code" && (
         <>
           <GoogleButton supabase={supabase} />
           <div className="flex items-center gap-3 text-navy/60" aria-hidden>
