@@ -14,7 +14,7 @@ interface Props {
 export function ResidentShell({ nav, buildingName, children }: Props) {
   return (
     <>
-      <header className="bg-linear-to-b from-navy from-40% to-[#2e5584] px-4 pt-safe pb-3 text-white">
+      <header className="bg-linear-to-b from-navy from-40% to-navy-light px-4 pt-safe pb-3 text-white">
         {/* Logo | centered building | empty column as wide as the logo, so the text sits in the true center. */}
         <div className="mx-auto grid max-w-lg grid-cols-[2.5rem_1fr_2.5rem] items-center gap-3">
           <Logo className="size-10" tone="dark" />

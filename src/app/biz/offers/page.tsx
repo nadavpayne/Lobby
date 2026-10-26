@@ -93,7 +93,7 @@ export default function OffersScreen() {
             <div className="flex flex-wrap gap-1.5">
               <OfferStatus offer={o} />
               {(o.startsOn || o.endsOn) && (
-                <Tag tint="sky" icon={<CalendarRange />}>{o.startsOn ? dayMonth(o.startsOn) : "מעכשיו"} – {o.endsOn ? dayMonth(o.endsOn) : "ללא סיום"}</Tag>
+                <Tag tint="sky" icon={<CalendarRange />}>{o.startsOn ? `מ-${dayMonth(o.startsOn)}` : "מעכשיו"}{o.endsOn ? ` עד ${dayMonth(o.endsOn)}` : ", ללא סיום"}</Tag>
               )}
             </div>
             {o.terms && <p className="text-sm text-navy/70">תנאים: {o.terms}</p>}

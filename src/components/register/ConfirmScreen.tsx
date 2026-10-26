@@ -101,7 +101,7 @@ export function ConfirmScreen({ scan, businessName, station, onApprove, onReject
             enterKeyHint="done"
             placeholder="0.00"
             dir="ltr"
-            className="min-w-0 flex-1 bg-transparent text-right text-3xl font-extrabold outline-none placeholder:text-navy/20"
+            className="min-w-0 flex-1 rounded-lg bg-transparent text-right text-3xl font-extrabold placeholder:text-navy/20"
           />
         </div>
         <div className="flex justify-between text-[15px]">

@@ -83,7 +83,7 @@ export function QrSheet({ authToken, businessId, businessName, discountPercent, 
                       <span role="timer" dir="ltr" className="font-bold tabular-nums">{formatCountdown(state.secondsLeft)}</span>
                     </div>
                     <div className="h-1.5 overflow-hidden rounded-full bg-cream">
-                      <div className="h-1.5 rounded-full bg-amber transition-[width] duration-1000 ease-linear" style={{ width: `${(state.secondsLeft / VALID_SECONDS) * 100}%` }} />
+                      <div className="h-1.5 w-full origin-right rounded-full bg-amber transition-transform duration-1000 ease-linear" style={{ transform: `scaleX(${state.secondsLeft / VALID_SECONDS})` }} />
                     </div>
                   </div>
                   <div className="h-px w-full bg-hairline" />

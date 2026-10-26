@@ -22,7 +22,7 @@ const COLUMNS: Column<AdminDisputeRow>[] = [
   { key: "recorded", header: "נרשם", align: "end", render: (d) => money(d.recordedBillAgorot) },
   { key: "claimed", header: "לפי הדייר", align: "end", render: (d) => money(d.claimedBillAgorot) },
   { key: "diff", header: "הפרש", align: "end", render: (d) => (d.claimedBillAgorot === null ? "—" : <span className="font-bold">{money(d.claimedBillAgorot - d.recordedBillAgorot)}</span>) },
-  { key: "photo", header: "קבלה", render: (d) => (d.hasPhoto ? <Camera aria-label="יש צילום קבלה" className="size-5" /> : <span className="text-navy/40">—</span>) },
+  { key: "photo", header: "קבלה", render: (d) => (d.hasPhoto ? <Camera aria-label="יש צילום קבלה" className="size-5" /> : <span className="text-navy/40">אין</span>) },
   { key: "status", header: "סטטוס", render: (d) => <span className="flex flex-col items-start gap-1"><Tag tint={STATUS_LABEL[d.status][1]}>{STATUS_LABEL[d.status][0]}</Tag><span className="text-sm text-navy/60">{ageLabel(d.createdAt)}</span></span> },
 ];
 

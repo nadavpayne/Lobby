@@ -1,3 +1,4 @@
+import { TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { Tag } from "@/components/ui";
 import type { DisputeSignal } from "@/lib/disputes/types";
@@ -9,8 +10,8 @@ const pct = (rate: number) => `${Math.round(rate * 100)}%`;
 export function DisputeSignalTag({ signal }: { signal: DisputeSignal | undefined }) {
   if (!signal || signal.disputes === 0) return null;
   return (
-    <Tag tint={signal.flagged ? "rose" : "white"}>
-      {signal.flagged ? "⚠ " : ""}{signal.disputes} דיווחים · {pct(signal.rate)}
+    <Tag tint={signal.flagged ? "rose" : "white"} icon={signal.flagged ? <TriangleAlert /> : undefined}>
+      {signal.disputes} דיווחים · {pct(signal.rate)}
     </Tag>
   );
 }

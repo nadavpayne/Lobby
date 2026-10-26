@@ -3,7 +3,7 @@ export function Skeleton({ className = "h-5 w-full" }: { className?: string }) {
   return (
     <span
       aria-hidden
-      className={`block animate-shimmer rounded-xl bg-[linear-gradient(90deg,rgb(31_58_95/0.06),rgb(31_58_95/0.12),rgb(31_58_95/0.06))] bg-[length:200%_100%] ${className}`}
+      className={`block animate-shimmer rounded-xl bg-linear-to-r from-navy/5 via-navy/10 to-navy/5 bg-[length:200%_100%] ${className}`}
     />
   );
 }

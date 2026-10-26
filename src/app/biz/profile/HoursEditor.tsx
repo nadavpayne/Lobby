@@ -29,7 +29,7 @@ export function HoursEditor({ hours, onChange }: { hours: WeekHours; onChange: (
             {range ? (
               <span dir="ltr" className="inline-flex items-center gap-2">
                 <input type="time" aria-label={`${label} פתיחה`} value={range[0]} onChange={(e) => setDay(day, [e.target.value, range[1]])} className={timeInput} />
-                –
+                <span className="text-navy/60">עד</span>
                 <input type="time" aria-label={`${label} סגירה`} value={range[1]} onChange={(e) => setDay(day, [range[0], e.target.value])} className={timeInput} />
               </span>
             ) : (

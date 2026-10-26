@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 /** PWA manifest: residents open Lobby from a WhatsApp link and can add it to their home screen. */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "לובי — מועדון הטבות לבניין",
+    name: "לובי | מועדון הטבות לבניין",
     short_name: "לובי",
     lang: "he",
     dir: "rtl",

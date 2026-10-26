@@ -11,6 +11,10 @@
   --color-warm: #f4efe9;
   --color-muted: #4a5878;
   --color-hairline: #d3dae6;
+  /* On navy surfaces: the header gradient's lighter end, secondary text, and hairlines. */
+  --color-navy-light: #2e5584;
+  --color-mist: #b7c2d9;
+  --color-navy-line: #2a3a5e;
   /* Soft card tints (used by Card / StatTile / Tag). Text on them stays navy. */
   --color-sky: #e3edf9;
   --color-peach: #fde9d2;
@@ -40,6 +44,18 @@
     from { background-position: 200% 0; }
     to { background-position: -200% 0; }
   }
+}
+
+html, body {
+  /* Nothing may push the page sideways on phones; carousels scroll inside their own box. */
+  overflow-x: clip;
+}
+
+/* Keyboard focus: a navy ring with a light gap, so it reads on the cream page and on the navy header alike. */
+:focus-visible {
+  outline: 3px solid var(--color-navy);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-cream);
 }
 
 body {
@@ -78,8 +94,8 @@ body {
 
 /* Register scan line: sweeps up and down the viewfinder (stops for reduced motion via the rule above). */
 @keyframes lobby-scan {
-  0%, 100% { top: 28px; }
-  50% { top: 248px; }
+  0%, 100% { transform: translateY(28px); }
+  50% { transform: translateY(248px); }
 }
 .lobby-scanline {
   animation: lobby-scan 2.6s ease-in-out infinite;

@@ -36,7 +36,7 @@ export function NotificationPhone() {
   return (
     <div
       aria-hidden
-      className="mx-auto flex h-[30rem] w-64 flex-col overflow-hidden rounded-[2.5rem] border-[10px] border-navy bg-gradient-to-b from-navy-deep via-navy to-[#2a3f6e] p-3 shadow-xl"
+      className="mx-auto flex h-[30rem] w-64 flex-col overflow-hidden rounded-[2.5rem] border-[10px] border-navy bg-gradient-to-b from-navy-deep via-navy to-navy-light p-3 shadow-xl"
     >
       <div className="pt-6 pb-5 text-center text-white">
         <p className="text-sm text-white/70">יום שישי, בוקר</p>

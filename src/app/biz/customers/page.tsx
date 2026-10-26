@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Users } from "lucide-react";
+import { Search, StickyNote, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { inputClass } from "@/components/Field";
 import { Chip, ChipRow, DataTable, EmptyState, Skeleton, Tag, type Column } from "@/components/ui";
@@ -19,7 +19,7 @@ const COLUMNS: Column<Customer>[] = [
   { key: "visits", header: "ביקורים", align: "end", render: (c) => c.visits },
   { key: "spent", header: "סה״כ קנייה", align: "end", render: (c) => <bdi dir="ltr">{formatShekels(c.totalSpent)}</bdi> },
   { key: "last", header: "ביקור אחרון", render: (c) => date.format(new Date(c.lastVisit)) },
-  { key: "tags", header: "תגיות", render: (c) => <span className="flex gap-1">{c.tags.map((t) => <Tag key={t} tint="lilac">{t}</Tag>)}{c.note && <Tag tint="white">📝</Tag>}</span> },
+  { key: "tags", header: "תגיות", render: (c) => <span className="flex gap-1">{c.tags.map((t) => <Tag key={t} tint="lilac">{t}</Tag>)}{c.note && <Tag tint="white" icon={<StickyNote />}>הערה</Tag>}</span> },
 ];
 
 /** Lobby customers: search, filter by building or tag, open one to keep a note and tags. */

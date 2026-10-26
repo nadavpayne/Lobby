@@ -43,7 +43,7 @@ export function OfferReview({ token, offer: o, onChanged }: Props) {
         {o.featured && <Tag tint="lilac" icon={<Star />}>מומלצת</Tag>}
       </div>
       <p className="text-sm">{o.description}{o.terms && <span className="text-navy/60"> · תנאים: {o.terms}</span>}</p>
-      {(o.startsAt || o.endsAt) && <p className="text-sm text-navy/60">{o.startsAt ? day.format(new Date(o.startsAt)) : "מעכשיו"} – {o.endsAt ? day.format(new Date(o.endsAt)) : "ללא סיום"}</p>}
+      {(o.startsAt || o.endsAt) && <p className="text-sm text-navy/60">{o.startsAt ? `מ-${day.format(new Date(o.startsAt))}` : "מעכשיו"}{o.endsAt ? ` עד ${day.format(new Date(o.endsAt))}` : ", ללא סיום"}</p>}
       <div className="flex flex-wrap items-center gap-2">
         {o.approved
           ? <Button size="sm" variant="ghost" onClick={() => run({ action: "unapprove" })} disabled={busy}><Undo2 aria-hidden className="size-4" /> ביטול אישור</Button>

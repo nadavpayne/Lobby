@@ -92,10 +92,10 @@ export function ScanScreen({ businessName, station, busy, error, onCode, onSignO
       <header className="flex items-center justify-between gap-3">
         <div>
           <h1 className="text-[22px] font-extrabold">סריקת הטבה</h1>
-          <p className="text-sm text-[#B7C2D9]">{businessName} · {station}</p>
+          <p className="text-sm text-mist">{businessName} · {station}</p>
         </div>
         {onSignOut && (
-          <button type="button" onClick={onSignOut} aria-label="התנתקות" className="grid size-11 place-items-center rounded-xl border border-[#2A3A5E]">
+          <button type="button" onClick={onSignOut} aria-label="התנתקות" className="grid size-11 place-items-center rounded-xl border border-navy-line">
             <LogOut aria-hidden className="size-5 rtl:-scale-x-100" />
           </button>
         )}
@@ -104,7 +104,7 @@ export function ScanScreen({ businessName, station, busy, error, onCode, onSignO
       <div className="flex flex-1 flex-col items-center justify-center gap-6">
         <div className="relative size-[280px] overflow-hidden rounded-[28px] bg-white/5">
           <video ref={video} aria-label="מצלמת הסריקה" className={`size-full object-cover ${camera === "on" ? "" : "hidden"}`} />
-          {camera === "on" && !busy && <span aria-hidden className="lobby-scanline absolute inset-x-7 h-[3px] rounded-full bg-amber" />}
+          {camera === "on" && !busy && <span aria-hidden className="lobby-scanline absolute inset-x-7 top-0 h-[3px] rounded-full bg-amber" />}
           {native.isApp && !busy && (
             <button type="button" onClick={scanNative} className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-lg font-bold">
               <Camera aria-hidden className="size-10" />
@@ -112,7 +112,7 @@ export function ScanScreen({ businessName, station, busy, error, onCode, onSignO
             </button>
           )}
           {!native.isApp && camera === "off" && (
-            <button type="button" onClick={() => { setCamera("starting"); setAttempt((n) => n + 1); }} className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center text-[#B7C2D9]">
+            <button type="button" onClick={() => { setCamera("starting"); setAttempt((n) => n + 1); }} className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center text-mist">
               <Camera aria-hidden className="size-8" />
               אין גישה למצלמה. אפשרו מצלמה בדפדפן ולחצו כאן, או הקלידו קוד גיבוי.
             </button>
@@ -122,7 +122,7 @@ export function ScanScreen({ businessName, station, busy, error, onCode, onSignO
         </div>
         <div className="flex flex-col items-center gap-1.5 text-center">
           <p className="text-[17px] font-semibold">כוונו את המצלמה לקוד בטלפון של הדייר</p>
-          <p className="max-w-[290px] text-sm leading-5 text-[#B7C2D9]">הבדיקה אוטומטית: שהקוד בתוקף, ושהדירה עוד לא מימשה הטבה אצלכם החודש</p>
+          <p className="max-w-[290px] text-sm leading-5 text-mist">הבדיקה אוטומטית: שהקוד בתוקף, ושהדירה עוד לא מימשה הטבה אצלכם החודש</p>
           {error && <p role="alert" className="mt-2 rounded-xl bg-red-500/20 px-3 py-2 text-sm">{error}</p>}
         </div>
       </div>
@@ -138,7 +138,7 @@ export function ScanScreen({ businessName, station, busy, error, onCode, onSignO
           aria-label={torch ? "כיבוי פנס" : "הפעלת פנס"}
           aria-pressed={torch === true}
           title={torch === null ? "אין פנס במכשיר הזה" : undefined}
-          className={`grid size-[52px] place-items-center rounded-xl border border-[#2A3A5E] disabled:opacity-40 ${torch ? "bg-amber text-navy" : ""}`}
+          className={`grid size-[52px] place-items-center rounded-xl border border-navy-line disabled:opacity-40 ${torch ? "bg-amber text-navy" : ""}`}
         >
           <Flashlight aria-hidden className="size-5" />
         </button>}

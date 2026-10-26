@@ -10,7 +10,7 @@ export function ShareWithCommittee() {
 
   async function share() {
     const result = await native.share.share({
-      title: "לובי — מועדון הטבות לבניין",
+      title: "לובי | מועדון הטבות לבניין",
       text: "מצאתי מועדון הטבות לבנייני מגורים: 10% הנחה בעסקים בשכונה. שווה לבדוק לבניין שלנו:",
       url: window.location.origin,
     });

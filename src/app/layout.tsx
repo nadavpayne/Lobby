@@ -10,7 +10,7 @@ const rubik = Rubik({ variable: "--font-rubik", subsets: ["hebrew", "latin"] });
 const montserrat = Montserrat({ variable: "--font-montserrat", subsets: ["latin"], weight: "900" });
 
 export const metadata: Metadata = {
-  title: "לובי — מועדון הטבות לבניין",
+  title: "לובי | מועדון הטבות לבניין",
   description: "מועדון הטבות סגור לדיירי בנייני מגורים",
   icons: { icon: "/logo.svg", apple: "/icon-192.png" },
 };

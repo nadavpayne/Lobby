@@ -46,10 +46,10 @@ export interface HeroSlide {
 export function heroSlides(feed: Pick<Feed, "offers" | "banners">): HeroSlide[] {
   if (feed.banners.length > 0) {
     return feed.banners.map((b) => ({
-      key: b.id, badge: "✨ חדש בלובי", kicker: b.subtitle, title: b.title, href: b.businessId && `/app/b/${b.businessId}`, imageUrl: b.imageUrl,
+      key: b.id, badge: "חדש בלובי", kicker: b.subtitle, title: b.title, href: b.businessId && `/app/b/${b.businessId}`, imageUrl: b.imageUrl,
     }));
   }
   return heroOffers(feed.offers).map((o) => ({
-    key: o.businessId, badge: "🔥 הכי מבוקש בבניינים", kicker: o.businessName, title: o.title, href: `/app/b/${o.businessId}`, imageUrl: null,
+    key: o.businessId, badge: "הכי מבוקש בבניינים", kicker: o.businessName, title: o.title, href: `/app/b/${o.businessId}`, imageUrl: null,
   }));
 }

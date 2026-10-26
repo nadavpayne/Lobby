@@ -74,7 +74,7 @@ export function HeroBanner({ slides }: { slides: HeroSlide[] }) {
         <div className="flex justify-center gap-1.5">
           {slides.map((s, i) => (
             <button key={s.key} type="button" onClick={() => go(i)} aria-label={`שקופית ${i + 1}`} aria-current={i === index} className="grid size-6 place-items-center">
-              <span className={`h-2 rounded-full transition-all ${i === index ? "w-5 bg-navy" : "w-2 bg-navy/25"}`} />
+              <span className={`h-2 rounded-full transition-colors ${i === index ? "w-5 bg-navy" : "w-2 bg-navy/25"}`} />
             </button>
           ))}
         </div>
