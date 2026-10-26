@@ -36,7 +36,7 @@ export function validateProfile(raw: unknown): ProfileValidation {
   const address = text(r.address);
   const hours = cleanHours(r.hours);
   const branches: Branch[] = Array.isArray(r.branches)
-    ? r.branches.map((b) => ({ name: text(b?.name) ?? "", address: text(b?.address) ?? "", placeId: text(b?.placeId) ?? undefined })).filter((b) => b.name || b.address)
+    ? r.branches.map((b) => ({ name: text(b?.name) ?? "", address: text(b?.address) ?? "", ...(text(b?.placeId) && { placeId: text(b?.placeId)! }) })).filter((b) => b.name || b.address)
     : [];
 
   if (description && description.length > 400) errors.description = "עד 400 תווים";
