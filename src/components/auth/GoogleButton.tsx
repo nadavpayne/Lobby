@@ -1,8 +1,8 @@
 "use client";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { useState } from "react";
-import { signInWithGoogle } from "@/lib/auth/authActions";
+import { useEffect, useState } from "react";
+import { oauthError, signInWithGoogle } from "@/lib/auth/authActions";
 
 /** Google's "G" mark, as its sign-in branding asks. */
 function GoogleMark() {
@@ -18,8 +18,20 @@ function GoogleMark() {
 
 /** "Continue with Google": leaves for Google and comes back signed in. */
 export function GoogleButton({ supabase }: { supabase: SupabaseClient }) {
-  const [error, setError] = useState<string | null>(null);
+  // A failed Google round trip comes back to this page with the reason in the address (?error= or #error=):
+  // show it instead of silently showing the login again.
+  const [error, setError] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    const params = new URLSearchParams(`${window.location.search.slice(1)}&${window.location.hash.slice(1)}`);
+    const reason = params.get("error_description") ?? params.get("error");
+    return reason ? oauthError(reason) : null;
+  });
   const [pending, setPending] = useState(false);
+
+  // Then clean the address, so a refresh doesn't show the error again.
+  useEffect(() => {
+    if (/[?#&]error/.test(window.location.href)) window.history.replaceState(null, "", window.location.pathname);
+  }, []);
 
   /** Starts the Google redirect; only an error brings us back here. */
   async function start() {

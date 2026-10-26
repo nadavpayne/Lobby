@@ -30,6 +30,14 @@ export async function signInWithGoogle(supabase: SupabaseClient): Promise<string
   return error && message(error, "לא הצלחנו להתחבר עם Google. נסו שוב.");
 }
 
+/** Hebrew for the reason a Google round trip came back without a session (the raw reason is kept for support). */
+export function oauthError(reason: string): string {
+  if (/access_denied|cancel/i.test(reason)) return "הכניסה עם Google בוטלה.";
+  if (/signups? not allowed|signup is disabled/i.test(reason)) return "אין עדיין חשבון לאימייל הזה. דיירים מצטרפים דרך הקישור של ועד הבית.";
+  if (/database error/i.test(reason)) return "לא הצלחנו ליצור את החשבון. נסו שוב, ואם זה חוזר פנו לתמיכה.";
+  return `הכניסה עם Google לא הצליחה (${reason.slice(0, 120)}). נסו שוב או היכנסו עם קוד למייל.`;
+}
+
 /** Email + password sign-in for accounts that set a password. */
 export async function signInWithPassword(supabase: SupabaseClient, email: string, password: string): Promise<string | null> {
   const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
