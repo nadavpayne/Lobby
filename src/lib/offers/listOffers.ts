@@ -1,7 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Membership } from "@/lib/buildings/membership";
-import { distanceMeters } from "@/lib/geo/distance";
+import { nearbyBusinesses } from "@/lib/geo/nearby";
 import { currentPeriod, nextPeriodStart } from "@/lib/period";
 import type { WeekHours } from "./hours";
 import type { ResidentOffer } from "./types";
@@ -37,6 +37,8 @@ export interface BusinessWithOffers {
 }
 
 const RECENT_DAYS = 30;
+// Distances are shown for every business in the city; the resident's own radius decides "near".
+const DISTANCE_REACH_METERS = 50_000;
 
 /** Active businesses the building's residents may use: same city; demo buildings see only the demo business. */
 export async function findBusinesses(db: SupabaseClient, m: Membership, businessId?: string): Promise<BusinessWithOffers[]> {
@@ -113,8 +115,11 @@ export async function listOffers(db: SupabaseClient, m: Membership): Promise<Res
   if (tokens.error) throw tokens.error;
   const usedAt = new Set(used.data.map((r) => r.business_id as string));
   const showingAt = new Set(tokens.data.map((t) => t.business_id as string));
-  const recent = await recentRedemptions(db, businesses.map((b) => b.id));
   const home = m.building.lat !== null && m.building.lng !== null ? { lat: m.building.lat, lng: m.building.lng } : null;
+  const [recent, distances] = await Promise.all([
+    recentRedemptions(db, businesses.map((b) => b.id)),
+    home ? nearbyBusinesses(db, home, DISTANCE_REACH_METERS) : Promise.resolve(new Map<string, number>()),
+  ]);
 
   const offers: ResidentOffer[] = [];
   for (const b of businesses) {
@@ -143,7 +148,8 @@ export async function listOffers(db: SupabaseClient, m: Membership): Promise<Res
       startsAt: offer.starts_at,
       endsAt: offer.ends_at,
       joinedAt: b.created_at,
-      distanceMeters: home && b.lat !== null && b.lng !== null ? distanceMeters(home, { lat: b.lat, lng: b.lng }) : null,
+      distanceMeters: distances.get(b.id) ?? null,
+      withinRadius: (distances.get(b.id) ?? Infinity) <= m.radiusMeters,
       featured: offer.featured,
       recentRedemptions: recent.get(b.id) ?? 0,
       remaining,

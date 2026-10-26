@@ -18,7 +18,7 @@ export function feedSections(offers: ResidentOffer[], now = new Date()): FeedSec
     { key: "featured", title: "מומלצות", offers: live.filter((o) => o.featured) },
     { key: "hot", title: "החמות ביותר", offers: live.filter((o) => o.recentRedemptions > 0).sort((a, b) => b.recentRedemptions - a.recentRedemptions) },
     { key: "new", title: "חדש בלובי", offers: live.filter((o) => Date.parse(o.joinedAt) >= newSince).sort((a, b) => Date.parse(b.joinedAt) - Date.parse(a.joinedAt)) },
-    { key: "near", title: "ליד הבניין", offers: live.filter((o) => o.distanceMeters !== null).sort((a, b) => a.distanceMeters! - b.distanceMeters!) },
+    { key: "near", title: "ליד הבניין", offers: live.filter((o) => o.withinRadius).sort((a, b) => a.distanceMeters! - b.distanceMeters!) },
     { key: "upcoming", title: "נפתחות בקרוב", offers: offers.filter((o) => o.state === "upcoming").sort((a, b) => Date.parse(a.startsAt!) - Date.parse(b.startsAt!)) },
     { key: "permanent", title: "הנחות קבועות", offers: live.filter((o) => !o.endsAt) },
   ];

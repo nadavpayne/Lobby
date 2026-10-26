@@ -27,6 +27,8 @@ export interface ResidentOffer {
   joinedAt: string;
   /** From my building; null when either address has no coordinates. */
   distanceMeters: number | null;
+  /** Within my building's radius (storefront or a branch): the "near" list and the map. */
+  withinRadius: boolean;
   /** Starred by the Lobby operator (drives "מומלצות"). */
   featured: boolean;
   /** Redeemed in the last 30 days, all buildings (drives "החמות ביותר"). */
@@ -63,6 +65,9 @@ export interface Feed {
   categories: FeedCategory[];
   /** What my apartment saved since joining. */
   savedTotal: number;
+  /** My building on the map (null until its address has a location) and how far "near" reaches. */
+  home: { lat: number; lng: number } | null;
+  radiusMeters: number;
 }
 
 /** One line in "my benefits" (voided = the business cancelled it). */

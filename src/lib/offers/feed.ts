@@ -47,5 +47,7 @@ export async function getFeed(db: SupabaseClient, m: Membership): Promise<Feed> 
     banners: banners.map((b) => (b.businessId && !visible.has(b.businessId) ? { ...b, businessId: null } : b)),
     categories: categories.filter((c) => used.has(c.slug)),
     savedTotal: saved,
+    home: m.building.lat !== null && m.building.lng !== null ? { lat: m.building.lat, lng: m.building.lng } : null,
+    radiusMeters: m.radiusMeters,
   };
 }

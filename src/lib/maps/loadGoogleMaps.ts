@@ -1,16 +1,26 @@
 // Loads the Google Maps JavaScript API once, only when a map is actually shown (each load is billed).
 // In the native app this is where the Capacitor Google Maps SDK would be swapped in.
 
-/** The small part of google.maps that MapView uses. */
-export interface GoogleMaps {
-  Map: new (el: HTMLElement, options: Record<string, unknown>) => { setCenter(p: LatLng): void };
-  Marker: new (options: Record<string, unknown>) => {
-    setPosition(p: LatLng): void;
-    addListener(event: "dragend", fn: (e: { latLng: { lat(): number; lng(): number } }) => void): void;
-  };
+type LatLng = { lat: number; lng: number };
+
+export interface GoogleMap {
+  setCenter(p: LatLng): void;
+  fitBounds(bounds: unknown, padding?: number): void;
 }
 
-type LatLng = { lat: number; lng: number };
+export interface GoogleMarker {
+  setPosition(p: LatLng): void;
+  setMap(map: GoogleMap | null): void;
+  addListener(event: "dragend" | "click", fn: (e?: { latLng: { lat(): number; lng(): number } }) => void): void;
+}
+
+/** The small part of google.maps that MapView uses. */
+export interface GoogleMaps {
+  Map: new (el: HTMLElement, options: Record<string, unknown>) => GoogleMap;
+  Marker: new (options: Record<string, unknown>) => GoogleMarker;
+  LatLngBounds: new () => { extend(p: LatLng): void };
+  SymbolPath: { CIRCLE: unknown };
+}
 
 /** The browser key; maps are off when it isn't set. */
 export const MAPS_WEB_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_WEB_KEY ?? "";

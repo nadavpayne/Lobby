@@ -36,7 +36,7 @@ export function validateProfile(raw: unknown): ProfileValidation {
   const address = text(r.address);
   const hours = cleanHours(r.hours);
   const branches: Branch[] = Array.isArray(r.branches)
-    ? r.branches.map((b) => ({ name: text(b?.name) ?? "", address: text(b?.address) ?? "" })).filter((b) => b.name || b.address)
+    ? r.branches.map((b) => ({ name: text(b?.name) ?? "", address: text(b?.address) ?? "", placeId: text(b?.placeId) ?? undefined })).filter((b) => b.name || b.address)
     : [];
 
   if (description && description.length > 400) errors.description = "עד 400 תווים";
@@ -48,7 +48,8 @@ export function validateProfile(raw: unknown): ProfileValidation {
   }
 
   if (Object.keys(errors).length > 0) return { ok: false, errors };
-  return { ok: true, data: { description, phone: phone!, address: address!, hours: hours!, branches } };
+  const pin = typeof r.pin === "object" && r.pin !== null ? (r.pin as { lat: number; lng: number }) : null; // range-checked on the server
+  return { ok: true, data: { description, phone: phone!, address: address!, hours: hours!, branches, placeId: text(r.placeId) ?? undefined, pin } };
 }
 
 /** A staff terminal PIN: exactly 4 digits (same rule as at sign-up). */

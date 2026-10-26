@@ -78,6 +78,8 @@ export interface BillingMonth {
 export interface Branch {
   name: string;
   address: string;
+  /** The branch's picked address (kept across saves so its map location survives). */
+  placeId?: string;
 }
 
 /** What the owner can edit about the business. */
@@ -87,6 +89,9 @@ export interface ProfileInput {
   address: string;
   hours: WeekHours;
   branches: Branch[];
+  /** Set only when the owner picked a new business address; pin = where they dragged the storefront pin. */
+  placeId?: string;
+  pin?: { lat: number; lng: number } | null;
 }
 
 /** The business profile screen. */

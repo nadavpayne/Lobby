@@ -7,6 +7,8 @@ export interface Membership {
   status: MemberStatus;
   apartmentId: string;
   apartmentNumber: string;
+  /** How far "near my building" reaches, in meters. */
+  radiusMeters: number;
   building: {
     id: string; name: string | null; address: string; city: string; lat: number | null; lng: number | null; apartmentCount: number | null;
     inviteSlug: string; active: boolean; isDemo: boolean; committeeName: string | null; committeePhone: string | null;
@@ -16,6 +18,7 @@ export interface Membership {
 interface Row {
   role: MemberRole;
   status: MemberStatus;
+  radius_preference: number;
   apartments: {
     id: string;
     apartment_number: string;
@@ -30,7 +33,7 @@ interface Row {
 export async function getMembership(db: SupabaseClient, userId: string): Promise<Membership | null> {
   const { data, error } = await db
     .from("residents")
-    .select("role, status, apartments(id, apartment_number, buildings(id, name, address, city, lat, lng, apartment_count, invite_slug, active, is_demo, committee_name, committee_phone))")
+    .select("role, status, radius_preference, apartments(id, apartment_number, buildings(id, name, address, city, lat, lng, apartment_count, invite_slug, active, is_demo, committee_name, committee_phone))")
     .eq("id", userId)
     .maybeSingle<Row>();
   if (error) throw error;
@@ -42,6 +45,7 @@ export async function getMembership(db: SupabaseClient, userId: string): Promise
     status: data.status,
     apartmentId: apt.id,
     apartmentNumber: apt.apartment_number,
+    radiusMeters: data.radius_preference,
     building: {
       id: b.id, name: b.name, address: b.address, city: b.city, lat: b.lat, lng: b.lng, apartmentCount: b.apartment_count,
       inviteSlug: b.invite_slug, active: b.active, isDemo: b.is_demo, committeeName: b.committee_name, committeePhone: b.committee_phone,

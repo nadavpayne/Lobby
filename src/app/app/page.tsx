@@ -9,9 +9,15 @@ import { Carousel } from "@/components/resident/Carousel";
 import { HeroBanner } from "@/components/resident/HeroBanner";
 import { SavingsCounter } from "@/components/resident/SavingsCounter";
 import { CategoryIcon, ChipRow, EmptyState, Skeleton, SkeletonCard } from "@/components/ui";
-import { feedSections, heroSlides } from "@/lib/offers/feedSections";
+import { feedSections, heroSlides, type FeedSection } from "@/lib/offers/feedSections";
 import { useFeed } from "@/lib/offers/useFeed";
 import { useResident } from "./ResidentGate";
+
+// "See more" links per carousel.
+const MORE: Partial<Record<FeedSection["key"], { moreHref: string; moreLabel?: string }>> = {
+  permanent: { moreHref: "/app/categories" },
+  near: { moreHref: "/app/map", moreLabel: "מפה" },
+};
 
 /** Placeholder while the feed loads. */
 function FeedSkeleton() {
@@ -57,7 +63,7 @@ export default function HomeScreen() {
         ))}
       </ChipRow>
       {feedSections(feed.offers).map((s) => (
-        <Carousel key={s.key} title={s.title} moreHref={s.key === "permanent" ? "/app/categories" : undefined}>
+        <Carousel key={s.key} title={s.title} {...MORE[s.key]}>
           {s.offers.map((o) => <BenefitCard key={o.businessId} offer={o} categories={feed.categories} />)}
         </Carousel>
       ))}

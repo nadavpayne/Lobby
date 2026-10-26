@@ -10,16 +10,16 @@ function offer(id: string, o: Partial<ResidentOffer>): ResidentOffer {
   return {
     businessId: id, businessName: id, category: "food", address: "", businessDescription: null, logoUrl: null, coverUrl: null,
     lat: null, lng: null, hours: null, branches: [], title: "", discountPercent: 10, description: "", terms: null,
-    startsAt: null, endsAt: null, joinedAt: "2026-01-01T00:00:00Z", distanceMeters: null, recentRedemptions: 0,
+    startsAt: null, endsAt: null, joinedAt: "2026-01-01T00:00:00Z", distanceMeters: null, withinRadius: false, recentRedemptions: 0,
     remaining: null, state: "available", featured: false, ...o,
   };
 }
 
 test("feed: sections pick and order the right offers", () => {
   const offers = [
-    offer("busy", { recentRedemptions: 9, distanceMeters: 800, endsAt: "2026-12-31", featured: true }),
-    offer("quiet", { recentRedemptions: 2, distanceMeters: 120 }),
-    offer("fresh", { joinedAt: "2026-10-20T00:00:00Z" }),
+    offer("busy", { recentRedemptions: 9, distanceMeters: 800, withinRadius: true, endsAt: "2026-12-31", featured: true }),
+    offer("quiet", { recentRedemptions: 2, distanceMeters: 120, withinRadius: true }),
+    offer("fresh", { joinedAt: "2026-10-20T00:00:00Z", distanceMeters: 4200 }), // in the city but outside my radius
     offer("soon", { state: "upcoming", startsAt: "2026-11-04T00:00:00Z", recentRedemptions: 50 }),
   ];
   const byKey = Object.fromEntries(feedSections(offers, now).map((s) => [s.key, s.offers.map((o) => o.businessId)]));

@@ -3,11 +3,12 @@
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { SettingsLinks } from "@/components/account/SettingsLinks";
+import { AddressInput, addressLookupOn } from "@/components/address/AddressInput";
 import { Field, inputClass } from "@/components/Field";
 import { Button, Card, DetailRow, Skeleton } from "@/components/ui";
 import { fetchProfile, saveProfile } from "@/lib/api/biz";
 import { isApiError } from "@/lib/api/http";
-import type { BizProfile } from "@/lib/biz/types";
+import type { BizProfile, Branch } from "@/lib/biz/types";
 import { validateProfile, type ProfileErrors } from "@/lib/biz/validateProfile";
 import { CATEGORIES, type Category } from "@/lib/businesses/categories";
 import { useBiz } from "../BizShell";
@@ -39,6 +40,8 @@ export default function ProfileScreen() {
   if (!p) return message ? <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{message.text}</p> : <Skeleton className="h-96 w-full rounded-3xl" />;
 
   const set = <K extends keyof BizProfile>(key: K, value: BizProfile[K]) => setP({ ...p, [key]: value });
+  /** Changes one branch's fields. */
+  const setBranch = (i: number, change: Partial<Branch>) => set("branches", p.branches.map((x, j) => (j === i ? { ...x, ...change } : x)));
   const field = (key: "description" | "phone" | "address") => ({
     value: p[key] ?? "",
     onChange: (e: { target: { value: string } }) => set(key, e.target.value),
@@ -75,10 +78,18 @@ export default function ProfileScreen() {
             </div>
             <p className="text-sm text-navy/60">לשינוי שם, קטגוריה או תנאי העמלה כתבו לצוות לובי.</p>
             <Field label="על העסק" error={errors.description} hint="מופיע בדף העסק אצל הדיירים"><textarea {...field("description")} maxLength={400} rows={3} className={`${inputClass} py-2`} /></Field>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="טלפון" error={errors.phone}><input {...field("phone")} inputMode="tel" dir="ltr" className={inputClass} /></Field>
+            <Field label="טלפון" error={errors.phone}><input {...field("phone")} inputMode="tel" dir="ltr" className={`${inputClass} sm:max-w-xs`} /></Field>
+            {addressLookupOn ? (
+              <AddressInput
+                label="כתובת העסק"
+                initialText={[p.address, p.city].filter(Boolean).join(", ")}
+                error={errors.address}
+                movablePin
+                onChange={(a) => setP({ ...p, placeId: a?.placeId, pin: a?.pin ?? null, address: a?.address ?? p.address })}
+              />
+            ) : (
               <Field label={`כתובת${p.city ? `, ${p.city}` : ""}`} error={errors.address}><input {...field("address")} className={inputClass} /></Field>
-            </div>
+            )}
           </Card>
 
           <Card className="flex flex-col gap-3">
@@ -91,9 +102,13 @@ export default function ProfileScreen() {
             <h2 className="text-xl font-bold">סניפים</h2>
             <p className="-mt-2 text-sm text-navy/60">אם יש לכם יותר מסניף אחד, הוסיפו את כולם. הדיירים יראו את הרשימה בדף העסק.</p>
             {p.branches.map((b, i) => (
-              <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-2">
-                <input aria-label="שם הסניף" value={b.name} placeholder="שם הסניף" onChange={(e) => set("branches", p.branches.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)))} className={inputClass} />
-                <input aria-label="כתובת הסניף" value={b.address} placeholder="כתובת" onChange={(e) => set("branches", p.branches.map((x, j) => (j === i ? { ...x, address: e.target.value } : x)))} className={inputClass} />
+              <div key={`${i}-${p.branches.length}`} className={addressLookupOn ? "flex flex-col gap-2 rounded-2xl border border-navy/10 p-3" : "grid grid-cols-[1fr_1fr_auto] gap-2"}>
+                <input aria-label="שם הסניף" value={b.name} placeholder="שם הסניף" onChange={(e) => setBranch(i, { name: e.target.value })} className={inputClass} />
+                {addressLookupOn ? (
+                  <AddressInput label="כתובת הסניף" initialText={b.address} onChange={(a) => setBranch(i, { placeId: a?.placeId, address: a?.address ?? "" })} />
+                ) : (
+                  <input aria-label="כתובת הסניף" value={b.address} placeholder="כתובת" onChange={(e) => setBranch(i, { address: e.target.value })} className={inputClass} />
+                )}
                 <button type="button" aria-label="מחיקת סניף" onClick={() => set("branches", p.branches.filter((_, j) => j !== i))} className="grid size-12 place-items-center rounded-xl hover:bg-navy/5">
                   <Trash2 aria-hidden className="size-5" />
                 </button>
