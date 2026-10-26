@@ -17,6 +17,7 @@ export function HomeFooter() {
           <a href="#how" className="flex min-h-11 items-center">איך זה עובד</a>
           <Link href="/join" className="flex min-h-11 items-center">הצטרפות עסקים</Link>
           <a href="#faq" className="flex min-h-11 items-center">שאלות נפוצות</a>
+          <Link href="/support" className="flex min-h-11 items-center">תמיכה</Link>
         </nav>
         <p className="text-sm text-cream/70">© 2026 לובי</p>
       </div>

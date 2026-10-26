@@ -2,6 +2,7 @@
 
 import { Coins, Download, HandCoins, Home, PiggyBank, Receipt, Undo2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { PullToRefresh } from "@/components/native/PullToRefresh";
 import { Button, DataTable, EmptyState, Skeleton, StatTile, Tag, type Column } from "@/components/ui";
 import { downloadBizCsv, fetchBizRedemptions, fetchCashiers } from "@/lib/api/biz";
 import { isApiError } from "@/lib/api/http";
@@ -74,6 +75,7 @@ export default function BizRedemptionsScreen() {
 
   return (
     <div className="flex flex-col gap-4">
+      <PullToRefresh onRefresh={() => setVersion((n) => n + 1)} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-3xl font-bold">מימושים</h1>
         <Button size="md" variant="navy" onClick={async () => setError(await downloadBizCsv(token, query))}><Download aria-hidden className="size-4" /> ייצוא CSV</Button>

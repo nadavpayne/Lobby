@@ -1,6 +1,7 @@
-import { connection } from "next/server";
+import { after, connection } from "next/server";
 import { correctDispute, dismissDispute, listDisputes, markInReview, signalsForPeriod, type DisputeFilters } from "@/lib/disputes/admin";
 import { DISPUTE_REASONS, type DisputeStatus } from "@/lib/disputes/types";
+import { notifyDisputeResolved } from "@/lib/push/events";
 import { parseBillAgorot } from "@/lib/qr/money";
 import { badRequest, isUuid, requireAdmin } from "../requireAdmin";
 
@@ -54,5 +55,7 @@ export async function POST(request: Request) {
     outcome = await dismissDispute(auth.db, body.id, auth.userId, note);
   } else return badRequest();
 
+  // Corrected or dismissed: push to the resident who reported it.
+  if (outcome.ok && body.action !== "review") after(() => notifyDisputeResolved(auth.db, body.id));
   return outcome.ok ? Response.json({ ok: true }) : Response.json({ error: outcome.error }, { status: outcome.status });
 }

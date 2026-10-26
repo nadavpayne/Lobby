@@ -3,6 +3,7 @@
 import { CalendarCheck, PiggyBank, Ticket } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { PullToRefresh } from "@/components/native/PullToRefresh";
 import { DisputeSheet, type DisputeTarget } from "@/components/resident/DisputeSheet";
 import { DisputeStatus } from "@/components/resident/DisputeStatus";
 import { buttonClass, EmptyState, SkeletonCard, StatTile, Tag, type Tint } from "@/components/ui";
@@ -43,6 +44,7 @@ export default function WalletScreen() {
 
   return (
     <div className="flex flex-col gap-4">
+      <PullToRefresh onRefresh={() => setReloads((n) => n + 1)} />
       <h1 className="text-3xl font-bold">הארנק שלי</h1>
       {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>}
       {!history && !error && <SkeletonCard />}

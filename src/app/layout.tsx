@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Montserrat, Rubik } from "next/font/google";
+import { Suspense } from "react";
+import { NativeBridge } from "@/components/native/NativeBridge";
 import "./globals.css";
 
 const rubik = Rubik({ variable: "--font-rubik", subsets: ["hebrew", "latin"] });
@@ -23,7 +25,12 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="he" dir="rtl" className={`${rubik.variable} ${montserrat.variable} h-full antialiased`}>
-      <body className="min-h-dvh flex flex-col">{children}</body>
+      <body className="min-h-dvh flex flex-col">
+        {children}
+        <Suspense>
+          <NativeBridge />
+        </Suspense>
+      </body>
     </html>
   );
 }

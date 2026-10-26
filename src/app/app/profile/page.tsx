@@ -1,6 +1,7 @@
 "use client";
 
 import { Building2, DoorOpen, LogOut, UserRound } from "lucide-react";
+import { SettingsLinks } from "@/components/account/SettingsLinks";
 import { Button, Card, DetailRow } from "@/components/ui";
 import { useResident } from "../ResidentGate";
 
@@ -20,6 +21,7 @@ export default function ProfileScreen() {
       </Card>
       <p className="text-sm text-navy/70">הטבה אחת לדירה בכל עסק, בכל חודש. כל החשבונות בדירה חולקים אותה.</p>
       <Button variant="secondary" onClick={signOut}><LogOut aria-hidden className="size-5 rtl:-scale-x-100" /> יציאה מהחשבון</Button>
+      <SettingsLinks base="/app" />
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchMyBusiness, type MyBusiness } from "@/lib/api/biz";
 import { isApiError } from "@/lib/api/http";
+import { signOutDevice } from "@/lib/push/device";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
 import type { Role } from "./homeFor";
 import { useRoles } from "./useRoles";
@@ -41,6 +42,6 @@ export function useHomeAccount(): HomeAccount | null | undefined {
     email: session.user.email ?? "",
     roles: roles.roles,
     business: !hasBusiness ? null : business?.token === session.access_token ? business.value : undefined,
-    signOut: () => supabase.auth.signOut(),
+    signOut: () => signOutDevice(supabase),
   };
 }

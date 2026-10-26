@@ -10,6 +10,7 @@ import type { NavItem } from "@/components/shell/types";
 import { secondaryButton, Loading } from "@/components/ui";
 import type { MyBuilding } from "@/lib/buildings/types";
 import { useMyBuilding } from "@/lib/buildings/useMyBuilding";
+import { signOutDevice } from "@/lib/push/device";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
 
 interface Resident {
@@ -77,7 +78,7 @@ function useGate(): Gate {
       />,
     );
   }
-  const signOut = () => supabase.auth.signOut();
+  const signOut = () => signOutDevice(supabase);
   if (error) return blocked(<p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>);
   if (building === undefined) return blocked(loading);
   if (!building) {

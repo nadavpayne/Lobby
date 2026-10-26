@@ -2,6 +2,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
+import { SettingsLinks } from "@/components/account/SettingsLinks";
 import { Field, inputClass } from "@/components/Field";
 import { Button, Card, DetailRow, Skeleton } from "@/components/ui";
 import { fetchProfile, saveProfile } from "@/lib/api/biz";
@@ -107,7 +108,11 @@ export default function ProfileScreen() {
           {message && <p role={message.ok ? "status" : "alert"} className={`rounded-2xl p-3 ${message.ok ? "bg-mint" : "bg-red-50 text-red-800"}`}>{message.text}</p>}
           <Button type="submit" disabled={pending}>{pending ? "שומרים…" : "שמירת השינויים"}</Button>
         </form>
-        <aside className="flex flex-col gap-6"><CashiersCard token={token} /><StaffCard token={token} terminalUrl={p.terminalUrl} /></aside>
+        <aside className="flex flex-col gap-6">
+          <CashiersCard token={token} />
+          <StaffCard token={token} terminalUrl={p.terminalUrl} />
+          <SettingsLinks base="/biz" />
+        </aside>
       </div>
     </div>
   );

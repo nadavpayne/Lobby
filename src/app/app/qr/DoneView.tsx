@@ -2,6 +2,7 @@
 
 import { CalendarDays, Check } from "lucide-react";
 import { useState } from "react";
+import { PushPrompt } from "@/components/native/PushPrompt";
 import { DisputeSheet } from "@/components/resident/DisputeSheet";
 import { Button } from "@/components/ui";
 import { receiptTime, unlockDay } from "@/lib/qr/labels";
@@ -48,6 +49,7 @@ export function DoneView({ authToken, done, onClose }: { authToken: string; done
         <p>ההטבה הבאה ב{done.businessName} תהיה זמינה ב-{unlockDay(done.renewsOn)}. בינתיים יש עוד עסקים בשכונה שמחכים לכם.</p>
       </div>
 
+      <PushPrompt token={authToken} text="נשלח התראה כשעסק חדש ליד הבית מצטרף, כדי שלא תפספסו הטבות." />
       <Button variant="navy" onClick={onClose} className="mt-auto">להטבות נוספות</Button>
     </div>
   );

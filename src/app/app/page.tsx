@@ -2,6 +2,8 @@
 
 import { Store } from "lucide-react";
 import Link from "next/link";
+import { PullToRefresh } from "@/components/native/PullToRefresh";
+import { PushPrompt } from "@/components/native/PushPrompt";
 import { BenefitCard } from "@/components/resident/BenefitCard";
 import { Carousel } from "@/components/resident/Carousel";
 import { HeroBanner } from "@/components/resident/HeroBanner";
@@ -25,7 +27,7 @@ function FeedSkeleton() {
 /** Home: hero, savings, category chips, and the benefit carousels for my building. */
 export default function HomeScreen() {
   const { token, building } = useResident();
-  const { feed, error } = useFeed(token);
+  const { feed, error, reload } = useFeed(token);
 
   if (error && !feed) return <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p>;
   if (!feed) return <FeedSkeleton />;
@@ -39,8 +41,10 @@ export default function HomeScreen() {
 
   return (
     <div className="flex animate-pop-in flex-col gap-6">
+      <PullToRefresh onRefresh={reload} />
       <HeroBanner slides={heroSlides(feed)} />
       <SavingsCounter saved={feed.savedTotal} />
+      <PushPrompt token={token} text="נשלח התראה כשעסק ליד הבית מצטרף ללובי, וכשמימוש שלכם הושלם בקופה." />
       <ChipRow label="קטגוריות">
         {feed.categories.map((c) => (
           <Link

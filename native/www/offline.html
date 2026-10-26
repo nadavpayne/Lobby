@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>אין חיבור</title>
+  <style>
+    :root { color-scheme: light; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+      padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+      box-sizing: border-box; background: #eef1f6; color: #14254a; text-align: center;
+      font-family: -apple-system, "Rubik", system-ui, sans-serif;
+    }
+    svg { width: 96px; height: 96px; }
+    h1 { margin: 8px 0 0; font-size: 26px; }
+    p { margin: 0; font-size: 18px; line-height: 1.5; max-width: 320px; }
+    button {
+      margin-top: 8px; min-height: 56px; min-width: 220px; border: 0; border-radius: 14px; background: #f28e2a; color: #14254a;
+      font: inherit; font-size: 20px; font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <svg viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M16 56 L60 18 L104 56 V102 Q104 112 94 112 H26 Q16 112 16 102 Z" fill="#14254A" />
+    <path d="M51 62 V88 H69" fill="none" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M10 56 L60 14 L110 56" fill="none" stroke="#F28E2A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+  <h1>אין חיבור לאינטרנט</h1>
+  <p>לובי צריך חיבור כדי להציג הטבות ולממש אותן. בדקו את ה-Wi-Fi או את הנתונים הסלולריים ונסו שוב.</p>
+  <button type="button" id="retry">ניסיון חוזר</button>
+  <script>
+    // Back to the app's start page; if still offline, the app shows this screen again.
+    document.getElementById("retry").addEventListener("click", function () {
+      window.location.replace(window.__LOBBY_START__ || "https://lobby-mocha.vercel.app/start");
+    });
+    window.addEventListener("online", function () { document.getElementById("retry").click(); });
+  </script>
+</body>
+</html>

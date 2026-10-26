@@ -1,6 +1,8 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { LEGAL } from "@/lib/legal/details";
+import { SUPPORT_EMAIL } from "@/lib/support/config";
 import { LegalLinks } from "./LegalLinks";
 
 /** Shared layout for legal documents: title, last-updated date, readable body, links to the other documents. */
@@ -24,11 +26,12 @@ export function LegalPage({ title, children }: { title: string; children: ReactN
   );
 }
 
-/** The contact email as a mailto link (kept LTR inside Hebrew text). */
+/** How to reach us: the support email (kept LTR inside Hebrew text) once it's set, otherwise the support page's form. */
 export function ContactEmail() {
+  if (!SUPPORT_EMAIL) return <Link href="/support#contact">טופס הפנייה בעמוד התמיכה</Link>;
   return (
-    <a href={`mailto:${LEGAL.contactEmail}`} dir="ltr">
-      {LEGAL.contactEmail}
+    <a href={`mailto:${SUPPORT_EMAIL}`} dir="ltr">
+      {SUPPORT_EMAIL}
     </a>
   );
 }

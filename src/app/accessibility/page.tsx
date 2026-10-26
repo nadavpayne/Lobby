@@ -33,7 +33,7 @@ export default function AccessibilityPage() {
 
       <h2>רכז הנגישות</h2>
       <p>
-        {LEGAL.accessibilityLead}, אימייל: <ContactEmail />. נשתדל להשיב לכל פנייה בתוך 5 ימי עבודה. בפנייה כדאי לציין את העמוד,
+        {LEGAL.accessibilityLead}, ליצירת קשר: <ContactEmail />. נשתדל להשיב לכל פנייה בתוך 5 ימי עבודה. בפנייה כדאי לציין את העמוד,
         את הבעיה ואת הדפדפן או קורא המסך שבו השתמשתם.
       </p>
 

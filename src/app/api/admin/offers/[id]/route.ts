@@ -1,4 +1,6 @@
+import { after } from "next/server";
 import { getBusiness } from "@/lib/admin/businesses";
+import { notifyNewBenefit } from "@/lib/push/events";
 import { applyOfferAction, parseOfferAction } from "@/lib/admin/offers";
 import { siteUrl } from "@/lib/siteUrl";
 import { badRequest, isUuid, notFound, requireAdmin } from "../../requireAdmin";
@@ -11,5 +13,6 @@ export async function POST(request: Request, ctx: RouteContext<"/api/admin/offer
   const action = parseOfferAction(await request.json().catch(() => null));
   if (!isUuid(id) || !action) return badRequest();
   const businessId = await applyOfferAction(auth.db, id, action);
+  if (businessId && action.action === "approve") after(() => notifyNewBenefit(auth.db, businessId)); // push to residents nearby
   return businessId ? Response.json(await getBusiness(auth.db, businessId, siteUrl(request))) : notFound("ההטבה");
 }

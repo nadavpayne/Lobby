@@ -6,6 +6,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { buttonClass, Loading } from "@/components/ui";
 import { canOpen, type AppHome } from "@/lib/auth/homeFor";
 import { useRoles } from "@/lib/auth/useRoles";
+import { signOutDevice } from "@/lib/push/device";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
 import { EmailCodeLogin } from "./EmailCodeLogin";
 
@@ -57,7 +58,7 @@ export function RoleGate({ app, loginTitle, allowSignUp = false, children }: Pro
   if (error) return <Frame><p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error}</p></Frame>;
   if (!roles) return <Frame>{loading}</Frame>;
 
-  const signOut = () => supabase.auth.signOut();
+  const signOut = () => signOutDevice(supabase);
   if (!canOpen(roles.roles, app)) {
     return (
       <Frame>

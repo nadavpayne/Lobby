@@ -1,6 +1,8 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { after } from "next/server";
 import { WINDOW_MINUTES } from "@/lib/businesses/attempts";
+import { notifyRedeemed } from "@/lib/push/events";
 import { parseBillAgorot } from "./money";
 import { approve, scan } from "./register";
 
@@ -22,5 +24,7 @@ export async function handleApprove(db: SupabaseClient, businessId: string, cash
   const bill = parseBillAgorot(body?.amount);
   if (bill === null) return Response.json({ error: "סכום לא תקין" }, { status: 400 });
   if (typeof body?.scanId !== "string" || !UUID.test(body.scanId)) return Response.json({ error: "בקשה לא תקינה" }, { status: 400 });
-  return Response.json(await approve(db, businessId, body.scanId, bill, cashierUserId));
+  const result = await approve(db, businessId, body.scanId, bill, cashierUserId);
+  if (result.code === "OK" && !result.replay) after(() => notifyRedeemed(db, result.receipt.redemptionId)); // push to the apartment
+  return Response.json(result);
 }

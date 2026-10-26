@@ -10,6 +10,7 @@ import type { AdminBusiness } from "@/lib/admin/types";
 import type { BannerInput, BuildingLead, BusinessLead, NotificationInput } from "@/lib/admin/validate";
 import type { BusinessStatus } from "@/lib/businesses/types";
 import type { AdminDisputeDetail, AdminDisputeRow, DisputeSignal } from "@/lib/disputes/types";
+import type { AdminSupportRequest } from "@/lib/support/requests";
 import { apiFetch, type ApiError } from "./http";
 
 // Client calls for the Lobby operator CRM (/admin). Every route checks the admin role on the server.
@@ -103,3 +104,10 @@ export const fetchDisputeSignals = (token: string, period: string) => apiFetch<D
 /** Mark in review, correct the bill (shekels as typed) or dismiss with a reason the resident sees. */
 export const disputeAction = (token: string, id: string, action: { action: "review" } | { action: "correct"; bill: string; note: string } | { action: "dismiss"; note: string }) =>
   apiFetch<{ ok: true }>("/api/admin/disputes", { token, body: { id, ...action } }) as Promise<{ ok: true } | FormError>;
+
+/** Support requests for a filter query ("status=open&topic=…"). */
+export const fetchSupportRequests = (token: string, query: string) => apiFetch<AdminSupportRequest[]>(`/api/admin/support?${query}`, { token });
+
+/** Marks a support request open, answered or closed. */
+export const setSupportRequestStatus = (token: string, id: string, status: AdminSupportRequest["status"]) =>
+  apiFetch<{ ok: true }>("/api/admin/support", { token, body: { id, status } });

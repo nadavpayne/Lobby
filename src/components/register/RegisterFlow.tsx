@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { isApiError } from "@/lib/api/http";
 import type { RegisterApi } from "@/lib/api/register";
+import { native } from "@/lib/native";
 import type { ApproveResult, ScanResult } from "@/lib/qr/types";
 import { ConfirmScreen } from "./ConfirmScreen";
 import { ScanErrorScreen, type RegisterError } from "./ScanErrorScreen";
@@ -41,9 +42,12 @@ export function RegisterFlow({ api, businessName, station, onSignOut, onUnauthor
     const res = await api.scan(code);
     setBusy(false);
     if (isApiError(res)) {
+      native.haptics.error();
       if (res.unauthorized) return onUnauthorized();
       return setStep({ kind: "scan", error: res.error });
     }
+    if (res.code === "OK") native.haptics.success();
+    else native.haptics.error();
     setStep(res.code === "OK" ? { kind: "confirm", scan: res } : { kind: "error", error: res as RegisterError });
   }, [api, onUnauthorized]);
 

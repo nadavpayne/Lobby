@@ -1,8 +1,9 @@
 "use client";
 
 import { Camera, Flashlight, Keyboard, LogOut } from "lucide-react";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { Button, Modal } from "@/components/ui";
+import { native } from "@/lib/native";
 import { normalizeBackupCode } from "@/lib/qr/backupCode";
 import { startCameraScan, type CameraScan } from "@/lib/native/web/cameraScan";
 
@@ -40,7 +41,17 @@ export function ScanScreen({ businessName, station, busy, error, onCode, onSignO
   const [typedError, setTypedError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
 
+  /** iOS app: the native full-screen scanner (it has its own flashlight button). */
+  const scanNative = useCallback(async () => {
+    const code = await native.qrScanner.scan();
+    if (code) onCode(code);
+  }, [onCode]);
+
   useEffect(() => {
+    if (native.isApp) {
+      scanNative();
+      return;
+    }
     let cancelled = false;
     if (!video.current) return;
     startCameraScan(video.current, onCode).then(
@@ -57,7 +68,7 @@ export function ScanScreen({ businessName, station, busy, error, onCode, onSignO
       scanner.current?.stop();
       scanner.current = null;
     };
-  }, [onCode, attempt]);
+  }, [onCode, attempt, scanNative]);
 
   /** Toggles the flashlight. */
   async function toggleTorch() {
@@ -94,7 +105,13 @@ export function ScanScreen({ businessName, station, busy, error, onCode, onSignO
         <div className="relative size-[280px] overflow-hidden rounded-[28px] bg-white/5">
           <video ref={video} aria-label="מצלמת הסריקה" className={`size-full object-cover ${camera === "on" ? "" : "hidden"}`} />
           {camera === "on" && !busy && <span aria-hidden className="lobby-scanline absolute inset-x-7 h-[3px] rounded-full bg-amber" />}
-          {camera === "off" && (
+          {native.isApp && !busy && (
+            <button type="button" onClick={scanNative} className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-lg font-bold">
+              <Camera aria-hidden className="size-10" />
+              סריקה במצלמה
+            </button>
+          )}
+          {!native.isApp && camera === "off" && (
             <button type="button" onClick={() => { setCamera("starting"); setAttempt((n) => n + 1); }} className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center text-[#B7C2D9]">
               <Camera aria-hidden className="size-8" />
               אין גישה למצלמה. אפשרו מצלמה בדפדפן ולחצו כאן, או הקלידו קוד גיבוי.
@@ -114,7 +131,7 @@ export function ScanScreen({ businessName, station, busy, error, onCode, onSignO
         <button type="button" onClick={() => setTyping(true)} className="flex h-[52px] flex-1 items-center justify-center gap-2 rounded-xl bg-white font-bold text-navy">
           <Keyboard aria-hidden className="size-5" /> הקלדת קוד גיבוי
         </button>
-        <button
+        {!native.isApp && <button
           type="button"
           onClick={toggleTorch}
           disabled={torch === null}
@@ -124,7 +141,7 @@ export function ScanScreen({ businessName, station, busy, error, onCode, onSignO
           className={`grid size-[52px] place-items-center rounded-xl border border-[#2A3A5E] disabled:opacity-40 ${torch ? "bg-amber text-navy" : ""}`}
         >
           <Flashlight aria-hidden className="size-5" />
-        </button>
+        </button>}
       </div>
 
       <Modal open={typing} onClose={() => setTyping(false)} title="קוד גיבוי">

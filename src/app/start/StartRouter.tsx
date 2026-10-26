@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { EmailCodeLogin } from "@/components/auth/EmailCodeLogin";
 import { buttonClass, Loading } from "@/components/ui";
 import { useRoles } from "@/lib/auth/useRoles";
+import { signOutDevice } from "@/lib/push/device";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
 
 /** Sign-in, then a redirect to /app, /biz or /admin; accounts with no role get an explanation. */
@@ -34,7 +35,7 @@ export function StartRouter() {
       <p className="text-lg">
         דיירים מצטרפים דרך קישור הבניין שוועד הבית שולח. בעלי עסקים נכנסים עם המייל שנרשמו איתו ללובי.
       </p>
-      <button type="button" onClick={() => supabase.auth.signOut()} className={buttonClass("secondary")}>יציאה מהחשבון</button>
+      <button type="button" onClick={() => signOutDevice(supabase)} className={buttonClass("secondary")}>יציאה מהחשבון</button>
     </section>
   );
 }

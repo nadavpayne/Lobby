@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, LayoutDashboard, Megaphone, MessageSquareWarning, ReceiptText, Store, Ticket, Users } from "lucide-react";
+import { Building2, LayoutDashboard, LifeBuoy, Megaphone, MessageSquareWarning, ReceiptText, Store, Ticket, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import { RoleGate, useAccount } from "@/components/auth/RoleGate";
 import { CrmShell } from "@/components/shell/CrmShell";
@@ -16,6 +16,7 @@ const NAV: NavItem[] = [
   { href: "/admin/disputes", label: "דיווחים", icon: MessageSquareWarning },
   { href: "/admin/billing", label: "חיובים", icon: ReceiptText },
   { href: "/admin/content", label: "תוכן", icon: Megaphone },
+  { href: "/admin/support", label: "תמיכה", icon: LifeBuoy },
 ];
 
 /** The CRM frame once an admin is signed in, with global search in the top bar. */

@@ -4,6 +4,7 @@ import { ChevronRight, Info } from "lucide-react";
 import { useEffect } from "react";
 import { QrCode } from "@/components/QrCode";
 import { Button, Skeleton } from "@/components/ui";
+import { native } from "@/lib/native";
 import { monthOfPeriod } from "@/lib/qr/labels";
 import { useResidentToken } from "@/lib/qr/useResidentToken";
 import { formatCountdown } from "@/lib/time/countdown";
@@ -26,6 +27,14 @@ interface Props {
 /** Full-screen "show at the register" sheet: business, QR with a 5:00 countdown + progress bar, backup code; then Done. */
 export function QrSheet({ authToken, businessId, businessName, discountPercent, address, onClose, onRedeemed }: Props) {
   const { state, renew } = useResidentToken(authToken, businessId, onRedeemed);
+
+  // While the QR is on screen: keep it awake and at full brightness (scanners read it better); restore on the way out.
+  useEffect(() => {
+    const restores = [native.screen.keepAwake(), native.screen.maxBrightness()];
+    return () => {
+      for (const r of restores) r.then((restore) => restore()).catch(() => {});
+    };
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();

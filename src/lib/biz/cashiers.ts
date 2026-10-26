@@ -57,8 +57,23 @@ export async function addCashier(db: SupabaseClient, businessId: string, rawEmai
   return "ok";
 }
 
-/** Revokes a cashier's access to the business (their past scans stay in the log). */
+/** Revokes a cashier's access to the business and deletes their login (their past scans stay in the log). */
 export async function revokeCashier(db: SupabaseClient, businessId: string, userId: string): Promise<void> {
   const { error } = await db.from("user_roles").delete().eq("user_id", userId).eq("business_id", businessId).eq("role", "cashier");
   if (error) throw error;
+  await deleteLoginIfUnused(db, userId);
+}
+
+/** Deletes a login that has no role and no resident account left (a cashier's email may also be someone's resident account). */
+export async function deleteLoginIfUnused(db: SupabaseClient, userId: string): Promise<void> {
+  const [roles, resident] = await Promise.all([
+    db.from("user_roles").select("id", { count: "exact", head: true }).eq("user_id", userId),
+    db.from("residents").select("id", { count: "exact", head: true }).eq("id", userId),
+  ]);
+  if (roles.error) throw roles.error;
+  if (resident.error) throw resident.error;
+  if (roles.count === 0 && resident.count === 0) {
+    const { error } = await db.auth.admin.deleteUser(userId);
+    if (error) throw error;
+  }
 }
