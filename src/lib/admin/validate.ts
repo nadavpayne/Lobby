@@ -27,6 +27,8 @@ export interface BuildingLead {
   committeePhone: string | null;
   apartmentCount: number;
   pipeline: BuildingStage;
+  /** The address picked from the list (when address lookup is on); the server resolves it. */
+  placeId?: string;
 }
 
 /** A building in the committee pipeline (new lead or edit). */
@@ -44,7 +46,7 @@ export function validateBuildingLead(raw: unknown): Result<BuildingLead> {
   if (phoneText && !committeePhone) errors.committeePhone = "טלפון ישראלי";
   if (!Number.isInteger(apartmentCount) || apartmentCount < 1 || apartmentCount > 500) errors.apartmentCount = "מספר דירות 1–500";
   if (!BUILDING_STAGES.includes(pipeline)) errors.pipeline = "שלב לא תקין";
-  return result(errors, () => ({ name: text(r.name), address: address!, city: city!, committeeName: text(r.committeeName), committeePhone, apartmentCount, pipeline }));
+  return result(errors, () => ({ name: text(r.name), address: address!, city: city!, committeeName: text(r.committeeName), committeePhone, apartmentCount, pipeline, placeId: text(r.placeId) ?? undefined }));
 }
 
 export interface BusinessLead {
@@ -55,6 +57,8 @@ export interface BusinessLead {
   contactName: string;
   phone: string;
   email: string;
+  /** The address picked from the list (when address lookup is on); the server resolves it. */
+  placeId?: string;
 }
 
 /** A business the operator adds by hand as a sales lead. */
@@ -70,7 +74,7 @@ export function validateBusinessLead(raw: unknown): Result<BusinessLead> {
   if (!contactName) errors.contactName = "איש קשר";
   if (!phone) errors.phone = "טלפון ישראלי";
   if (!email || !EMAIL.test(email)) errors.email = "אימייל";
-  return result(errors, () => ({ name: name!, category: category!, address: address!, city: city!, contactName: contactName!, phone: phone!, email: email!.toLowerCase() }));
+  return result(errors, () => ({ name: name!, category: category!, address: address!, city: city!, contactName: contactName!, phone: phone!, email: email!.toLowerCase(), placeId: text(r.placeId) ?? undefined }));
 }
 
 /** Commission override for a business's contract: 0–100, up to 2 decimals. */

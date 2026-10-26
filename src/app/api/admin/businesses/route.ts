@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+import { addressFromForm } from "@/lib/address/resolve";
 import { createBusinessLead, getBusiness, listBusinesses, setBusinessStatus, setCommission } from "@/lib/admin/businesses";
 import { validateBusinessLead, validateCommission } from "@/lib/admin/validate";
 import type { BusinessStatus } from "@/lib/businesses/types";
@@ -28,7 +29,9 @@ export async function POST(request: Request) {
   if (body?.action === "lead") {
     const v = validateBusinessLead(body);
     if (!v.ok) return badRequest(v.errors);
-    id = await createBusinessLead(auth.db, v.data);
+    const place = await addressFromForm(auth.db, body);
+    if (!place.ok) return badRequest({ address: place.error });
+    id = await createBusinessLead(auth.db, v.data, place.columns);
   } else if (body?.action === "status" && isUuid(id) && STATUSES.includes(body.status)) {
     if (!(await setBusinessStatus(auth.db, id, body.status))) return notFound("העסק");
   } else if (body?.action === "commission" && isUuid(id)) {

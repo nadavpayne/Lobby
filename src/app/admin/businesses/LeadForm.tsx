@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { AddressInput, addressLookupOn } from "@/components/address/AddressInput";
 import { Field, inputClass } from "@/components/Field";
 import { Button, Modal } from "@/components/ui";
 import { addBusinessLead } from "@/lib/api/admin";
@@ -10,7 +11,7 @@ import { validateBusinessLead, type BusinessLead } from "@/lib/admin/validate";
 import { CATEGORIES } from "@/lib/businesses/categories";
 
 type Form = Record<keyof BusinessLead, string>;
-const EMPTY: Form = { name: "", category: "restaurants", address: "", city: "פתח תקווה", contactName: "", phone: "", email: "" };
+const EMPTY: Form = { name: "", category: "restaurants", address: "", city: "פתח תקווה", contactName: "", phone: "", email: "", placeId: "" };
 
 /** Popup to add a business by hand as a sales lead. */
 export function LeadForm({ token, open, onClose, onAdded }: { token: string; open: boolean; onClose: () => void; onAdded: (b: AdminBusiness) => void }) {
@@ -42,10 +43,18 @@ export function LeadForm({ token, open, onClose, onAdded }: { token: string; ope
             <select value={f.category} onChange={set("category")} className={inputClass}>{Object.entries(CATEGORIES).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select>
           </Field>
         </div>
+        {addressLookupOn ? (
+          <AddressInput
+            key={open ? "open" : "closed"}
+            error={errors.address ?? errors.city}
+            onChange={(a) => setF((v) => ({ ...v, placeId: a?.placeId ?? "", address: a?.address ?? "", city: a?.city ?? "" }))}
+          />
+        ) : (
         <div className="grid grid-cols-2 gap-3">
           <Field label="כתובת" error={errors.address}><input value={f.address} onChange={set("address")} className={inputClass} /></Field>
           <Field label="עיר" error={errors.city}><input value={f.city} onChange={set("city")} className={inputClass} /></Field>
         </div>
+        )}
         <Field label="איש קשר" error={errors.contactName}><input value={f.contactName} onChange={set("contactName")} className={inputClass} /></Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="טלפון" error={errors.phone}><input value={f.phone} onChange={set("phone")} inputMode="tel" dir="ltr" className={inputClass} /></Field>

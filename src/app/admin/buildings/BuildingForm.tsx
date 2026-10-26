@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { AddressInput, addressLookupOn } from "@/components/address/AddressInput";
 import { Field, inputClass } from "@/components/Field";
 import { Button, Modal } from "@/components/ui";
 import { deleteBuilding, saveBuilding } from "@/lib/api/admin";
@@ -33,7 +34,7 @@ export function BuildingForm({ token, editing, onClose, onSaved }: Props) {
 function BuildingFields({ token, building: b, onSaved }: { token: string; building: AdminBuilding | null; onSaved: Props["onSaved"] }) {
   const [f, setF] = useState<Form>({
     name: b?.name ?? "", address: b?.address ?? "", city: b?.city ?? "פתח תקווה", committeeName: b?.committeeName ?? "",
-    committeePhone: b?.committeePhone ?? "", apartmentCount: String(b?.apartmentCount || ""), pipeline: b?.pipeline ?? "lead",
+    committeePhone: b?.committeePhone ?? "", apartmentCount: String(b?.apartmentCount || ""), pipeline: b?.pipeline ?? "lead", placeId: "",
   });
   const [errors, setErrors] = useState<Partial<Form>>({});
   const [error, setError] = useState<string | null>(null);
@@ -62,10 +63,18 @@ function BuildingFields({ token, building: b, onSaved }: { token: string; buildi
           {BUILDING_STAGES.map((s) => <option key={s} value={s}>{STAGE_LABEL[s]}</option>)}
         </select>
       </Field>
+      {addressLookupOn ? (
+        <AddressInput
+          initialText={b ? `${b.address}, ${b.city}` : ""}
+          error={errors.address ?? errors.city}
+          onChange={(a) => setF((v) => ({ ...v, placeId: a?.placeId ?? "", address: a?.address ?? (b?.address ?? ""), city: a?.city ?? (b?.city ?? "") }))}
+        />
+      ) : (
       <div className="grid grid-cols-2 gap-3">
         <Field label="כתובת" error={errors.address}><input value={f.address} onChange={set("address")} className={inputClass} /></Field>
         <Field label="עיר" error={errors.city}><input value={f.city} onChange={set("city")} className={inputClass} /></Field>
       </div>
+      )}
       <div className="grid grid-cols-2 gap-3">
         <Field label="שם הבניין (לא חובה)"><input value={f.name} onChange={set("name")} placeholder="בית רוטשילד" className={inputClass} /></Field>
         <Field label="מספר דירות" error={errors.apartmentCount}><input value={f.apartmentCount} onChange={set("apartmentCount")} inputMode="numeric" dir="ltr" className={inputClass} /></Field>

@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { BusinessStatus } from "@/lib/businesses/types";
 import { hashPin } from "@/lib/pin";
 import type { AdminBusiness } from "./types";
+import type { PlaceColumns } from "@/lib/address/resolve";
 import type { BusinessLead } from "./validate";
 
 const COLUMNS =
@@ -88,12 +89,12 @@ export async function setCommission(db: SupabaseClient, id: string, commissionPe
  * Adds a business as a sales lead. It has no terms accepted and a random terminal PIN; when the owner signs in
  * with this email they get /biz and can set their own PIN.
  */
-export async function createBusinessLead(db: SupabaseClient, lead: BusinessLead): Promise<string> {
+export async function createBusinessLead(db: SupabaseClient, lead: BusinessLead, place: PlaceColumns | null = null): Promise<string> {
   const randomPin = String(crypto.getRandomValues(new Uint32Array(1))[0] % 10000).padStart(4, "0");
   const { data, error } = await db
     .from("businesses")
     .insert({
-      name: lead.name, category: lead.category, address: lead.address, city: lead.city, contact_name: lead.contactName,
+      ...place, name: lead.name, category: lead.category, address: place?.address ?? lead.address, city: place?.city ?? lead.city, contact_name: lead.contactName,
       phone: lead.phone, email: lead.email, pin_hash: hashPin(randomPin), status: "lead", agreed_terms_at: null,
     })
     .select("id")

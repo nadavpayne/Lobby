@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { currentPeriod } from "@/lib/period";
+import type { PlaceColumns } from "@/lib/address/resolve";
 import type { BuildingLead, BuildingStage } from "./validate";
 
 /** A building in the admin's committee pipeline. */
@@ -78,10 +79,10 @@ async function ensureApartments(db: SupabaseClient, buildingId: string, count: n
   if (error) throw error;
 }
 
-/** Adds a building to the pipeline, or edits one. Only "joined" buildings accept residents (active). */
-export async function saveBuilding(db: SupabaseClient, input: BuildingLead, id?: string): Promise<string | null> {
+/** Adds a building to the pipeline, or edits one. Only "joined" buildings accept residents (active). place: a newly picked address. */
+export async function saveBuilding(db: SupabaseClient, input: BuildingLead, id?: string, place: PlaceColumns | null = null): Promise<string | null> {
   const fields = {
-    name: input.name, address: input.address, city: input.city, committee_name: input.committeeName, committee_phone: input.committeePhone,
+    ...place, name: input.name, address: place?.address ?? input.address, city: place?.city ?? input.city, committee_name: input.committeeName, committee_phone: input.committeePhone,
     apartment_count: input.apartmentCount, pipeline: input.pipeline, active: input.pipeline === "joined",
   };
   const query = id ? db.from("buildings").update(fields).eq("id", id).eq("is_demo", false) : db.from("buildings").insert(fields);

@@ -1,3 +1,4 @@
+import { addressFromForm } from "@/lib/address/resolve";
 import { accountTakenMessage, existingAccount } from "@/lib/auth/accountGuard";
 import { checkLogo, storeLogo } from "@/lib/biz/logo";
 import { createBusiness } from "@/lib/businesses/createBusiness";
@@ -27,9 +28,12 @@ export async function POST(request: Request) {
   const taken = await existingAccount(db, { email: result.data.email });
   if (taken) return Response.json({ errors: { email: accountTakenMessage(taken) } }, { status: 409 });
 
+  const place = await addressFromForm(db, raw as Record<string, unknown>, { withPin: true });
+  if (!place.ok) return Response.json({ errors: { address: place.error } }, { status: 400 });
+
   let businessId: string | null = null;
   try {
-    businessId = (await createBusiness(result.data)).id;
+    businessId = (await createBusiness(result.data, place.columns)).id;
     await storeLogo(db, businessId, logo);
     return Response.json({ loginUrl: `${siteUrl(request)}/biz` }, { status: 201 });
   } catch (error) {

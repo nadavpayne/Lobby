@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+import { addressFromForm } from "@/lib/address/resolve";
 import { deleteBuilding, listBuildings, regenerateInvite, saveBuilding } from "@/lib/admin/buildings";
 import { validateBuildingLead } from "@/lib/admin/validate";
 import { siteUrl } from "@/lib/siteUrl";
@@ -22,7 +23,10 @@ export async function POST(request: Request) {
   if (body?.action === "save") {
     const v = validateBuildingLead(body);
     if (!v.ok) return badRequest(v.errors);
-    if (!(await saveBuilding(auth.db, v.data, body.id))) return notFound("הבניין");
+    // Editing without re-picking keeps the stored address.
+    const place = await addressFromForm(auth.db, body, { required: !body.id });
+    if (!place.ok) return badRequest({ address: place.error });
+    if (!(await saveBuilding(auth.db, v.data, body.id, place.columns))) return notFound("הבניין");
   } else if (body?.action === "invite" && body.id) {
     if (!(await regenerateInvite(auth.db, body.id))) return notFound("הבניין");
   } else if (body?.action === "delete" && body.id) {

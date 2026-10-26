@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { AddressInput, addressLookupOn } from "@/components/address/AddressInput";
 import { Field, inputClass } from "@/components/Field";
 import { primaryButton } from "@/components/ui";
 import { registerBuilding } from "@/lib/api/buildings";
@@ -44,12 +45,18 @@ export function BuildingForm({ token, onCreated }: { token: string; onCreated: (
 
       <fieldset className="flex flex-col gap-4">
         <legend className="mb-3 text-xl font-bold">הבניין</legend>
-        <Field label="רחוב ומספר בית" error={errors.address}>
-          <input {...control("address")} autoComplete="street-address" maxLength={120} />
-        </Field>
-        <Field label="עיר" error={errors.city}>
-          <input {...control("city")} autoComplete="address-level2" maxLength={40} />
-        </Field>
+        {addressLookupOn ? (
+          <AddressInput label="כתובת הבניין" error={errors.address ?? errors.city} />
+        ) : (
+          <>
+            <Field label="רחוב ומספר בית" error={errors.address}>
+              <input {...control("address")} autoComplete="street-address" maxLength={120} />
+            </Field>
+            <Field label="עיר" error={errors.city}>
+              <input {...control("city")} autoComplete="address-level2" maxLength={40} />
+            </Field>
+          </>
+        )}
         <Field label="כמה דירות יש בבניין?" hint="הדיירים יבחרו מספר דירה מ-1 ועד המספר הזה" error={errors.apartmentCount}>
           <input {...control("apartmentCount")} inputMode="numeric" dir="ltr" className={`${inputClass} max-w-32`} />
         </Field>

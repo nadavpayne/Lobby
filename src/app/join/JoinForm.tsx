@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import { AddressInput, addressLookupOn } from "@/components/address/AddressInput";
 import { Field, inputClass } from "@/components/Field";
+import type { Point } from "@/lib/geo/distance";
 import { submitJoin } from "@/lib/api/join";
 import { validateJoin, type JoinErrors, type JoinField } from "@/lib/businesses/validateJoin";
 import { CategoryPicker } from "./CategoryPicker";
@@ -18,6 +20,7 @@ export function JoinForm() {
   const [formError, setFormError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState<{ loginUrl: string; email: string } | null>(null);
+  const [pin, setPin] = useState<Point | null>(null);
 
   /** Common props for a named control, including its error state. */
   const control = (name: JoinField) => ({ name, "aria-invalid": !!errors[name], className: inputClass });
@@ -38,6 +41,7 @@ export function JoinForm() {
       tags: data.getAll("tags"),
       discountPercent: Number(data.get("discountPercent")),
       acceptTerms: data.get("acceptTerms") === "on",
+      pin,
     };
 
     // Same rules as the server, so most mistakes are caught without a round-trip. The logo is required.
@@ -74,12 +78,18 @@ export function JoinForm() {
           <input {...control("name")} autoComplete="organization" maxLength={80} />
         </Field>
         <CategoryPicker errors={errors} />
-        <Field label="כתובת העסק" hint="רחוב ומספר" error={errors.address}>
-          <input {...control("address")} autoComplete="street-address" maxLength={120} />
-        </Field>
-        <Field label="עיר" hint="דיירים יראו עסקים בעיר של הבניין שלהם" error={errors.city}>
-          <input {...control("city")} autoComplete="address-level2" maxLength={40} />
-        </Field>
+        {addressLookupOn ? (
+          <AddressInput label="כתובת העסק" hint="דיירים יראו עסקים קרובים לבניין שלהם" error={errors.address ?? errors.city} movablePin onChange={(a) => setPin(a?.pin ?? null)} />
+        ) : (
+          <>
+            <Field label="כתובת העסק" hint="רחוב ומספר" error={errors.address}>
+              <input {...control("address")} autoComplete="street-address" maxLength={120} />
+            </Field>
+            <Field label="עיר" hint="דיירים יראו עסקים בעיר של הבניין שלהם" error={errors.city}>
+              <input {...control("city")} autoComplete="address-level2" maxLength={40} />
+            </Field>
+          </>
+        )}
       </fieldset>
 
       <fieldset className="flex flex-col gap-4">

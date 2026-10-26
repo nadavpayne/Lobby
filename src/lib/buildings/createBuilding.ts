@@ -1,28 +1,26 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { PlaceColumns } from "@/lib/address/resolve";
 import type { BuildingData } from "./validateBuilding";
 
 /**
  * Registers a building with apartments 1..N and makes the user its committee member, in their own apartment.
- * Returns the invite slug, or { exists: true } if this exact address is already registered.
+ * place: the picked address (null when address lookup is off: free text as typed).
+ * Returns the invite slug, or { exists: true } if the building is already registered (same place, or same street + number + city).
  */
-export async function createBuilding(db: SupabaseClient, userId: string, data: BuildingData): Promise<{ inviteSlug: string } | { exists: true }> {
-  // shortcut: exact-match duplicate check (addresses are whitespace-normalized); add a unique index or geocoding if duplicates appear
-  const { data: existing, error: lookupError } = await db
-    .from("buildings")
-    .select("id")
-    .eq("address", data.address)
-    .eq("city", data.city)
-    .limit(1)
-    .maybeSingle();
-  if (lookupError) throw lookupError;
-  if (existing) return { exists: true };
+export async function createBuilding(
+  db: SupabaseClient, userId: string, data: BuildingData, place: PlaceColumns | null = null,
+): Promise<{ inviteSlug: string } | { exists: true }> {
+  const address = place?.address ?? data.address;
+  const city = place?.city ?? data.city;
+  if (await buildingExists(db, address, city, place?.place_id)) return { exists: true };
 
   const { data: building, error } = await db
     .from("buildings")
-    .insert({ address: data.address, city: data.city, apartment_count: data.apartmentCount, created_by: userId, committee_name: data.name })
+    .insert({ ...place, address, city, apartment_count: data.apartmentCount, created_by: userId, committee_name: data.name })
     .select("id, invite_slug")
     .single<{ id: string; invite_slug: string }>();
+  if (error?.code === "23505") return { exists: true }; // the same place was registered a moment ago
   if (error) throw error;
 
   try {
@@ -44,4 +42,16 @@ export async function createBuilding(db: SupabaseClient, userId: string, data: B
   }
 
   return { inviteSlug: building.invite_slug };
+}
+
+/** True if a building with this place ID, or this exact street + number + city, is already registered. */
+export async function buildingExists(db: SupabaseClient, address: string, city: string, placeId?: string | null): Promise<boolean> {
+  if (placeId) {
+    const { data, error } = await db.from("buildings").select("id").eq("place_id", placeId).limit(1).maybeSingle();
+    if (error) throw error;
+    if (data) return true;
+  }
+  const { data, error } = await db.from("buildings").select("id").eq("address", address).eq("city", city).limit(1).maybeSingle();
+  if (error) throw error;
+  return !!data;
 }
