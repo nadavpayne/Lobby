@@ -7,7 +7,8 @@ android {
         applicationId "il.lobby.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        // Google Play needs a higher number on every upload; the GitHub build passes its run number.
+        versionCode((System.getenv("LOBBY_VERSION_CODE") ?: "1") as Integer)
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
@@ -16,8 +17,23 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Google Play upload key: kept outside the repo; the GitHub build passes it in through these variables
+    // (.github/workflows/android.yml). Without them a release build is simply unsigned.
+    def uploadKey = System.getenv("LOBBY_KEYSTORE_FILE")
+    signingConfigs {
+        release {
+            if (uploadKey) {
+                storeFile file(uploadKey)
+                storeType "pkcs12"
+                storePassword System.getenv("LOBBY_KEYSTORE_PASSWORD")
+                keyAlias "upload"
+                keyPassword System.getenv("LOBBY_KEYSTORE_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         release {
+            if (uploadKey) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

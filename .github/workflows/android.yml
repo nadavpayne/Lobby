@@ -1,6 +1,8 @@
 # Builds the Android app (a debug APK you can install on any Android phone, no Google Play needed).
 # Runs when the Android project or the app config changes, or by hand: GitHub → Actions → "Android app" → Run workflow.
 # The APK is under the run's "Artifacts" (lobby-android.zip). The app loads the live site, so site deploys need no rebuild.
+# When the upload key is in the repo's secrets (LOBBY_KEYSTORE_BASE64, LOBBY_KEYSTORE_PASSWORD), it also builds the
+# signed bundle for Google Play (lobby-android-play.zip, an .aab).
 name: Android app
 
 on:
@@ -14,6 +16,8 @@ jobs:
     # Pinned: the 24.04 image ships the Android SDK (ANDROID_HOME); ubuntu-latest is moving to 26.
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    env:
+      KEYSTORE_B64: ${{ secrets.LOBBY_KEYSTORE_BASE64 }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -40,4 +44,25 @@ jobs:
         with:
           name: lobby-android
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+      - name: Signed bundle for Google Play
+        if: env.KEYSTORE_B64 != ''
+        env:
+          LOBBY_KEYSTORE_PASSWORD: ${{ secrets.LOBBY_KEYSTORE_PASSWORD }}
+          LOBBY_VERSION_CODE: ${{ github.run_number }}
+        run: |
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.p12"
+          export LOBBY_KEYSTORE_FILE="$RUNNER_TEMP/upload.p12"
+          ./gradlew bundleRelease --no-daemon > release.log 2>&1 || {
+            tail -n 60 release.log
+            echo "::error title=Release build failed::$( (grep -A 14 'What went wrong' release.log) | tr '\n' ' ' | cut -c1-3000)"
+            exit 1
+          }
+          rm -f "$RUNNER_TEMP/upload.p12"
+        working-directory: android
+      - if: env.KEYSTORE_B64 != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: lobby-android-play
+          path: android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 30
