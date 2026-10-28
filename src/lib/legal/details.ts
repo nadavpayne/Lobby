@@ -1,7 +1,7 @@
-// Details shown on the legal pages. Fill OPERATOR before public launch.
+// Details shown on the legal pages.
 export const LEGAL = {
   /** Legal name of whoever operates Lobby (person or company, with ID/company number). */
-  operator: "[שם המפעיל ומספר עוסק/ח.פ.]",
+  operator: "נדב פיין, עוסק מס' 213786254",
   accessibilityLead: "נדב פיין",
   updated: "28.10.2026",
 } as const;
