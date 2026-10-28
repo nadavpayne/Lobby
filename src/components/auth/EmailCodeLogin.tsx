@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { Field, inputClass } from "@/components/Field";
 import { primaryButton } from "@/components/ui";
-import { googleEnabled } from "@/lib/auth/authActions";
+import { googleEnabled, signInForReview } from "@/lib/auth/authActions";
 import { native } from "@/lib/native";
 import { GoogleButton } from "./GoogleButton";
 
@@ -69,8 +69,9 @@ export function EmailCodeLogin({ supabase, shouldCreateUser, title, subtitle }: 
     setPending(true);
     setError(null);
     const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token: value, type: "email" });
+    const signedIn = !error || (await signInForReview(supabase, email, value));
     setPending(false);
-    if (error) {
+    if (!signedIn) {
       setError("הקוד שגוי או שפג תוקפו");
       setCode("");
     }

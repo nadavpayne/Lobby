@@ -23,6 +23,18 @@ export async function signInWithGoogle(supabase: SupabaseClient): Promise<string
   return error && message(error, "לא הצלחנו להתחבר עם Google. נסו שוב.");
 }
 
+/**
+ * The store reviewers' demo account: a rejected email code is also checked as the fixed review code, and on a match the
+ * server's one-time token signs in here. True when signed in.
+ */
+export async function signInForReview(supabase: SupabaseClient, email: string, code: string): Promise<boolean> {
+  const res = await fetch("/api/review-login", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: email.trim(), code }) });
+  if (!res.ok) return false;
+  const { tokenHash } = (await res.json()) as { tokenHash: string };
+  const { error } = await supabase.auth.verifyOtp({ type: "magiclink", token_hash: tokenHash });
+  return !error;
+}
+
 /** Hebrew for the reason a Google round trip came back without a session (the raw reason is kept for support). */
 export function oauthError(reason: string): string {
   if (/access_denied|cancel/i.test(reason)) return "הכניסה עם Google בוטלה.";

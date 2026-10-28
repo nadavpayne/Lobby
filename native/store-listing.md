@@ -7,7 +7,11 @@
 
 ## לפני ההגשה (חובה)
 
-1. **חשבון בדיקה לבודקים.** ראו "הערות לבודקים" למטה: הבודקים לא יכולים לקבל קוד למייל שלכם, וצריך דרך כניסה שתעבוד בשבילם.
+1. **להפעיל את כניסת הבודקים באתר החי.** הקוד כבר קיים (`src/lib/auth/reviewLogin.ts`): חשבון הדגמה אחד מקבל, נוסף על הקוד מהמייל, קוד קבוע בן 6 ספרות. כשמגישים:
+   - ליצור את חשבון ההדגמה `npayne191+review@gmail.com` כדייר בבניין ההדגמה של האתר החי (Claude יכול לעשות את זה).
+   - ב-Vercel, להוסיף `REVIEW_LOGIN_EMAIL` = `npayne191+review@gmail.com` ו-`REVIEW_LOGIN_CODE` = 6 ספרות שתבחרו, ולפרוס מחדש.
+   - להדביק את המייל והקוד ב"הערות לבודקים" ובשדות ה-Sign-in של אפל וגוגל.
+   - אחרי שהאפליקציה אושרה, למחוק את שתי ההגדרות מ-Vercel.
 
 ---
 
@@ -101,7 +105,9 @@ https://lobby-mocha.vercel.app/privacy
 Lobby is a closed benefits club for residential buildings in Israel. Residents join only through an invite link from their building's house committee, so the app has no open sign-up.
 
 Demo account (resident, in a demo building with sample businesses and offers):
-  [login details to be added]
+  1. On the login screen enter the email: npayne191+review@gmail.com
+  2. Tap the button to send a code (a real email is sent, you don't need it).
+  3. Enter this code instead: [REVIEW_LOGIN_CODE]
 
 What to try:
 1. Home: benefits near the building, by category.
@@ -112,7 +118,7 @@ What to try:
 The app is in Hebrew (right-to-left). Push notifications are optional and only announce new nearby businesses.
 ```
 
-**Sign-in required:** כן. בשדות username/password ממלאים את פרטי חשבון הבדיקה (עוד לא קיים, ראו "לפני ההגשה").
+**Sign-in required:** כן. username: `npayne191+review@gmail.com`, password: הקוד הקבוע מ-`REVIEW_LOGIN_CODE`.
 
 ---
 
