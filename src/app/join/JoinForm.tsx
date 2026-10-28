@@ -65,6 +65,8 @@ export function JoinForm() {
 
   return (
     <form noValidate onSubmit={onSubmit} className="flex flex-col gap-8">
+      {/* Honeypot: hidden from people and screen readers; bots fill it, and the server then saves nothing. */}
+      <input name="website" tabIndex={-1} autoComplete="off" aria-hidden className="absolute -start-[9999px] size-px opacity-0" />
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold">הצטרפות עסקים ללובי</h1>
         <p className="text-lg">לקוחות חדשים מהבניינים בשכונה. משלמים רק על מכירות שאימתתם.</p>

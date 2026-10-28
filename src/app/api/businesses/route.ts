@@ -1,9 +1,10 @@
 import { addressFromForm } from "@/lib/address/resolve";
 import { accountTakenMessage, existingAccount } from "@/lib/auth/accountGuard";
 import { checkLogo, storeLogo } from "@/lib/biz/logo";
-import { createBusiness } from "@/lib/businesses/createBusiness";
+import { createBusiness, signupsFull } from "@/lib/businesses/createBusiness";
 import { validateJoin } from "@/lib/businesses/validateJoin";
 import { siteUrl } from "@/lib/siteUrl";
+import { isBot } from "@/lib/support/validate";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
@@ -19,12 +20,15 @@ export async function POST(request: Request) {
   } catch {
     /* falls through to validation errors */
   }
+  // A filled hidden field means a bot: answer like a success, save nothing.
+  if (isBot(raw as Record<string, unknown> | null)) return Response.json({ loginUrl: `${siteUrl(request)}/biz` }, { status: 201 });
   const [result, logo] = await Promise.all([Promise.resolve(validateJoin(raw)), checkLogo(form?.get("logo"))]);
   if (!result.ok || !logo.ok) {
     return Response.json({ errors: { ...(result.ok ? {} : result.errors), ...(!logo.ok && { logo: logo.error }) } }, { status: 400 });
   }
 
   const db = createAdminClient();
+  if (await signupsFull(db)) return Response.json({ error: "יש עכשיו הרבה הרשמות. נסו שוב בעוד שעה." }, { status: 429 });
   const taken = await existingAccount(db, { email: result.data.email });
   if (taken) return Response.json({ errors: { email: accountTakenMessage(taken) } }, { status: 409 });
 
