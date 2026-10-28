@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { sendApns, type PushMessage } from "./apns";
+import { sendFcm } from "./fcm";
 import { parsePrefs, wants, type NotificationPrefs, type NotificationType } from "./prefs";
 
 /** Pushes a message to every device of these accounts that wants this type. Never throws: a push is a bonus. */
@@ -10,12 +11,14 @@ export async function notifyUsers(db: SupabaseClient, userIds: string[], type: N
     if (ids.length === 0) return;
     const [prefs, tokens] = await Promise.all([
       db.from("notification_prefs").select("*").in("user_id", ids),
-      db.from("push_tokens").select("token, user_id").in("user_id", ids),
+      db.from("push_tokens").select("token, user_id, platform").in("user_id", ids),
     ]);
     if (prefs.error || tokens.error) return;
     const saved = new Map(prefs.data.map((p) => [p.user_id as string, p as Partial<NotificationPrefs>]));
-    const targets = tokens.data.filter((t) => wants(saved.get(t.user_id) ?? null, type)).map((t) => t.token as string);
-    const dead = await sendApns(targets, message);
+    const targets = tokens.data.filter((t) => wants(saved.get(t.user_id) ?? null, type));
+    const on = (platform: string) => targets.filter((t) => t.platform === platform).map((t) => t.token as string);
+    // Each platform has its own service: an Android token sent to Apple would come back "bad" and be deleted.
+    const dead = (await Promise.all([sendApns(on("ios"), message), sendFcm(on("android"), message)])).flat();
     if (dead.length) await db.from("push_tokens").delete().in("token", dead);
   } catch {
     // shortcut: failures are silent; add logging once push volume matters.

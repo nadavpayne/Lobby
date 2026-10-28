@@ -1,14 +1,15 @@
-import type { PushNotifications } from "../types";
+import { Capacitor } from "@capacitor/core";
+import type { Platform, PushNotifications } from "../types";
 import { pathOf } from "./device";
 
-/** iOS app push (APNs through Capacitor): permission, device token, and taps that open a screen. */
+/** App push through Capacitor (APNs on iOS, Firebase on Android): permission, device token, and taps that open a screen. */
 export const appPush: PushNotifications = {
   async register() {
     const { PushNotifications } = await import("@capacitor/push-notifications");
     const status = await PushNotifications.requestPermissions();
     if (status.receive !== "granted") return null;
     return new Promise((resolve) => {
-      PushNotifications.addListener("registration", (t) => resolve({ platform: "ios", token: t.value }));
+      PushNotifications.addListener("registration", (t) => resolve({ platform: Capacitor.getPlatform() as Platform, token: t.value }));
       PushNotifications.addListener("registrationError", () => resolve(null));
       PushNotifications.register();
     });

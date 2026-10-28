@@ -12,14 +12,16 @@ export type * from "./types";
 
 const isApp = Capacitor.isNativePlatform();
 const platform = Capacitor.getPlatform() as Platform;
+// The app runs the site's code, but Firebase is compiled into the Android app (google-services.json); asking for push
+// in an app built without it crashes. So Android push waits for this site setting, switched on once installed apps
+// have Firebase.
+const ANDROID_PUSH = process.env.NEXT_PUBLIC_ANDROID_PUSH === "on";
 
 /** Device features for the current platform: native plugins inside the iOS and Android apps, web APIs in a browser. */
 export const native: Native = {
   platform,
   isApp,
-  // shortcut: Android push needs Firebase (google-services.json), without it registering crashes the app; until then
-  // Android uses the "unsupported" stub. Add Firebase and FCM sending before the Google Play launch.
-  push: platform === "ios" ? appPush : webPush,
+  push: platform === "ios" || (platform === "android" && ANDROID_PUSH) ? appPush : webPush,
   geolocation: webGeolocation, // the web API also works inside the app's web view
   qrScanner: isApp ? appQrScanner : webQrScanner,
   share: webShare, // navigator.share opens the iOS share sheet inside the app too
