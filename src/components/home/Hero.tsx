@@ -2,10 +2,9 @@ import Link from "next/link";
 import { primaryButton, secondaryButton } from "@/components/ui";
 import { NotificationPhone } from "./NotificationPhone";
 
-const STATS = [
-  ["10%", "הנחה לדיירים בעסקים בשכונה"],
-  ["0 ₪", "לוועד הבית בתקופת הניסיון"],
-] as const;
+// Yearly averages set by Lobby (not live data); update by hand as real usage grows.
+const SAVED_PER_BUILDING = "₪4,400";
+const SAVED_PER_APARTMENT = "₪430";
 
 /** Top of the home page: what Lobby is, the two main calls to action, and the key numbers. */
 export function Hero() {
@@ -15,8 +14,7 @@ export function Hero() {
       <div className="flex flex-col gap-3 md:col-start-1 md:row-start-1 md:gap-6 md:self-end">
         <h1 className="text-2xl leading-tight font-bold md:text-5xl">ההטבות של השכונה, רק לדיירי הבניין שלכם</h1>
         <p className="text-sm leading-relaxed md:text-xl">
-          לובי הוא מועדון הטבות סגור לבנייני מגורים. ועד הבית משתף קישור בקבוצת הווטסאפ, והדיירים מקבלים{" "}
-          <bdi dir="ltr">10%</bdi> הנחה בעסקים שליד הבית.
+          לובי הוא מועדון הטבות סגור לבנייני מגורים. ועד הבית משתף קישור בקבוצת הווטסאפ, והדיירים מקבלים הנחות בעסקים שליד הבית.
         </p>
       </div>
       <div className="[zoom:0.65] md:col-start-2 md:row-span-2 md:row-start-1 md:[zoom:1]">
@@ -30,12 +28,17 @@ export function Hero() {
         <p className="text-navy/70">דיירים? ההצטרפות רק דרך הקישור שהוועד שולח.</p>
       </div>
       <dl className="col-span-2 grid gap-3 sm:grid-cols-2">
-        {STATS.map(([value, label]) => (
-          <div key={label} className="rounded-2xl bg-white p-5 shadow-sm">
-            <dt className="text-navy/70">{label}</dt>
-            <dd dir="ltr" className="text-end text-3xl font-bold text-navy">{value}</dd>
-          </div>
-        ))}
+        <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <dt className="text-navy/70">לדיירים</dt>
+          <dd className="text-2xl leading-snug font-bold text-navy">הנחות בעסקים שכונתיים ליד הבית שלך</dd>
+        </div>
+        <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <dt className="text-navy/70">חיסכון ממוצע בשנה</dt>
+          <dd className="flex flex-wrap items-baseline gap-x-4 gap-y-1 font-bold text-navy">
+            <span><bdi dir="ltr" className="text-3xl">{SAVED_PER_BUILDING}</bdi> לבניין</span>
+            <span><bdi dir="ltr" className="text-3xl">{SAVED_PER_APARTMENT}</bdi> לדירה</span>
+          </dd>
+        </div>
       </dl>
     </section>
   );
