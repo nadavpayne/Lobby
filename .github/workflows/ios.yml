@@ -1,0 +1,40 @@
+# Checks that the iOS app builds, on GitHub's macOS machines (free for public repos; no Mac or Apple account needed).
+# It builds for the iPhone simulator without signing. The result (lobby-ios-simulator.zip under the run's "Artifacts")
+# also runs in a browser on Appetize.io. A signed App Store build needs the paid Apple Developer account.
+# Runs when the iOS project or the app config changes, or by hand: GitHub → Actions → "iOS app" → Run workflow.
+name: iOS app
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["ios/**", "capacitor.config.ts", "native/**", "package.json", ".github/workflows/ios.yml"]
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx cap sync ios
+      # On failure, the errors go into an annotation: run logs need a GitHub sign-in, annotations don't.
+      - run: |
+          xcodebuild -version
+          xcodebuild build -project ios/App/App.xcodeproj -scheme App -configuration Debug \
+            -sdk iphonesimulator -destination "generic/platform=iOS Simulator" -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO > build.log 2>&1 || {
+            tail -n 60 build.log
+            echo "::error title=Xcode build failed::$(grep -E 'error:|BUILD FAILED|xcodebuild: error' build.log | sort -u | head -n 20 | tr '\n' ' ' | cut -c1-3000)"
+            exit 1
+          }
+      - run: cd build/Build/Products/Debug-iphonesimulator && zip -qry "$GITHUB_WORKSPACE/lobby-ios-simulator.zip" App.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lobby-ios-simulator
+          path: lobby-ios-simulator.zip
+          retention-days: 30
