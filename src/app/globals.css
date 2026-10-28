@@ -76,6 +76,19 @@ body {
   padding-right: env(safe-area-inset-right);
 }
 
+/* "במרחק הליכה" (WalkingDistanceIllustration): off-screen it waits hidden ("armed"); in view it plays once — rings
+   from the center outward, then badges pop — and the badges drift slowly after. Only opacity, scale and translate
+   animate, so the elements' own positioning is untouched. Reduced motion never arms it. */
+.walking-distance .wd-ring { transform-box: fill-box; transform-origin: center; }
+.walking-distance[data-phase="armed"] :is(.wd-ring, .wd-badge) { opacity: 0; }
+.walking-distance[data-phase="play"] .wd-ring { animation: wd-grow 600ms cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+.walking-distance[data-phase="play"] .wd-badge {
+  animation: wd-pop 420ms cubic-bezier(0.3, 1.4, 0.5, 1) both, wd-drift 7s ease-in-out infinite alternate;
+}
+@keyframes wd-grow { from { opacity: 0; scale: 0.6; } }
+@keyframes wd-pop { from { opacity: 0; scale: 0.3; } }
+@keyframes wd-drift { to { translate: 0 -5%; } }
+
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
