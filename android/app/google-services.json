@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "894111384254",
+    "project_id": "lobby-c3a0f",
+    "storage_bucket": "lobby-c3a0f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:894111384254:android:73e12fc8d5d2a936e094ef",
+        "android_client_info": {
+          "package_name": "il.lobby.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAa4U7ZQp6UWAOLUT5bxQyRU9s_Tz2lWrI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
