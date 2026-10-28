@@ -13,6 +13,8 @@ export const RINGS = [
 export interface WalkingBadge {
   /** Subcategory id in data/business-categories.json. */
   id: string;
+  /** Short Hebrew name shown under the badge when its ring is highlighted. */
+  name: string;
   icon: LucideIcon;
   /** Index into RINGS. */
   ring: 0 | 1 | 2;
@@ -23,15 +25,15 @@ export interface WalkingBadge {
 }
 
 export const BADGES: WalkingBadge[] = [
-  { id: "cafe", icon: Coffee, ring: 0, angle: 200, compact: true },
-  { id: "bakery", icon: Croissant, ring: 0, angle: 340, compact: true },
-  { id: "grocery_supermarket", icon: ShoppingBasket, ring: 0, angle: 270, compact: false },
-  { id: "hair_salon", icon: Scissors, ring: 1, angle: 160, compact: true },
-  { id: "pharmacy", icon: Pill, ring: 1, angle: 20, compact: true },
-  { id: "laundry_dry_cleaning", icon: WashingMachine, ring: 1, angle: 235, compact: false },
-  { id: "gym", icon: Dumbbell, ring: 2, angle: 300, compact: true },
-  { id: "restaurant", icon: Utensils, ring: 2, angle: 125, compact: true },
-  { id: "pet_store", icon: PawPrint, ring: 2, angle: 55, compact: false },
+  { id: "cafe", name: "קפה", icon: Coffee, ring: 0, angle: 200, compact: true },
+  { id: "bakery", name: "מאפייה", icon: Croissant, ring: 0, angle: 340, compact: true },
+  { id: "grocery_supermarket", name: "מכולת", icon: ShoppingBasket, ring: 0, angle: 270, compact: false },
+  { id: "hair_salon", name: "מספרה", icon: Scissors, ring: 1, angle: 160, compact: true },
+  { id: "pharmacy", name: "פארם", icon: Pill, ring: 1, angle: 20, compact: true },
+  { id: "laundry_dry_cleaning", name: "מכבסה", icon: WashingMachine, ring: 1, angle: 235, compact: false },
+  { id: "gym", name: "כושר", icon: Dumbbell, ring: 2, angle: 300, compact: true },
+  { id: "restaurant", name: "מסעדה", icon: Utensils, ring: 2, angle: 125, compact: true },
+  { id: "pet_store", name: "חיות", icon: PawPrint, ring: 2, angle: 55, compact: false },
 ];
 
 /** Where a point on a ring sits, as left/top percentages of the square (2 decimals: server and browser print the same style). */

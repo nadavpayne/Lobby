@@ -85,6 +85,11 @@ body {
 .walking-distance[data-phase="play"] .wd-badge {
   animation: wd-pop 420ms cubic-bezier(0.3, 1.4, 0.5, 1) both, wd-drift 7s ease-in-out infinite alternate;
 }
+/* After the rings have opened, one amber wave spreads from the house (duration and delay set inline, linear so the
+   component knows when it reaches each ring). Hidden unless playing. */
+.walking-distance .wd-ripple { transform-box: fill-box; transform-origin: center; opacity: 0; }
+.walking-distance[data-phase="play"] .wd-ripple { animation: wd-ripple linear forwards; }
+@keyframes wd-ripple { from { opacity: 0.8; scale: 1; } 85% { opacity: 0.5; } to { opacity: 0; scale: 4; } }
 @keyframes wd-grow { from { opacity: 0; scale: 0.6; } }
 @keyframes wd-pop { from { opacity: 0; scale: 0.3; } }
 @keyframes wd-drift { to { translate: 0 -5%; } }
