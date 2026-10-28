@@ -3,7 +3,7 @@ export const LEGAL = {
   /** Legal name of whoever operates Lobby (person or company, with ID/company number). */
   operator: "[שם המפעיל ומספר עוסק/ח.פ.]",
   accessibilityLead: "נדב פיין",
-  updated: "25.10.2026",
+  updated: "28.10.2026",
 } as const;
 
 /** All legal documents, in footer order. */
