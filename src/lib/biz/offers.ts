@@ -1,9 +1,10 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { BenefitType, OneTimeScope } from "@/lib/benefits/types";
 import type { BizOffer, OfferInput } from "./types";
 import { endOfIsraelDay, startOfIsraelDay, toIsraelDay } from "./validateOffer";
 
-const COLUMNS = "id, title, description, terms, image_url, discount_percent, category, starts_at, ends_at, active, approved_at, created_at";
+const COLUMNS = "id, title, description, terms, image_url, discount_percent, benefit_type, one_time_scope, category, starts_at, ends_at, active, approved_at, created_at";
 
 interface Row {
   id: string;
@@ -12,6 +13,8 @@ interface Row {
   terms: string | null;
   image_url: string | null;
   discount_percent: number;
+  benefit_type: BenefitType;
+  one_time_scope: OneTimeScope;
   category: string | null;
   starts_at: string | null;
   ends_at: string | null;
@@ -28,6 +31,8 @@ function toBizOffer(r: Row, fallbackCategory: string): BizOffer {
     description: r.description,
     terms: r.terms,
     discountPercent: r.discount_percent,
+    benefitType: r.benefit_type,
+    oneTimeScope: r.one_time_scope,
     category: r.category ?? fallbackCategory,
     startsOn: toIsraelDay(r.starts_at),
     endsOn: toIsraelDay(r.ends_at),

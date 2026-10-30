@@ -50,10 +50,10 @@ export const addBusinessLead = (token: string, lead: BusinessLead) =>
 export const setBusinessStage = (token: string, id: string, status: BusinessStatus) =>
   apiFetch<AdminBusiness>("/api/admin/businesses", { token, body: { action: "status", id, status } });
 
-export const setBusinessCommission = (token: string, id: string, commissionPercent: number) =>
-  apiFetch<AdminBusiness>("/api/admin/businesses", { token, body: { action: "commission", id, commissionPercent } });
+export const setBusinessCommission = (token: string, id: string, commissionPercent: number, commissionBase: "gross" | "net") =>
+  apiFetch<AdminBusiness>("/api/admin/businesses", { token, body: { action: "commission", id, commissionPercent, commissionBase } });
 
-/** Approve / un-approve / override discount / feature / pause an offer; returns its business. */
+/** Approve / un-approve / replace the benefit (type, scope, rate) / feature / pause an offer; returns its business. */
 export const offerAction = (token: string, id: string, action: OfferAction) => apiFetch<AdminBusiness>(`/api/admin/offers/${id}`, { token, body: action });
 
 export const fetchResidents = (token: string, q: string, building: string | null) =>

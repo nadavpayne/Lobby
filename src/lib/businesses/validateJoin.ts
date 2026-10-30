@@ -71,8 +71,8 @@ export function validateJoin(raw: unknown): JoinResult {
   const email = str(body.email).toLowerCase();
   if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "כתובת אימייל לא תקינה";
 
-  const discountPercent = Number(body.discountPercent ?? 10);
-  // 10% is the default; each business may agree a different rate.
+  const discountPercent = Number(body.discountPercent);
+  // The rate the business offers at sign-up; Lobby may agree a different one later.
   if (!Number.isInteger(discountPercent) || discountPercent < 1 || discountPercent > 50) {
     errors.discountPercent = "ההנחה חייבת להיות בין 1% ל-50%";
   }

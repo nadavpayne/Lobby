@@ -25,13 +25,13 @@ interface Props {
   onCancel: () => void;
 }
 
-/** Form values for an existing offer, or a sensible new one (10% is Lobby's default deal). */
+/** Form values for an existing offer, or an empty new one (the rate is whatever was agreed with Lobby). */
 function initial(offer: BizOffer | null, category: string): Form {
   return {
-    title: offer?.title ?? "10% הנחה על כל ",
+    title: offer?.title ?? "הנחה על כל ",
     description: offer?.description ?? "",
     terms: offer?.terms ?? "",
-    discountPercent: String(offer?.discountPercent ?? 10),
+    discountPercent: offer ? String(offer.discountPercent) : "",
     category: offer?.category ?? category,
     startsOn: offer?.startsOn ?? "",
     endsOn: offer?.endsOn ?? "",
@@ -39,12 +39,12 @@ function initial(offer: BizOffer | null, category: string): Form {
 }
 
 /** The form as the resident app will show it (for the live preview). */
-function previewOf(f: Form, businessName: string, logoUrl: string | null): ResidentOffer {
+function previewOf(f: Form, businessName: string, logoUrl: string | null, benefit: Pick<ResidentOffer, "benefitType" | "oneTimeScope">): ResidentOffer {
   const today = new Date().toISOString().slice(0, 10);
   return {
     businessId: "preview", businessName, category: f.category, subcategories: [], tags: [], address: "", businessDescription: null, logoUrl,
     coverUrl: null, lat: null, lng: null, hours: null, branches: [],
-    title: f.title || "כותרת ההטבה", discountPercent: Number(f.discountPercent) || 0, description: f.description, terms: f.terms || null,
+    title: f.title || "כותרת ההטבה", discountPercent: Number(f.discountPercent) || 0, ...benefit, description: f.description, terms: f.terms || null,
     startsAt: f.startsOn ? `${f.startsOn}T00:00:00Z` : null, endsAt: f.endsOn ? `${f.endsOn}T12:00:00Z` : null,
     joinedAt: new Date().toISOString(), distanceMeters: null, withinRadius: false, featured: false, recentRedemptions: 0, remaining: null,
     state: f.startsOn && f.startsOn > today ? "upcoming" : "available",
@@ -112,7 +112,7 @@ export function OfferForm({ token, businessName, logoUrl, offer, defaultCategory
       <aside className="flex flex-col gap-2">
         <h3 className="font-bold">כך הדיירים יראו את זה</h3>
         <div className="pointer-events-none" aria-hidden>
-          <BenefitCard offer={previewOf(f, businessName, logoUrl)} categories={categories} layout="grid" />
+          <BenefitCard offer={previewOf(f, businessName, logoUrl, { benefitType: offer?.benefitType ?? "monthly", oneTimeScope: offer?.oneTimeScope ?? "apartment" })} categories={categories} layout="grid" />
         </div>
       </aside>
     </div>

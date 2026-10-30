@@ -11,7 +11,7 @@ export function InviteLink({ address, inviteUrl }: { address: string; inviteUrl:
   async function share() {
     const result = await native.share.share({
       title: "לובי | מועדון ההטבות של הבניין",
-      text: `הבניין שלנו (${address}) הצטרף ללובי: 10% הנחה בעסקים בשכונה, רק לדיירים. נרשמים כאן:`,
+      text: `הבניין שלנו (${address}) הצטרף ללובי: הנחות בעסקים בשכונה, רק לדיירים. נרשמים כאן:`,
       url: inviteUrl,
     });
     setCopied(result === "copied");

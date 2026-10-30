@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 
 /**
  * POST /api/admin/businesses — { action: "lead", ...business } | { action: "status", id, status } |
- * { action: "commission", id, commissionPercent } → the created/updated business.
+ * { action: "commission", id, commissionPercent, commissionBase } → the created/updated business.
  */
 export async function POST(request: Request) {
   const auth = await requireAdmin(request);
@@ -37,7 +37,8 @@ export async function POST(request: Request) {
   } else if (body?.action === "commission" && isUuid(id)) {
     const rate = validateCommission(body.commissionPercent);
     if (rate === null) return badRequest({ commissionPercent: "עמלה בין 0 ל-100" });
-    if (!(await setCommission(auth.db, id, rate))) return notFound("העסק");
+    if (body.commissionBase !== "gross" && body.commissionBase !== "net") return badRequest({ commissionBase: "בסיס העמלה: לפני או אחרי ההנחה" });
+    if (!(await setCommission(auth.db, id, rate, body.commissionBase))) return notFound("העסק");
   } else {
     return badRequest();
   }

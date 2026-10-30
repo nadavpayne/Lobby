@@ -10,6 +10,8 @@ export interface BillingLine {
   business: string;
   period: string;
   redemptions: number;
+  /** Of which one-time benefits: new customers the business got through Lobby. */
+  oneTimeRedemptions: number;
   gmv: number;
   /** What the month is charged, including corrections to earlier months carried into it. */
   commission: number;
@@ -23,6 +25,7 @@ interface MonthRow {
   business_id: string;
   period: string;
   redemptions: number;
+  one_time_redemptions: number;
   gmv: number;
   commission_total: number;
 }
@@ -44,7 +47,7 @@ function statements(months: MonthRow[], adjustments: BusinessAdjustment[]) {
 /** Every business × month with redeemed purchases (demo excluded), newest month first, with payment status. */
 export async function listBillingLines(db: SupabaseClient): Promise<BillingLine[]> {
   const [months, invoices, businesses, adjustments] = await Promise.all([
-    db.from("commissions_monthly").select("business_id, period, redemptions, gmv, commission_total"),
+    db.from("commissions_monthly").select("business_id, period, redemptions, one_time_redemptions, gmv, commission_total"),
     db.from("invoices").select("business_id, period, status, paid_at"),
     db.from("businesses").select("id, name").eq("is_demo", false),
     loadAdjustments(db),
@@ -53,6 +56,7 @@ export async function listBillingLines(db: SupabaseClient): Promise<BillingLine[
 
   const name = new Map(businesses.data!.map((b) => [b.id as string, b.name as string]));
   const invoice = new Map(invoices.data!.map((i) => [`${i.business_id}|${i.period}`, i]));
+  const oneTime = new Map((months.data as MonthRow[]).map((m) => [`${m.business_id}|${m.period}`, m.one_time_redemptions]));
   const now = currentPeriod();
   return statements(months.data as MonthRow[], adjustments)
     .filter((m) => name.has(m.businessId))
@@ -60,7 +64,7 @@ export async function listBillingLines(db: SupabaseClient): Promise<BillingLine[
       const inv = invoice.get(`${m.businessId}|${m.period}`);
       return {
         businessId: m.businessId, business: name.get(m.businessId)!, period: m.period, redemptions: m.redemptions,
-        gmv: m.gmv, commission: m.charged, adjustmentsAgorot: m.adjustmentsAgorot,
+        oneTimeRedemptions: oneTime.get(`${m.businessId}|${m.period}`) ?? 0, gmv: m.gmv, commission: m.charged, adjustmentsAgorot: m.adjustmentsAgorot,
         status: m.period === now ? "current" : inv?.status === "paid" ? "paid" : "open",
         paidAt: inv?.paid_at ?? null,
       } satisfies BillingLine;

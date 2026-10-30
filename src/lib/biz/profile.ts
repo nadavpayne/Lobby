@@ -15,6 +15,7 @@ interface Row {
   logo_url: string | null;
   hours: WeekHours | null;
   commission_percent: number;
+  commission_base: "gross" | "net";
   access_slug: string;
   branches: { name: string; address: string; place_id: string | null }[];
 }
@@ -23,7 +24,7 @@ interface Row {
 export async function getProfile(db: SupabaseClient, businessId: string, origin: string): Promise<BizProfile> {
   const { data, error } = await db
     .from("businesses")
-    .select("name, category, description, phone, address, city, logo_url, hours, commission_percent, access_slug, branches(name, address, place_id)")
+    .select("name, category, description, phone, address, city, logo_url, hours, commission_percent, commission_base, access_slug, branches(name, address, place_id)")
     .eq("id", businessId)
     .single<Row>();
   if (error) throw error;
@@ -38,6 +39,7 @@ export async function getProfile(db: SupabaseClient, businessId: string, origin:
     hours: data.hours ?? {},
     branches: data.branches.map((b) => ({ name: b.name, address: b.address, ...(b.place_id && { placeId: b.place_id }) })),
     commissionPercent: Number(data.commission_percent),
+    commissionBase: data.commission_base,
     terminalUrl: `${origin}/b/${data.access_slug}`,
   };
 }

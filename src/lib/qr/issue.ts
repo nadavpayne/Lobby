@@ -1,5 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { eligibilityKey } from "@/lib/benefits/eligibility";
+import type { BenefitType, OneTimeScope } from "@/lib/benefits/types";
 import type { Membership } from "@/lib/buildings/membership";
 import { findBusinesses, liveOffer, remainingInBuilding } from "@/lib/offers/listOffers";
 import { currentPeriod, nextPeriodStart } from "@/lib/period";
@@ -8,7 +10,7 @@ import { formatBackupCode, generateBackupCode } from "./backupCode";
 import { signQr } from "./signing";
 import type { IssuedToken, Receipt, TokenStatus } from "./types";
 
-export type IssueOutcome = { ok: true; token: IssuedToken } | { ok: false; reason: "not_found" | "used" | "sold_out" };
+export type IssueOutcome = { ok: true; token: IssuedToken } | { ok: false; reason: "not_found" | "used" | "used_once" | "sold_out" };
 
 interface TokenRow {
   id: string;
@@ -17,24 +19,25 @@ interface TokenRow {
   expires_at: string;
 }
 
+/** True when a non-voided redemption already holds this key at the business. */
+export async function alreadyRedeemed(db: SupabaseClient, businessId: string, key: string): Promise<boolean> {
+  const { count, error } = await db.from("redemptions").select("id", { count: "exact", head: true }).eq("business_id", businessId).eq("eligibility_key", key).eq("status", "redeemed");
+  if (error) throw error;
+  return !!count;
+}
+
 /**
- * A fresh 5-minute token for this apartment at the business. Only one is active per apartment + business: issuing
- * replaces the previous one (the DB's partial unique index is the real guard against two phones racing).
+ * A fresh 5-minute token for this apartment at the business, with the benefit snapshot the register will apply.
+ * Only one is active per apartment + business: issuing replaces the previous one (the DB's partial unique index is
+ * the real guard against two phones racing). Refused when the benefit's slot is already used.
  */
 export async function issueToken(db: SupabaseClient, userId: string, m: Membership, businessId: string): Promise<IssueOutcome> {
   const [business] = await findBusinesses(db, m, businessId);
   const offer = business && liveOffer(business);
   if (!business || !offer) return { ok: false, reason: "not_found" };
 
-  const { count, error } = await db
-    .from("redemptions")
-    .select("id", { count: "exact", head: true })
-    .eq("apartment_id", m.apartmentId)
-    .eq("business_id", business.id)
-    .eq("period", currentPeriod())
-    .eq("status", "redeemed");
-  if (error) throw error;
-  if (count) return { ok: false, reason: "used" };
+  const key = eligibilityKey({ benefitType: offer.benefit_type, oneTimeScope: offer.one_time_scope, apartmentId: m.apartmentId, residentId: userId, period: currentPeriod() });
+  if (await alreadyRedeemed(db, business.id, key)) return { ok: false, reason: offer.benefit_type === "one_time" ? "used_once" : "used" };
   if ((await remainingInBuilding(db, offer, m.building.id)) === 0) return { ok: false, reason: "sold_out" };
 
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -49,21 +52,22 @@ export async function issueToken(db: SupabaseClient, userId: string, m: Membersh
     const { data, error: insertError } = await db
       .from("redemption_tokens")
       .insert({
-        business_id: business.id, offer_id: offer.id, apartment_id: m.apartmentId, building_id: m.building.id,
-        resident_id: userId, discount_rate: offer.discount_percent, backup_code: generateBackupCode(),
+        business_id: business.id, offer_id: offer.id, apartment_id: m.apartmentId, building_id: m.building.id, resident_id: userId,
+        discount_rate: offer.discount_percent, commission_rate: business.commission_percent, commission_base: business.commission_base,
+        benefit_type: offer.benefit_type, one_time_scope: offer.one_time_scope, backup_code: generateBackupCode(),
       })
       .select("id, backup_code, issued_at, expires_at")
       .single<TokenRow>();
     if (insertError?.code === "23505") continue; // another phone's token or a backup-code collision: replace and retry
     if (insertError) throw insertError;
 
-    await audit(db, { event: "token_issued", businessId: business.id, tokenId: data.id, actorUserId: userId, details: { apartmentId: m.apartmentId } });
+    await audit(db, { event: "token_issued", businessId: business.id, tokenId: data.id, actorUserId: userId, details: { apartmentId: m.apartmentId, benefitType: offer.benefit_type } });
     return {
       ok: true,
       token: {
         tokenId: data.id, qr: signQr(data.id, new Date(data.expires_at), qrSecret()), backupCode: formatBackupCode(data.backup_code),
         issuedAt: data.issued_at, expiresAt: data.expires_at, businessName: business.name, discountRate: offer.discount_percent,
-        apartmentNumber: m.apartmentNumber, period: currentPeriod(),
+        benefitType: offer.benefit_type, oneTimeScope: offer.one_time_scope, apartmentNumber: m.apartmentNumber, period: currentPeriod(),
       },
     };
   }
@@ -77,16 +81,19 @@ interface RedemptionRow {
   discount_agorot: number;
   paid_agorot: number;
   discount_rate: number;
+  benefit_type: BenefitType;
   apartments: { apartment_number: string };
 }
 
 /** A redemption row → the receipt shown to residents and cashiers. */
 export const toReceipt = (r: RedemptionRow): Receipt => ({
   redemptionId: r.id, redeemedAt: r.redeemed_at, billAgorot: r.bill_agorot, discountAgorot: r.discount_agorot,
-  paidAgorot: r.paid_agorot, discountRate: Number(r.discount_rate), apartmentNumber: r.apartments.apartment_number,
+  paidAgorot: r.paid_agorot, discountRate: Number(r.discount_rate), benefitType: r.benefit_type, apartmentNumber: r.apartments.apartment_number,
 });
 
-export const RECEIPT_COLUMNS = "id, redeemed_at, bill_agorot, discount_agorot, paid_agorot, discount_rate, apartments(apartment_number)";
+export const RECEIPT_COLUMNS = "id, redeemed_at, bill_agorot, discount_agorot, paid_agorot, discount_rate, benefit_type, apartments(apartment_number)";
+
+export type { OneTimeScope };
 
 /** Where one of my apartment's tokens stands (the resident app polls this to move to the Done screen). Null if not mine. */
 export async function tokenStatus(db: SupabaseClient, m: Membership, tokenId: string): Promise<TokenStatus | null> {
@@ -103,5 +110,6 @@ export async function tokenStatus(db: SupabaseClient, m: Membership, tokenId: st
 
   const { data: r, error: rError } = await db.from("redemptions").select(RECEIPT_COLUMNS).eq("id", t.redemption_id!).single<RedemptionRow>();
   if (rError) throw rError;
-  return { status: "used", receipt: toReceipt(r), businessName: t.businesses.name, renewsOn: nextPeriodStart(new Date(r.redeemed_at)) };
+  const receipt = toReceipt(r);
+  return { status: "used", receipt, businessName: t.businesses.name, renewsOn: receipt.benefitType === "monthly" ? nextPeriodStart(new Date(r.redeemed_at)) : null };
 }

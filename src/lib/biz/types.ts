@@ -1,3 +1,4 @@
+import type { BenefitType, OneTimeScope } from "@/lib/benefits/types";
 import type { StatementCorrection } from "@/lib/disputes/types";
 import type { WeekHours } from "@/lib/offers/hours";
 
@@ -52,6 +53,9 @@ export interface OfferInput {
 /** An offer as the owner sees it. */
 export interface BizOffer extends OfferInput {
   id: string;
+  /** Set by Lobby with the business (the owner sees it, can't change it). */
+  benefitType: BenefitType;
+  oneTimeScope: OneTimeScope;
   active: boolean;
   /** false = waiting for Lobby to approve (residents don't see it yet). */
   approved: boolean;
@@ -62,6 +66,8 @@ export interface BizOffer extends OfferInput {
 export interface BillingMonth {
   period: string;
   redemptions: number;
+  /** Of which one-time benefits: new customers brought in. */
+  oneTimeRedemptions: number;
   gmv: number;
   /** What the month is charged, including corrections to earlier months carried into it. */
   commission: number;
@@ -100,6 +106,8 @@ export interface BizProfile extends ProfileInput {
   category: string;
   city: string | null;
   commissionPercent: number;
+  /** What the commission is computed on: the bill before the discount (gross) or after it (net). */
+  commissionBase: "gross" | "net";
   /** The business's one photo (logo / profile picture); changed through the logo upload, not this form. */
   logoUrl: string | null;
   /** Link for staff phones/tablets at the register (PIN protected). */

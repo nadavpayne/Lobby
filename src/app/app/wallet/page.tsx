@@ -70,7 +70,7 @@ export default function WalletScreen() {
                   <li key={item.id} className={`flex flex-col gap-1 rounded-3xl bg-white p-4 shadow-soft ${item.status === "voided" ? "opacity-60" : ""}`}>
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-lg font-bold">{item.businessName}</p>
-                      <Tag tint={tint}>{label}</Tag>
+                      <span className="flex gap-1.5">{item.benefitType === "one_time" && <Tag tint="lilac">חד־פעמית</Tag>}<Tag tint={tint}>{label}</Tag></span>
                     </div>
                     <p className="text-sm text-muted"><bdi dir="ltr">{date.format(new Date(item.redeemedAt))}</bdi></p>
                     <p>

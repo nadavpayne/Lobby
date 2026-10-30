@@ -171,6 +171,7 @@ await insertAll("redemptions", redeemed.map((r) => ({
   bill_agorot: agorot(r.amount!), discount_agorot: agorot(r.discountAmount!), paid_agorot: agorot(r.amount!) - agorot(r.discountAmount!),
   commission_agorot: agorot(r.commissionAmount!), discount_rate: BUSINESSES[r.businessIdx].offer.discount ?? 10,
   commission_rate: BUSINESSES[r.businessIdx].commission ?? 5, commission_base: "gross",
+  benefit_type: "monthly", eligibility_key: `apt:${r.apartmentKey}:m:${r.period}`, // seeded history is all monthly
 })));
 console.log(`Created ${redeemed.length} redemptions over ${months.join(", ")}.`);
 

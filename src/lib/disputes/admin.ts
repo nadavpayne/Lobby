@@ -141,11 +141,15 @@ export async function signalsForPeriod(db: SupabaseClient, period: string): Prom
   const [redemptions, disputes, businesses] = await Promise.all([
     db.from("redemptions").select("business_id, bill_agorot").eq("status", "redeemed").eq("period", period),
     db.from("redemption_disputes").select("business_id, status, original_bill_agorot, redemptions!inner(period, bill_agorot)").eq("redemptions.period", period),
-    db.from("businesses").select("id, category, subcategories").eq("is_demo", false),
+    db.from("businesses").select("id, category, subcategories, offers(benefit_type, active, approved_at)").eq("is_demo", false),
   ]);
   for (const r of [redemptions, disputes, businesses]) if (r.error) throw r.error;
   const real = new Set(businesses.data!.map((b) => b.id as string));
-  const peerGroup = new Map(businesses.data!.map((b) => [b.id as string, ((b.subcategories as string[] | null)?.[0] ?? b.category) as string]));
+  // Peers: same subcategory and the same benefit type (first-visit bills of one-time businesses differ).
+  const peerGroup = new Map(businesses.data!.map((b) => {
+    const live = (b.offers as { benefit_type: string; active: boolean; approved_at: string | null }[]).find((o) => o.active && o.approved_at);
+    return [b.id as string, `${live?.benefit_type ?? "monthly"}:${(b.subcategories as string[] | null)?.[0] ?? b.category}`];
+  }));
   return disputeSignals({
     redemptions: redemptions.data!.filter((r) => real.has(r.business_id)).map((r) => ({ businessId: r.business_id, billAgorot: r.bill_agorot })),
     disputes: (disputes.data as unknown as { business_id: string; status: DisputeStatus; original_bill_agorot: number; redemptions: { bill_agorot: number } }[])

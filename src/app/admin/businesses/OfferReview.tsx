@@ -7,8 +7,10 @@ import { offerAction } from "@/lib/api/admin";
 import { isApiError } from "@/lib/api/http";
 import type { OfferAction } from "@/lib/admin/offers";
 import type { AdminBusiness, AdminOffer } from "@/lib/admin/types";
+import { BENEFIT_TYPE_LABEL, ONE_TIME_SCOPE_LABEL, type BenefitType, type OneTimeScope } from "@/lib/benefits/types";
 
 const day = new Intl.DateTimeFormat("he-IL", { day: "numeric", month: "numeric", year: "2-digit", timeZone: "Asia/Jerusalem" });
+const select = "min-h-9 rounded-lg border border-navy/25 bg-white px-2 text-sm";
 
 interface Props {
   token: string;
@@ -16,8 +18,10 @@ interface Props {
   onChanged: (b: AdminBusiness) => void;
 }
 
-/** One offer under review: text, dates, status, and approve / feature / discount override / pause. */
+/** One offer under review: text, dates, status, approve / feature / pause, and the benefit terms (type, scope, discount). */
 export function OfferReview({ token, offer: o, onChanged }: Props) {
+  const [type, setType] = useState<BenefitType>(o.benefitType);
+  const [scope, setScope] = useState<OneTimeScope>(o.oneTimeScope);
   const [discount, setDiscount] = useState(String(o.discountPercent));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,10 +37,13 @@ export function OfferReview({ token, offer: o, onChanged }: Props) {
   }
 
   const newDiscount = Number(discount);
+  const changed = type !== o.benefitType || (type === "one_time" && scope !== o.oneTimeScope) || newDiscount !== o.discountPercent;
   return (
     <div className={`flex flex-col gap-2 rounded-2xl border p-3 ${o.approved ? "border-navy/10" : "border-amber bg-peach/40"}`}>
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-bold">{o.title}</span>
+        <Tag tint="amber"><bdi dir="ltr">{o.discountPercent}%</bdi></Tag>
+        <Tag tint={o.benefitType === "one_time" ? "lilac" : "sky"}>{BENEFIT_TYPE_LABEL[o.benefitType]}{o.benefitType === "one_time" && ` · ${ONE_TIME_SCOPE_LABEL[o.oneTimeScope]}`}</Tag>
         {!o.approved && <Tag tint="amber">ממתינה לאישור</Tag>}
         {o.approved && o.active && <Tag tint="mint">פעילה</Tag>}
         {!o.active && <Tag tint="white">מושהית</Tag>}
@@ -54,12 +61,33 @@ export function OfferReview({ token, offer: o, onChanged }: Props) {
         <Button size="sm" variant="ghost" onClick={() => run({ action: "active", active: !o.active })} disabled={busy}>
           {o.active ? <><Pause aria-hidden className="size-4" /> השהיה</> : <><Play aria-hidden className="size-4 rtl:-scale-x-100" /> הפעלה</>}
         </Button>
-        <label className="ms-auto inline-flex items-center gap-1 text-sm">
+      </div>
+      {/* The commercial terms. Saving creates a new offer row (the old one is deactivated), so history and snapshots stay. */}
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        <label className="inline-flex items-center gap-1">
+          סוג
+          <select value={type} onChange={(e) => setType(e.target.value as BenefitType)} className={select}>
+            <option value="monthly">חודשית (פעם בחודש לדירה)</option>
+            <option value="one_time">חד־פעמית (לקוח חדש)</option>
+          </select>
+        </label>
+        {type === "one_time" && (
+          <label className="inline-flex items-center gap-1">
+            נספרת
+            <select value={scope} onChange={(e) => setScope(e.target.value as OneTimeScope)} className={select}>
+              <option value="apartment">לכל דירה</option>
+              <option value="resident">לכל דייר</option>
+            </select>
+          </label>
+        )}
+        <label className="inline-flex items-center gap-1">
           הנחה
           <input value={discount} onChange={(e) => setDiscount(e.target.value.replace(/\D/g, "").slice(0, 3))} inputMode="numeric" dir="ltr" className="h-9 w-14 rounded-lg border border-navy/25 px-2 text-center" />%
         </label>
-        {newDiscount !== o.discountPercent && (
-          <Button size="sm" variant="navy" onClick={() => run({ action: "discount", discountPercent: newDiscount })} disabled={busy || !(newDiscount >= 1 && newDiscount <= 100)}>עדכון</Button>
+        {changed && (
+          <Button size="sm" variant="navy" onClick={() => run({ action: "benefit", benefitType: type, oneTimeScope: scope, discountPercent: newDiscount })} disabled={busy || !(newDiscount >= 1 && newDiscount <= 100)}>
+            עדכון התנאים
+          </Button>
         )}
       </div>
       {error && <p role="alert" className="text-sm text-red-700">{error}</p>}

@@ -113,7 +113,7 @@ export function JoinForm() {
           <input {...control("discountPercent")} type="number" inputMode="numeric" min={1} max={50} defaultValue={10} dir="ltr" />
         </Field>
         <Field label="תיאור ההטבה" error={errors.description}>
-          <input {...control("description")} placeholder="לדוגמה: 10% הנחה על כל התפריט" maxLength={200} />
+          <input {...control("description")} placeholder="לדוגמה: הנחה על כל התפריט" maxLength={200} />
         </Field>
         <Field label="תנאים והגבלות (לא חובה)" error={errors.terms}>
           <textarea {...control("terms")} rows={3} placeholder="לדוגמה: לא כולל אלכוהול ומבצעים אחרים" maxLength={500} className={`${inputClass} py-2`} />
@@ -124,8 +124,8 @@ export function JoinForm() {
         <p className="font-bold">תנאי ההצטרפות</p>
         <ul className="list-disc ps-5 leading-relaxed">
           <li>הנחה לדיירים לפי האחוז שבחרתם</li>
-          <li>עמלה של <bdi dir="ltr">5%</bdi> ללובי על כל מימוש מאומת</li>
-          <li>מימוש אחד לכל דירה בחודש קלנדרי</li>
+          <li>עמלה ללובי על כל מימוש מאומת, בשיעור שייקבע בהסכם</li>
+          <li>הטבה חודשית (מימוש אחד לכל דירה בחודש) או חד־פעמית ללקוחות חדשים, לפי מה שיסוכם</li>
           <li>אין עמלה על מימוש שלא אימתתם</li>
         </ul>
         <label className="flex min-h-11 items-center gap-3">

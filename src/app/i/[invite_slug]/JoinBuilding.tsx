@@ -24,7 +24,7 @@ export function JoinBuilding({ inviteSlug, building }: { inviteSlug: string; bui
         supabase={supabase}
         shouldCreateUser
         title="מועדון ההטבות של הבניין"
-        subtitle={`${address}. התחברו עם האימייל שלכם כדי להצטרף ולקבל 10% הנחה בעסקים בשכונה.`}
+        subtitle={`${address}. התחברו עם האימייל שלכם כדי להצטרף ולקבל הנחות בעסקים בשכונה.`}
       />
     );
   }

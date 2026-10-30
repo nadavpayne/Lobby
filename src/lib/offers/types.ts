@@ -1,3 +1,4 @@
+import type { BenefitType, OneTimeScope } from "../benefits/types";
 import type { ResidentDispute } from "../disputes/types";
 import type { WeekHours } from "./hours";
 
@@ -22,6 +23,9 @@ export interface ResidentOffer {
   branches: { name: string; address: string }[];
   title: string;
   discountPercent: number;
+  /** Monthly (once per apartment per month) or one-time (once ever, per apartment or per resident). */
+  benefitType: BenefitType;
+  oneTimeScope: OneTimeScope;
   description: string;
   terms: string | null;
   startsAt: string | null;
@@ -39,7 +43,7 @@ export interface ResidentOffer {
   /** Left for this building when the offer has a quantity limit, else null. */
   remaining: number | null;
   state: OfferState;
-  /** "YYYY-MM-01" when this month's benefit is used and renews. */
+  /** "YYYY-MM-01" when this month's benefit is used and renews (monthly benefits only). */
   renewsOn?: string;
 }
 
@@ -80,6 +84,7 @@ export interface CodeHistoryItem {
   code: string;
   businessName: string;
   status: "redeemed" | "voided";
+  benefitType: BenefitType;
   redeemedAt: string;
   amount: number;
   discountAmount: number;

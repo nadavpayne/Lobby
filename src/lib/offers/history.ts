@@ -1,5 +1,6 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { BenefitType } from "@/lib/benefits/types";
 import { withinWindow } from "@/lib/disputes/rules";
 import type { ResidentDispute } from "@/lib/disputes/types";
 import { currentPeriod } from "@/lib/period";
@@ -9,6 +10,7 @@ interface Row {
   id: string;
   code: string;
   status: "redeemed" | "voided";
+  benefit_type: BenefitType;
   redeemed_at: string;
   amount: number;
   discount_amount: number;
@@ -22,7 +24,7 @@ interface Row {
 export async function codeHistory(db: SupabaseClient, apartmentId: string): Promise<CodeHistory> {
   const { data, error } = await db
     .from("redemptions")
-    .select("id, code, status, redeemed_at, amount, discount_amount, bill_agorot, period, businesses(name), redemption_disputes(status, resolution_note, original_bill_agorot)")
+    .select("id, code, status, benefit_type, redeemed_at, amount, discount_amount, bill_agorot, period, businesses(name), redemption_disputes(status, resolution_note, original_bill_agorot)")
     .eq("apartment_id", apartmentId)
     .order("redeemed_at", { ascending: false })
     .limit(100);
@@ -38,7 +40,7 @@ export async function codeHistory(db: SupabaseClient, apartmentId: string): Prom
     items: rows.map((r) => {
       const d = r.redemption_disputes;
       return {
-        id: r.id, code: r.code, businessName: r.businesses.name, status: r.status, redeemedAt: r.redeemed_at,
+        id: r.id, code: r.code, businessName: r.businesses.name, status: r.status, benefitType: r.benefit_type, redeemedAt: r.redeemed_at,
         amount: Number(r.amount), discountAmount: Number(r.discount_amount), billAgorot: r.bill_agorot,
         dispute: d && { status: d.status, resolutionNote: d.resolution_note, originalBillAgorot: d.original_bill_agorot },
         canReport: r.status === "redeemed" && !d && withinWindow(r.redeemed_at, now),

@@ -3,6 +3,7 @@
 import { Check, ChevronRight } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui";
+import { BENEFIT_TYPE_LABEL } from "@/lib/benefits/types";
 import { formatAgorot, parseBillAgorot, splitBill } from "@/lib/qr/money";
 import type { ApproveResult, ScanResult } from "@/lib/qr/types";
 
@@ -77,12 +78,12 @@ export function ConfirmScreen({ scan, businessName, station, onApprove, onReject
           <span aria-hidden className="grid size-11 shrink-0 place-items-center rounded-full bg-navy text-white"><Check className="size-[22px]" strokeWidth={2.5} /></span>
           <div>
             <p className="text-[1.0625rem] font-bold">הקוד תקין</p>
-            <p className="text-sm text-muted">חבר מועדון Lobby · דירה {scan.apartmentNumber}</p>
+            <p className="text-sm text-muted">חבר מועדון Lobby · דירה {scan.apartmentNumber} · {BENEFIT_TYPE_LABEL[scan.benefitType]}</p>
           </div>
         </div>
         <div className="h-px bg-hairline" />
         <ul className="flex flex-col gap-2 text-sm">
-          <li className="flex items-center gap-2"><Check aria-hidden className="size-[18px]" /> הטבה ראשונה של הדירה אצלכם החודש</li>
+          <li className="flex items-center gap-2"><Check aria-hidden className="size-[18px]" /> {scan.benefitType === "one_time" ? (scan.oneTimeScope === "resident" ? "הביקור הראשון של הדייר אצלכם" : "הביקור הראשון של הדירה אצלכם") : "הטבה ראשונה של הדירה אצלכם החודש"}</li>
           <li className="flex items-center gap-2"><Check aria-hidden className="size-[18px]" /> קוד בתוקף, נסרק פעם אחת</li>
         </ul>
       </section>

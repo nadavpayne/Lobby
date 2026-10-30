@@ -7,5 +7,5 @@ export async function GET(request: Request) {
   await connection(); // per-request auth: never prerender (cacheComponents is on)
   const auth = await requireMember(request);
   if (auth instanceof Response) return auth;
-  return Response.json(await getFeed(auth.db, auth.m));
+  return Response.json(await getFeed(auth.db, auth.m, auth.userId));
 }

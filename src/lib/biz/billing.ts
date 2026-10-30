@@ -8,7 +8,7 @@ import type { BillingMonth } from "./types";
 /** Monthly statement lines, newest first: redemptions, revenue and commission per month with invoice status and corrections. */
 export async function listBilling(db: SupabaseClient, businessId: string): Promise<BillingMonth[]> {
   const [months, invoices, adjustments, corrections] = await Promise.all([
-    db.from("commissions_monthly").select("period, redemptions, gmv, commission_total").eq("business_id", businessId),
+    db.from("commissions_monthly").select("period, redemptions, one_time_redemptions, gmv, commission_total").eq("business_id", businessId),
     db.from("invoices").select("period, status, paid_at").eq("business_id", businessId),
     loadAdjustments(db, businessId),
     loadCorrections(db, businessId),
@@ -17,6 +17,7 @@ export async function listBilling(db: SupabaseClient, businessId: string): Promi
   if (invoices.error) throw invoices.error;
 
   const invoiceOf = new Map(invoices.data.map((i) => [i.period as string, i]));
+  const oneTime = new Map(months.data.map((m) => [m.period as string, m.one_time_redemptions as number]));
   const now = currentPeriod();
   const statement = buildStatement(
     months.data.map((m) => ({ period: m.period, redemptions: m.redemptions, gmv: Number(m.gmv), commission: Number(m.commission_total) })),
@@ -27,6 +28,7 @@ export async function listBilling(db: SupabaseClient, businessId: string): Promi
     return {
       period: m.period,
       redemptions: m.redemptions,
+      oneTimeRedemptions: oneTime.get(m.period) ?? 0,
       gmv: m.gmv,
       commission: m.charged,
       adjustmentsAgorot: m.adjustmentsAgorot,

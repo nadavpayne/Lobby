@@ -32,9 +32,9 @@ async function savedTotal(db: SupabaseClient, apartmentId: string): Promise<numb
 }
 
 /** The resident home feed: offers with my state, banners, category chips (only ones with offers), my savings. */
-export async function getFeed(db: SupabaseClient, m: Membership): Promise<Feed> {
+export async function getFeed(db: SupabaseClient, m: Membership, userId: string): Promise<Feed> {
   const [offers, banners, categories, saved] = await Promise.all([
-    listOffers(db, m),
+    listOffers(db, m, userId),
     m.building.isDemo ? Promise.resolve([]) : listBanners(db, m.building.city),
     listCategories(db),
     savedTotal(db, m.apartmentId),

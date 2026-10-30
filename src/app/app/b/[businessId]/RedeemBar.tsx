@@ -22,7 +22,7 @@ export function RedeemBar({ offer: o, token, address, onRedeemed }: Props) {
   const status = {
     available: "ההטבה זמינה לדירה שלכם החודש",
     active: "יש לכם קוד פתוח. הציגו אותו בקופה",
-    used: `מימשתם החודש · ההטבה מתחדשת ב-${o.renewsOn ? shortDate(o.renewsOn) : "1 לחודש"}`,
+    used: o.benefitType === "one_time" ? "מימשתם את ההטבה החד־פעמית בעסק הזה" : `מימשתם החודש · ההטבה מתחדשת ב-${o.renewsOn ? shortDate(o.renewsOn) : "1 לחודש"}`,
     sold_out: "ההטבה אזלה בבניין החודש",
     upcoming: `ההטבה תיפתח ב-${o.startsAt ? shortDate(o.startsAt) : "קרוב"}`,
   }[o.state];

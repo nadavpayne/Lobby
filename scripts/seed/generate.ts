@@ -1,6 +1,13 @@
 // Pure generator for seeded redemption history (no database). Deterministic for a given seed.
 import { currentPeriod } from "../../src/lib/period.ts";
-import { calcRedemption } from "../../src/lib/redemptions/money.ts";
+
+/** Seeded demo history money, in shekels: discount and commission (on the full bill), rounded to the agora. */
+export function calcRedemption(amount: number, discountPercent: number, commissionPercent: number) {
+  const agorot = Math.round(amount * 100);
+  const discount = Math.round((agorot * discountPercent) / 100);
+  const commission = Math.round((agorot * commissionPercent) / 100);
+  return { amount: agorot / 100, discountAmount: discount / 100, commissionAmount: commission / 100, payAmount: (agorot - discount) / 100 };
+}
 
 /** Small seeded PRNG (mulberry32): same seed, same demo data. Returns floats in [0, 1). */
 export function seededRandom(seed: number): () => number {

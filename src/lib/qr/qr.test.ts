@@ -33,7 +33,7 @@ test("QR signing: round trip, forgery and tampering rejected", () => {
 
 test("scan results in the spec's order", () => {
   const now = new Date("2026-10-25T10:00:00Z");
-  const t = (o: Partial<ScannedToken>): ScannedToken => ({ businessId: "b1", status: "active", expiresAt: "2026-10-25T10:04:00Z", ...o });
+  const t = (o: Partial<ScannedToken>): ScannedToken => ({ businessId: "b1", status: "active", expiresAt: "2026-10-25T10:04:00Z", benefitType: "monthly", ...o });
   assert.equal(classifyScan(null, "b1", false, now), "INVALID_CODE");
   assert.equal(classifyScan(t({ businessId: "b2" }), "b1", true, now), "WRONG_BUSINESS");
   assert.equal(classifyScan(t({ expiresAt: "2026-10-25T09:59:59Z" }), "b1", false, now), "CODE_EXPIRED");
@@ -42,6 +42,8 @@ test("scan results in the spec's order", () => {
   assert.equal(classifyScan(t({ status: "used" }), "b1", false, now), "CODE_ALREADY_USED");
   assert.equal(classifyScan(t({ status: "used", expiresAt: "2026-10-25T09:00:00Z" }), "b1", false, now), "CODE_EXPIRED"); // expiry is checked first
   assert.equal(classifyScan(t({}), "b1", true, now), "ALREADY_REDEEMED_THIS_MONTH");
+  assert.equal(classifyScan(t({ benefitType: "one_time" }), "b1", true, now), "ALREADY_REDEEMED_ONE_TIME"); // once ever, no next month
+  assert.equal(classifyScan(t({ benefitType: "one_time" }), "b1", false, now), "OK");
   assert.equal(classifyScan(t({}), "b1", false, now), "OK");
 });
 

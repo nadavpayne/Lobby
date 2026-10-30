@@ -21,7 +21,7 @@ export function validateOffer(raw: unknown): OfferValidation {
   const startsOn = text(r.startsOn);
   const endsOn = text(r.endsOn);
 
-  if (!title || title.length < 3 || title.length > 60) errors.title = "כותרת של 3–60 תווים, למשל „10% הנחה על כל התפריט”";
+  if (!title || title.length < 3 || title.length > 60) errors.title = "כותרת של 3–60 תווים, למשל „הנחה על כל התפריט”";
   if (!description || description.length > 300) errors.description = "תיאור קצר, עד 300 תווים";
   if (terms && terms.length > 300) errors.terms = "עד 300 תווים";
   if (!Number.isInteger(discountPercent) || discountPercent < 1 || discountPercent > 100) errors.discountPercent = "אחוז הנחה שלם בין 1 ל-100";

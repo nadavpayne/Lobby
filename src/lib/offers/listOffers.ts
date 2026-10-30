@@ -1,5 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { eligibilityKey } from "@/lib/benefits/eligibility";
+import type { BenefitType, OneTimeScope } from "@/lib/benefits/types";
 import type { Membership } from "@/lib/buildings/membership";
 import { nearbyBusinesses } from "@/lib/geo/nearby";
 import { currentPeriod, nextPeriodStart } from "@/lib/period";
@@ -10,6 +12,8 @@ interface OfferRow {
   id: string;
   title: string | null;
   discount_percent: number;
+  benefit_type: BenefitType;
+  one_time_scope: OneTimeScope;
   description: string;
   terms: string | null;
   quantity_limit: number | null;
@@ -34,6 +38,8 @@ export interface BusinessWithOffers {
   lng: number | null;
   hours: WeekHours | null;
   created_at: string;
+  commission_percent: number;
+  commission_base: "gross" | "net";
   offers: OfferRow[];
   branches: { name: string; address: string }[];
 }
@@ -47,8 +53,8 @@ export async function findBusinesses(db: SupabaseClient, m: Membership, business
   let query = db
     .from("businesses")
     .select(
-      "id, name, category, subcategories, tags, address, description, logo_url, cover_url, lat, lng, hours, created_at, " +
-        "offers(id, title, discount_percent, description, terms, quantity_limit, starts_at, ends_at, active, approved_at, featured), branches(name, address)",
+      "id, name, category, subcategories, tags, address, description, logo_url, cover_url, lat, lng, hours, created_at, commission_percent, commission_base, " +
+        "offers(id, title, discount_percent, benefit_type, one_time_scope, description, terms, quantity_limit, starts_at, ends_at, active, approved_at, featured), branches(name, address)",
     )
     .eq("status", "active")
     .eq("city", m.building.city)
@@ -107,15 +113,17 @@ async function recentRedemptions(db: SupabaseClient, businessIds: string[]): Pro
 }
 
 /** Live and upcoming offers for the member's building, each with this month's state for their apartment. */
-export async function listOffers(db: SupabaseClient, m: Membership): Promise<ResidentOffer[]> {
+export async function listOffers(db: SupabaseClient, m: Membership, userId: string): Promise<ResidentOffer[]> {
   const [businesses, used, tokens] = await Promise.all([
     findBusinesses(db, m),
-    db.from("redemptions").select("business_id").eq("apartment_id", m.apartmentId).eq("period", currentPeriod()).eq("status", "redeemed"),
+    // Every non-voided redemption of the apartment (any month): matched to each offer by its eligibility key.
+    db.from("redemptions").select("business_id, eligibility_key").eq("apartment_id", m.apartmentId).eq("status", "redeemed"),
     db.from("redemption_tokens").select("business_id").eq("apartment_id", m.apartmentId).eq("status", "active").gt("expires_at", new Date().toISOString()),
   ]);
   if (used.error) throw used.error;
   if (tokens.error) throw tokens.error;
-  const usedAt = new Set(used.data.map((r) => r.business_id as string));
+  const usedKeys = new Set(used.data.map((r) => `${r.business_id}|${r.eligibility_key}`));
+  const period = currentPeriod();
   const showingAt = new Set(tokens.data.map((t) => t.business_id as string));
   const home = m.building.lat !== null && m.building.lng !== null ? { lat: m.building.lat, lng: m.building.lng } : null;
   const [recent, distances] = await Promise.all([
@@ -129,7 +137,8 @@ export async function listOffers(db: SupabaseClient, m: Membership): Promise<Res
     const offer = live ?? upcomingOffer(b);
     if (!offer) continue;
     const remaining = live ? await remainingInBuilding(db, offer, m.building.id) : null;
-    const state = !live ? "upcoming" : usedAt.has(b.id) ? "used" : showingAt.has(b.id) ? "active" : remaining === 0 ? "sold_out" : "available";
+    const key = eligibilityKey({ benefitType: offer.benefit_type, oneTimeScope: offer.one_time_scope, apartmentId: m.apartmentId, residentId: userId, period });
+    const state = !live ? "upcoming" : usedKeys.has(`${b.id}|${key}`) ? "used" : showingAt.has(b.id) ? "active" : remaining === 0 ? "sold_out" : "available";
 
     offers.push({
       businessId: b.id,
@@ -147,6 +156,8 @@ export async function listOffers(db: SupabaseClient, m: Membership): Promise<Res
       branches: b.branches,
       title: offer.title ?? `${offer.discount_percent}% הנחה`,
       discountPercent: offer.discount_percent,
+      benefitType: offer.benefit_type,
+      oneTimeScope: offer.one_time_scope,
       description: offer.description,
       terms: offer.terms,
       startsAt: offer.starts_at,
@@ -158,7 +169,7 @@ export async function listOffers(db: SupabaseClient, m: Membership): Promise<Res
       recentRedemptions: recent.get(b.id) ?? 0,
       remaining,
       state,
-      ...(state === "used" && { renewsOn: nextPeriodStart() }),
+      ...(state === "used" && offer.benefit_type === "monthly" && { renewsOn: nextPeriodStart() }),
     });
   }
   return offers;

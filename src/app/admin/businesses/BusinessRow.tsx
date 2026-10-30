@@ -12,6 +12,7 @@ import { BusinessLogo } from "@/components/resident/BusinessCover";
 import type { DisputeSignal } from "@/lib/disputes/types";
 import { DisputeSignalLine, DisputeSignalTag } from "./DisputeSignalBadge";
 import { OfferReview } from "./OfferReview";
+import { BENEFIT_TYPE_LABEL } from "@/lib/benefits/types";
 
 export const STAGE_LABEL: Record<BusinessStatus, string> = { lead: "ליד", pending: "במו״מ", active: "פעיל", paused: "מושהה", declined: "נדחה" };
 const STAGE_TINT: Record<BusinessStatus, "white" | "sky" | "mint" | "rose"> = { lead: "white", pending: "sky", active: "mint", paused: "rose", declined: "rose" };
@@ -31,6 +32,8 @@ export function BusinessRow({ token, business: b, focused, onChanged, signal }: 
   const pendingOffers = b.offers.filter((o) => !o.approved && o.active).length;
   const [open, setOpen] = useState(focused || pendingOffers > 0);
   const [rate, setRate] = useState(String(b.commissionPercent));
+  const [base, setBase] = useState(b.commissionBase);
+  const live = b.offers.find((o) => o.approved && o.active);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -54,6 +57,8 @@ export function BusinessRow({ token, business: b, focused, onChanged, signal }: 
           </span>
         </button>
         <DisputeSignalTag signal={signal} />
+        {live && <Tag tint={live.benefitType === "one_time" ? "lilac" : "sky"}><bdi dir="ltr">{live.discountPercent}%</bdi> · {BENEFIT_TYPE_LABEL[live.benefitType]}</Tag>}
+        <Tag tint="white">עמלה <bdi dir="ltr">{b.commissionPercent}%</bdi></Tag>
         {pendingOffers > 0 && <Tag tint="amber">{pendingOffers} לאישור</Tag>}
         <Tag tint={STAGE_TINT[b.status]}>{STAGE_LABEL[b.status]}</Tag>
       </div>
@@ -73,7 +78,11 @@ export function BusinessRow({ token, business: b, focused, onChanged, signal }: 
               <span className="flex gap-2">
                 <input value={rate} onChange={(e) => setRate(e.target.value)} inputMode="decimal" dir="ltr" className="min-h-10 w-20 rounded-lg border border-navy/25 px-2 text-center" aria-label="אחוז עמלה" />
                 <span className="self-center">%</span>
-                {Number(rate) !== b.commissionPercent && <Button size="sm" variant="navy" onClick={() => apply(setBusinessCommission(token, b.id, Number(rate)))}>שמירה</Button>}
+                <select value={base} onChange={(e) => setBase(e.target.value as "gross" | "net")} aria-label="בסיס העמלה" className="min-h-10 rounded-lg border border-navy/25 bg-white px-2">
+                  <option value="gross">מהחשבון לפני ההנחה</option>
+                  <option value="net">מהסכום ששולם</option>
+                </select>
+                {(Number(rate) !== b.commissionPercent || base !== b.commissionBase) && <Button size="sm" variant="navy" onClick={() => apply(setBusinessCommission(token, b.id, Number(rate), base))}>שמירה</Button>}
               </span>
             </div>
           </div>

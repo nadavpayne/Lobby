@@ -12,6 +12,7 @@ import { currentPeriod } from "@/lib/period";
 export type RegisterError =
   | { code: "CODE_EXPIRED"; issuedAt: string | null; expiresAt: string | null }
   | { code: "ALREADY_REDEEMED_THIS_MONTH"; apartmentNumber: string | null; previous: PreviousRedemption | null; renewsOn: string }
+  | { code: "ALREADY_REDEEMED_ONE_TIME"; apartmentNumber: string | null; previous: PreviousRedemption | null }
   | { code: "CODE_ALREADY_USED"; usedAt: string | null }
   | { code: "INVALID_CODE" | "WRONG_BUSINESS" | "INVALID_AMOUNT" };
 
@@ -32,21 +33,24 @@ interface Props {
 /** The "no discount" screens: expired (Expired.dc), already redeemed this month (Used.dc), reused / invalid / other business. */
 export function ScanErrorScreen({ error: e, businessName, station, onNext }: Props) {
   // "Used" layout (navy, ban icon) for redemption-related refusals; "Expired" layout (amber) for dead or bad codes.
-  const used = e.code === "ALREADY_REDEEMED_THIS_MONTH" || e.code === "CODE_ALREADY_USED";
+  const redeemed = e.code === "ALREADY_REDEEMED_THIS_MONTH" || e.code === "ALREADY_REDEEMED_ONE_TIME";
+  const used = redeemed || e.code === "CODE_ALREADY_USED";
+  const apartment = redeemed && e.apartmentNumber ? `דירה ${e.apartmentNumber}` : "הדירה";
   const icon = e.code === "CODE_EXPIRED" ? <Clock /> : e.code === "WRONG_BUSINESS" ? <Store /> : used ? <Ban /> : <XCircle />;
   const content = {
     CODE_EXPIRED: ["הקוד פג תוקף", "קוד הטבה תקף ל-5 דקות. בקשו מהדייר לפתוח את ההטבה מחדש באפליקציה, ויופיע קוד חדש."],
     ALREADY_REDEEMED_THIS_MONTH: [
       "ההטבה כבר מומשה החודש",
-      `${e.code === "ALREADY_REDEEMED_THIS_MONTH" && e.apartmentNumber ? `דירה ${e.apartmentNumber}` : "הדירה"} כבר קיבלה הנחה אצלכם ב${monthOfPeriod(currentPeriod())}. ההטבה הבאה תהיה זמינה מ-${e.code === "ALREADY_REDEEMED_THIS_MONTH" ? unlockDay(e.renewsOn) : ""}.`,
+      `${apartment} כבר קיבלה הנחה אצלכם ב${monthOfPeriod(currentPeriod())}. ההטבה הבאה תהיה זמינה מ-${e.code === "ALREADY_REDEEMED_THIS_MONTH" ? unlockDay(e.renewsOn) : ""}.`,
     ],
+    ALREADY_REDEEMED_ONE_TIME: ["ההטבה כבר נוצלה", `${apartment} כבר קיבלה את ההטבה החד־פעמית אצלכם. ההטבה ניתנת פעם אחת בלבד.`],
     CODE_ALREADY_USED: ["הקוד כבר מומש", `הקוד הזה כבר שימש למימוש${e.code === "CODE_ALREADY_USED" && e.usedAt ? ` ב-${clock(e.usedAt)}` : ""}. כל קוד תקף פעם אחת בלבד.`],
     INVALID_CODE: ["הקוד לא תקין", "הקוד לא נמצא אצל Lobby. בדקו שהוקלד נכון, או בקשו מהדייר לפתוח את ההטבה מחדש באפליקציה."],
     WRONG_BUSINESS: ["הקוד שייך לעסק אחר", "הקוד הזה הונפק להטבה בעסק אחר, ולא אפשר לממש אותו כאן."],
     INVALID_AMOUNT: ["סכום לא תקין", "הקלידו את סכום החשבון לפני ההנחה וסרקו שוב."],
   }[e.code];
   const note =
-    e.code === "ALREADY_REDEEMED_THIS_MONTH" ? "אין לתת הנחה על הקנייה הזו. הלקוח יכול לשלם במחיר הרגיל."
+    redeemed ? "אין לתת הנחה על הקנייה הזו. הלקוח יכול לשלם במחיר הרגיל."
     : e.code === "CODE_ALREADY_USED" ? "לא נרשם מימוש נוסף. אין לתת הנחה שוב."
     : "לא נרשם מימוש. אין לתת הנחה על הקוד הזה.";
 
@@ -74,7 +78,7 @@ export function ScanErrorScreen({ error: e, businessName, station, onNext }: Pro
             <div className="h-px bg-hairline" />
           </>
         )}
-        {e.code === "ALREADY_REDEEMED_THIS_MONTH" && e.previous && (
+        {redeemed && e.previous && (
           <>
             <p className="text-[0.8125rem] font-semibold">המימוש הקודם</p>
             <Row label="תאריך">{receiptTime(e.previous.redeemedAt)}</Row>

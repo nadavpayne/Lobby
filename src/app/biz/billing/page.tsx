@@ -23,7 +23,7 @@ const STATUS: Record<BillingMonth["status"], [string, "sky" | "rose" | "mint"]> 
 
 const COLUMNS: Column<BillingMonth>[] = [
   { key: "month", header: "חודש", render: (m) => <span className="font-medium">{monthName.format(new Date(`${m.period}-01T00:00:00Z`))}</span> },
-  { key: "redemptions", header: "מימושים", align: "end", render: (m) => m.redemptions },
+  { key: "redemptions", header: "מימושים", align: "end", render: (m) => <span>{m.redemptions}{m.oneTimeRedemptions > 0 && <span className="block text-sm font-normal text-muted">{m.oneTimeRedemptions} לקוחות חדשים דרך לובי</span>}</span> },
   { key: "gmv", header: "הכנסות דרך לובי", align: "end", render: (m) => money(m.gmv) },
   {
     key: "commission", header: "עמלה", align: "end",
@@ -72,7 +72,7 @@ export default function BillingScreen() {
             <StatTile tint={owed > 0 ? "rose" : "mint"} icon={<HandCoins />} label="לתשלום עכשיו" value={money(owed)} hint={owed > 0 ? "חודשים שהסתיימו" : "הכל שולם"} />
             <StatTile tint="sky" icon={<ReceiptText />} label="עמלה החודש עד כה" value={money(current?.commission ?? 0)} hint={`${current?.redemptions ?? 0} מימושים`} />
           </div>
-          <p className="text-sm text-navy/70">העמלה מחושבת מסכום החשבון המלא לפני ההנחה, רק על מימושים שאישרתם בקופה. חשבונית נשלחת בתחילת כל חודש.</p>
+          <p className="text-sm text-navy/70">העמלה מחושבת לפי השיעור והבסיס שסוכמו איתכם, רק על מימושים שאישרתם בקופה. חשבונית נשלחת בתחילת כל חודש.</p>
           <DataTable
             columns={COLUMNS}
             rows={months}

@@ -74,7 +74,7 @@ export default function ProfileScreen() {
             <div className="flex flex-col gap-1">
               <DetailRow label="שם">{p.name}</DetailRow>
               <DetailRow label="קטגוריה">{CATEGORIES[p.category as Category] ?? p.category}</DetailRow>
-              <DetailRow label="עמלת לובי"><bdi dir="ltr">{p.commissionPercent}%</bdi></DetailRow>
+              <DetailRow label="עמלת לובי"><bdi dir="ltr">{p.commissionPercent}%</bdi> {p.commissionBase === "net" ? "מהסכום ששולם" : "מהחשבון לפני ההנחה"}</DetailRow>
             </div>
             <p className="text-sm text-muted">לשינוי שם, קטגוריה או תנאי העמלה כתבו לצוות לובי.</p>
             <Field label="על העסק" error={errors.description} hint="מופיע בדף העסק אצל הדיירים"><textarea {...field("description")} maxLength={400} rows={3} className={`${inputClass} py-2`} /></Field>

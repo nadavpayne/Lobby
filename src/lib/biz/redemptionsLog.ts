@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { toCsv } from "@/lib/admin/csv";
+import type { BenefitType } from "@/lib/benefits/types";
 import { emailsOf } from "./cashiers";
 
 /** One redemption in the owner's log (agorot). */
@@ -13,6 +14,7 @@ export interface BizRedemption {
   customer: string;
   /** Cashier's email, or "קופה" for the staff PIN terminal. */
   cashier: string;
+  benefitType: BenefitType;
   billAgorot: number;
   discountAgorot: number;
   paidAgorot: number;
@@ -39,7 +41,7 @@ export interface BizLogFilters {
 }
 
 interface Row {
-  id: string; redeemed_at: string; status: "redeemed" | "voided"; cashier_user_id: string | null; void_reason: string | null;
+  id: string; redeemed_at: string; status: "redeemed" | "voided"; benefit_type: BenefitType; cashier_user_id: string | null; void_reason: string | null;
   bill_agorot: number; discount_agorot: number; paid_agorot: number; commission_agorot: number;
   residents: { name: string | null } | null; apartments: { apartment_number: string; buildings: { name: string | null; address: string } };
   redemption_disputes: { status: string; original_bill_agorot: number } | null;
@@ -60,7 +62,7 @@ export function parseBizLogFilters(url: URL): BizLogFilters {
 export async function listBizRedemptions(db: SupabaseClient, businessId: string, f: BizLogFilters, limit: number): Promise<{ rows: BizRedemption[]; totals: BizTotals }> {
   let q = db
     .from("redemptions")
-    .select("id, redeemed_at, status, cashier_user_id, void_reason, bill_agorot, discount_agorot, paid_agorot, commission_agorot, residents(name), apartments(apartment_number, buildings(name, address)), redemption_disputes(status, original_bill_agorot)")
+    .select("id, redeemed_at, status, benefit_type, cashier_user_id, void_reason, bill_agorot, discount_agorot, paid_agorot, commission_agorot, residents(name), apartments(apartment_number, buildings(name, address)), redemption_disputes(status, original_bill_agorot)")
     .eq("business_id", businessId)
     .order("redeemed_at", { ascending: false })
     .limit(limit);
@@ -77,7 +79,7 @@ export async function listBizRedemptions(db: SupabaseClient, businessId: string,
   const rows = raw.map((r) => ({
     id: r.id, redeemedAt: r.redeemed_at, status: r.status, apartment: r.apartments.apartment_number,
     building: r.apartments.buildings.name ?? r.apartments.buildings.address, customer: r.residents?.name?.trim().split(/\s+/)[0] || "—",
-    cashier: r.cashier_user_id ? (emails.get(r.cashier_user_id) ?? "קופאי/ת") : "קופה", billAgorot: r.bill_agorot, discountAgorot: r.discount_agorot,
+    cashier: r.cashier_user_id ? (emails.get(r.cashier_user_id) ?? "קופאי/ת") : "קופה", benefitType: r.benefit_type, billAgorot: r.bill_agorot, discountAgorot: r.discount_agorot,
     paidAgorot: r.paid_agorot, commissionAgorot: r.commission_agorot, voidReason: r.void_reason,
     // Only the outcome reaches the business: never the resident's report, note or photo.
     correctedFromAgorot: r.redemption_disputes?.status === "CORRECTED" ? r.redemption_disputes.original_bill_agorot : null,

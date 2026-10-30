@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { QrCode } from "@/components/QrCode";
 import { Button, Skeleton } from "@/components/ui";
 import { native } from "@/lib/native";
+import { benefitRule } from "@/lib/benefits/types";
 import { monthOfPeriod } from "@/lib/qr/labels";
 import { useResidentToken } from "@/lib/qr/useResidentToken";
 import { formatCountdown } from "@/lib/time/countdown";
@@ -111,8 +112,8 @@ export function QrSheet({ authToken, businessId, businessName, discountPercent, 
             <div className="flex items-start gap-2.5 rounded-2xl bg-warm p-3.5 text-sm leading-5">
               <Info aria-hidden className="mt-0.5 size-5 shrink-0" />
               <p>
-                הטבה אחת בחודש לדירה בכל עסק.
-                {state.phase === "showing" && ` זו ההטבה שלכם ב${businessName} ל${monthOfPeriod(state.token.period)}.`}
+                {state.phase === "showing" ? benefitRule(state.token.benefitType, state.token.oneTimeScope) : "הטבה אחת בחודש לדירה בכל עסק."}
+                {state.phase === "showing" && state.token.benefitType === "monthly" && ` זו ההטבה שלכם ב${businessName} ל${monthOfPeriod(state.token.period)}.`}
               </p>
             </div>
 

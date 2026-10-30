@@ -3,6 +3,7 @@
 import { CalendarRange, Megaphone, Pause, Pencil, Play, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button, Card, EmptyState, Skeleton, Tag } from "@/components/ui";
+import { BENEFIT_TYPE_LABEL, ONE_TIME_SCOPE_LABEL } from "@/lib/benefits/types";
 import { fetchBizOffers, setOfferActive } from "@/lib/api/biz";
 import { isApiError } from "@/lib/api/http";
 import type { BizOffer } from "@/lib/biz/types";
@@ -77,7 +78,7 @@ export default function OffersScreen() {
       {!offers && !error && <Skeleton className="h-40 w-full rounded-3xl" />}
       {offers?.length === 0 && (
         <EmptyState icon={<Megaphone />} title="עוד אין הטבות" action={<Button size="md" onClick={() => setEditing("new")}>יצירת הטבה ראשונה</Button>}>
-          ההצעה הנפוצה בלובי: 10% הנחה לדיירים על כל הקנייה.
+          הגדירו את ההנחה שסיכמתם עם לובי לדיירי הבניינים בשכונה.
         </EmptyState>
       )}
       <div className="grid gap-4 md:grid-cols-2">
@@ -92,6 +93,7 @@ export default function OffersScreen() {
             </div>
             <div className="flex flex-wrap gap-1.5">
               <OfferStatus offer={o} />
+              <Tag tint={o.benefitType === "one_time" ? "lilac" : "peach"}>{BENEFIT_TYPE_LABEL[o.benefitType]}{o.benefitType === "one_time" && ` · ${ONE_TIME_SCOPE_LABEL[o.oneTimeScope]}`}</Tag>
               {(o.startsOn || o.endsOn) && (
                 <Tag tint="sky" icon={<CalendarRange />}>{o.startsOn ? `מ-${dayMonth(o.startsOn)}` : "מעכשיו"}{o.endsOn ? ` עד ${dayMonth(o.endsOn)}` : ", ללא סיום"}</Tag>
               )}

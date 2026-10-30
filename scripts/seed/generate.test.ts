@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { calcRedemption } from "../../src/lib/redemptions/money.ts";
+import { calcRedemption } from "./generate.ts";
 import { lastMonths, planRedemptions, seededRandom, type PlanApartment, type PlanBusiness } from "./generate.ts";
 
 const now = new Date("2026-10-25T10:00:00Z");

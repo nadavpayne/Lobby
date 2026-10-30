@@ -54,7 +54,7 @@ export default function BizRedemptionsScreen() {
   const columns: Column<BizRedemption>[] = [
     { key: "time", header: "זמן", render: (r) => time.format(new Date(r.redeemedAt)) },
     { key: "apt", header: "דירה", render: (r) => <span>{r.building}<span className="block text-sm text-muted">דירה {r.apartment} · {r.customer}</span></span> },
-    { key: "cashier", header: "קופה", render: (r) => <span className="text-sm">{r.cashier}</span> },
+    { key: "cashier", header: "קופה", render: (r) => <span className="text-sm">{r.cashier}{r.benefitType === "one_time" && <Tag tint="lilac">חד־פעמית</Tag>}</span> },
     {
       key: "bill", header: "חשבון", align: "end",
       render: (r) => (

@@ -56,7 +56,7 @@ export default function AdminBillingScreen() {
   const columns: Column<BillingLine>[] = [
     { key: "business", header: "עסק", render: (l) => <span className="font-medium">{l.business}</span> },
     { key: "period", header: "חודש", render: (l) => month(l.period) },
-    { key: "count", header: "מימושים", align: "end", render: (l) => l.redemptions },
+    { key: "count", header: "מימושים", align: "end", render: (l) => <span>{l.redemptions}{l.oneTimeRedemptions > 0 && <span className="block text-sm font-normal text-muted">{l.oneTimeRedemptions} לקוחות חדשים</span>}</span> },
     { key: "gmv", header: "מחזור", align: "end", render: (l) => money(l.gmv) },
     {
       key: "commission", header: "עמלה", align: "end",

@@ -1,3 +1,4 @@
+import type { BenefitType, OneTimeScope } from "../benefits/types.ts";
 import type { BusinessStatus } from "../businesses/types.ts";
 
 /** An offer as the admin reviews it. */
@@ -7,6 +8,8 @@ export interface AdminOffer {
   description: string;
   terms: string | null;
   discountPercent: number;
+  benefitType: BenefitType;
+  oneTimeScope: OneTimeScope;
   active: boolean;
   approved: boolean;
   featured: boolean;
@@ -27,8 +30,9 @@ export interface AdminBusiness {
   phone: string;
   email: string;
   status: BusinessStatus;
-  /** Contract rate (default 5%). */
+  /** Contract rate and what it is computed on (the bill before or after the discount). */
   commissionPercent: number;
+  commissionBase: "gross" | "net";
   isDemo: boolean;
   createdAt: string;
   verifyUrl: string;

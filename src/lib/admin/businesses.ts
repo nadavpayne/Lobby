@@ -1,5 +1,6 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { BenefitType, OneTimeScope } from "@/lib/benefits/types";
 import type { BusinessStatus } from "@/lib/businesses/types";
 import { hashPin } from "@/lib/pin";
 import type { AdminBusiness } from "./types";
@@ -7,8 +8,8 @@ import type { PlaceColumns } from "@/lib/address/resolve";
 import type { BusinessLead } from "./validate";
 
 const COLUMNS =
-  "id, name, logo_url, category, address, city, contact_name, phone, email, status, commission_percent, is_demo, access_slug, created_at, " +
-  "offers(id, title, description, terms, discount_percent, active, approved_at, featured, starts_at, ends_at, created_at)";
+  "id, name, logo_url, category, address, city, contact_name, phone, email, status, commission_percent, commission_base, is_demo, access_slug, created_at, " +
+  "offers(id, title, description, terms, discount_percent, benefit_type, one_time_scope, active, approved_at, featured, starts_at, ends_at, created_at)";
 
 interface BusinessRow {
   id: string;
@@ -22,11 +23,12 @@ interface BusinessRow {
   email: string;
   status: BusinessStatus;
   commission_percent: number;
+  commission_base: "gross" | "net";
   is_demo: boolean;
   access_slug: string;
   created_at: string;
   offers: {
-    id: string; title: string | null; description: string; terms: string | null; discount_percent: number; active: boolean;
+    id: string; title: string | null; description: string; terms: string | null; discount_percent: number; benefit_type: BenefitType; one_time_scope: OneTimeScope; active: boolean;
     approved_at: string | null; featured: boolean; starts_at: string | null; ends_at: string | null; created_at: string;
   }[];
 }
@@ -45,6 +47,7 @@ function toAdminBusiness(row: BusinessRow, baseUrl: string): AdminBusiness {
     email: row.email,
     status: row.status,
     commissionPercent: Number(row.commission_percent),
+    commissionBase: row.commission_base,
     isDemo: row.is_demo,
     createdAt: row.created_at,
     verifyUrl: `${baseUrl}/b/${row.access_slug}`,
@@ -52,7 +55,7 @@ function toAdminBusiness(row: BusinessRow, baseUrl: string): AdminBusiness {
       .sort((a, b) => b.created_at.localeCompare(a.created_at))
       .map((o) => ({
         id: o.id, title: o.title ?? `${o.discount_percent}% הנחה`, description: o.description, terms: o.terms, discountPercent: o.discount_percent,
-        active: o.active, approved: o.approved_at !== null, featured: o.featured, startsAt: o.starts_at, endsAt: o.ends_at,
+        benefitType: o.benefit_type, oneTimeScope: o.one_time_scope, active: o.active, approved: o.approved_at !== null, featured: o.featured, startsAt: o.starts_at, endsAt: o.ends_at,
       })),
   };
 }
@@ -78,9 +81,9 @@ export async function setBusinessStatus(db: SupabaseClient, id: string, status: 
   return data !== null;
 }
 
-/** Sets the contract commission rate (overrides the default 5% for future redemptions). */
-export async function setCommission(db: SupabaseClient, id: string, commissionPercent: number): Promise<boolean> {
-  const { data, error } = await db.from("businesses").update({ commission_percent: commissionPercent }).eq("id", id).select("id").maybeSingle();
+/** Sets the contract commission rate and base for future tokens (issued tokens and past redemptions keep their snapshot). */
+export async function setCommission(db: SupabaseClient, id: string, commissionPercent: number, commissionBase: "gross" | "net"): Promise<boolean> {
+  const { data, error } = await db.from("businesses").update({ commission_percent: commissionPercent, commission_base: commissionBase }).eq("id", id).select("id").maybeSingle();
   if (error) throw error;
   return data !== null;
 }

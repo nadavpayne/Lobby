@@ -27,7 +27,7 @@ export function BenefitCard({ offer: o, categories, layout = "carousel" }: Props
         </span>
         {o.state === "used" && (
           <span className="absolute top-3 end-3 inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-sm font-medium">
-            <CheckCircle2 aria-hidden className="size-4 text-emerald-700" /> מומש החודש
+            <CheckCircle2 aria-hidden className="size-4 text-emerald-700" /> {o.benefitType === "one_time" ? "מומש" : "מומש החודש"}
           </span>
         )}
         {o.state === "active" && (

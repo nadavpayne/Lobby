@@ -9,7 +9,7 @@ const now = new Date("2026-10-25T10:00:00Z");
 function offer(id: string, o: Partial<ResidentOffer>): ResidentOffer {
   return {
     businessId: id, businessName: id, category: "food", subcategories: [], tags: [], address: "", businessDescription: null, logoUrl: null, coverUrl: null,
-    lat: null, lng: null, hours: null, branches: [], title: "", discountPercent: 10, description: "", terms: null,
+    lat: null, lng: null, hours: null, branches: [], title: "", discountPercent: 10, benefitType: "monthly", oneTimeScope: "apartment", description: "", terms: null,
     startsAt: null, endsAt: null, joinedAt: "2026-01-01T00:00:00Z", distanceMeters: null, withinRadius: false, recentRedemptions: 0,
     remaining: null, state: "available", featured: false, ...o,
   };

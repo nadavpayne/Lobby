@@ -46,7 +46,7 @@ export function DoneView({ authToken, done, onClose }: { authToken: string; done
 
       <div className="flex items-start gap-2.5 rounded-2xl bg-warm p-3.5 text-sm leading-5">
         <CalendarDays aria-hidden className="mt-0.5 size-5 shrink-0" />
-        <p>ההטבה הבאה ב{done.businessName} תהיה זמינה ב-{unlockDay(done.renewsOn)}. בינתיים יש עוד עסקים בשכונה שמחכים לכם.</p>
+        <p>{done.renewsOn ? `ההטבה הבאה ב${done.businessName} תהיה זמינה ב-${unlockDay(done.renewsOn)}. בינתיים יש עוד עסקים בשכונה שמחכים לכם.` : `ניצלתם את ההטבה החד־פעמית ב${done.businessName}. יש עוד עסקים בשכונה שמחכים לכם.`}</p>
       </div>
 
       <PushPrompt token={authToken} text="נשלח התראה כשעסק חדש ליד הבית מצטרף, כדי שלא תפספסו הטבות." />

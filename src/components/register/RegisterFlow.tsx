@@ -11,7 +11,7 @@ import { ScanScreen } from "./ScanScreen";
 
 /** A refused approve (lost a race, month already used…) → the error screen's data. */
 function approveError(r: Exclude<ApproveResult, { code: "OK" }>, apartmentNumber: string): RegisterError {
-  if (r.code === "ALREADY_REDEEMED_THIS_MONTH") return { ...r, apartmentNumber };
+  if (r.code === "ALREADY_REDEEMED_THIS_MONTH" || r.code === "ALREADY_REDEEMED_ONE_TIME") return { ...r, apartmentNumber };
   if (r.code === "CODE_EXPIRED") return { code: r.code, issuedAt: null, expiresAt: null };
   if (r.code === "CODE_ALREADY_USED") return { code: r.code, usedAt: null };
   return { code: r.code };
